@@ -5,7 +5,7 @@ import React from 'react'
 export default function Page() {
   return (
     <div className='bg-zinc-950'>
-      <Button>Hello world</Button>
+      <Button>Hello world Pham Phu Loc</Button>
       <Link href={'/login'}>Login</Link>
     </div>
   )
