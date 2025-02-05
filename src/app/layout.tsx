@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Smart Order',
-  description: 'SOA TDTU Midterm project'
+  description: 'SOA TDTU Midterm Project'
 }
 
 export default function RootLayout({

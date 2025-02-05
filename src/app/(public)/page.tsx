@@ -1,12 +1,20 @@
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import http from '@/lib/http'
 import React from 'react'
+import { Suspense } from 'react'
 
-export default function Page() {
+export default async function Page() {
+  try {
+    const res = await http.get<string>('')
+    console.log(res)
+  } catch (error) {
+    console.log(error)
+  }
   return (
-    <div className='bg-zinc-950'>
-      <Button>Hello world Pham Phu Loc</Button>
-      <Link href={'/login'}>Login</Link>
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <div>
+        <Button>Hello world Pham Phu Loc</Button>
+      </div>
+    </Suspense>
   )
 }
