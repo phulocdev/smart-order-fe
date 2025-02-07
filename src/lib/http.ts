@@ -1,7 +1,18 @@
+import authApiRequest from '@/apiRequests/auth.api'
 import envConfig from '@/config'
-import { getAccessTokenFromLS, normalizePath } from '@/lib/utils'
-import { ISuccessResponse } from '@/types/response.type'
-import { defaultMaxListeners } from 'events'
+import { ENTITY_ERROR_STATUS_CODE, EntityError, HttpError, UNAUTHORIZED_ERROR_STATUS_CODE } from '@/lib/errors'
+import {
+  getAccessTokenFromLS,
+  normalizePath,
+  removeAccessTokenFromLS,
+  removeRefreshTokenFromLS,
+  setAccessTokenToLS,
+  setRefreshTokenToLS
+} from '@/lib/utils'
+import { IAuth } from '@/types/auth.type'
+import { ApiErrorResponse, ApiResponse } from '@/types/response.type'
+import { CloudHail } from 'lucide-react'
+import { redirect } from 'next/navigation'
 
 type OptionsType = Omit<RequestInit, 'method' | 'body'> & {
   baseUrl?: '' // khi cần gọi API đến NextServer
@@ -9,12 +20,12 @@ type OptionsType = Omit<RequestInit, 'method' | 'body'> & {
 
 export const isClient = typeof window !== 'undefined'
 
-const request = async <ResponseType>(
+const request = async <Response>(
   method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
   path: string,
   payload?: any,
   options?: OptionsType | undefined
-): Promise<ResponseType | { error: any }> => {
+) => {
   const baseUrl = options?.baseUrl === '' ? envConfig.NEXT_PUBLIC_NEXT_API_URL : envConfig.NEXT_PUBLIC_BACKEND_URL
   const normalizedPath = normalizePath(path)
   const fullUrl = `${baseUrl}${normalizedPath}`
@@ -23,17 +34,18 @@ const request = async <ResponseType>(
     'Content-Type': 'application/json'
   }
 
+  // Lưu ý body có thể là Object hoặc FormData (image, file...) -> cho nên không phải lúc nào cũng JSON.stringify()
+  let body: FormData | string | undefined = undefined
+  if (payload && !(payload instanceof FormData)) {
+    body = JSON.stringify(payload)
+  }
+
+  // ------------------------------------------- INTERCEPTOR REQUEST  -------------------------------------------
   if (isClient) {
     const accessToken = getAccessTokenFromLS()
     if (accessToken) {
       baseHeaders.Authorization = `Bearer ${accessToken}`
     }
-  }
-
-  // Lưu ý body có thể là Object hoặc FormData (image, file...) -> cho nên không phải lúc nào cũng JSON.stringify
-  let body: FormData | string | undefined = undefined
-  if (payload && !(payload instanceof FormData)) {
-    body = JSON.stringify(payload)
   }
 
   const res = await fetch(fullUrl, {
@@ -42,26 +54,59 @@ const request = async <ResponseType>(
     body
   })
 
+  // ------------------------------------------- INTERCEPTOR ERROR RESPONSE  -------------------------------------------
   if (!res.ok) {
-    const error = await res.json()
-    throw error
+    const errorResponse: ApiErrorResponse = await res.json()
+    const { message, statusCode, errors } = errorResponse
+    if (statusCode === UNAUTHORIZED_ERROR_STATUS_CODE) {
+      if (isClient) {
+        // + RT hết hạn
+        // + RT bị Server xóa đi / RT không hợp lệ
+        // + AT bị hết hạn (vì lưu trong LocalStorage nên không thể tự động xóa)
+        // + AT không hợp lệ (do client chỉnh sửa)
+        // + AT không được gửi lên
+        authApiRequest.logout().finally(() => {
+          window.location.href = '/login'
+        })
+      } else {
+        // + AT không hợp lệ (do client chỉnh sửa)
+        // + AT không được gửi lên / AT trong cookie không còn
+        redirect(`/logout?logoutSecretKey=${envConfig.NEXT_PUBLIC_LOGOUT_SECRET_KEY}`)
+      }
+    } else if (statusCode === ENTITY_ERROR_STATUS_CODE) {
+      throw new EntityError({ message, errors })
+    }
+    throw new HttpError({ message, statusCode })
   }
-  const data: ResponseType = await res.json()
-  return data
+
+  // ------------------------------------------- INTERCEPTOR SUCCESS RESPONSE  -------------------------------------------
+  const successResponse: Response = await res.json()
+
+  if (['/api/auth/login', '/api/auth/register', '/api/auth/refresh-token'].includes(normalizedPath)) {
+    const data = (successResponse as ApiResponse<IAuth>).data
+    const { accessToken, refreshToken } = data
+    setAccessTokenToLS(accessToken)
+    setRefreshTokenToLS(refreshToken)
+  } else if ('/api/auth/logout' === normalizedPath) {
+    removeAccessTokenFromLS()
+    removeRefreshTokenFromLS()
+  }
+
+  return successResponse
 }
 
 const http = {
-  get: <DataType>(path: string, options?: OptionsType) => {
-    return request<ISuccessResponse<DataType>>('GET', path, options)
+  get: <T>(path: string, options?: OptionsType) => {
+    return request<T>('GET', path, undefined, options)
   },
-  post: <DataType>(path: string, body: any, options?: OptionsType) => {
-    return request<ISuccessResponse<DataType>>('POST', path, body, options)
+  post: <T>(path: string, body: any, options?: OptionsType) => {
+    return request<T>('POST', path, body, options)
   },
-  patch: <DataType>(path: string, body: any, options?: OptionsType) => {
-    return request<ISuccessResponse<DataType>>('PATCH', path, body, options)
+  patch: <T>(path: string, body: any, options?: OptionsType) => {
+    return request<T>('PATCH', path, body, options)
   },
-  delete: <DataType>(path: string, options?: OptionsType) => {
-    return request<ISuccessResponse<DataType>>('DELETE', path, options)
+  delete: <T>(path: string, options?: OptionsType) => {
+    return request<T>('DELETE', path, undefined, options)
   }
 }
 

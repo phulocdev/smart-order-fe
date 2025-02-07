@@ -1,5 +1,8 @@
+import { toast } from '@/hooks/use-toast'
+import { EntityError, HttpError } from '@/lib/errors'
 import { isClient } from '@/lib/http'
 import { clsx, type ClassValue } from 'clsx'
+import { UseFormSetError } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
@@ -43,5 +46,19 @@ export const removeAccessTokenFromLS = () => {
 export const removeRefreshTokenFromLS = () => {
   if (isClient) {
     localStorage.removeItem('refreshToken')
+  }
+}
+
+export const handleApiError = ({ error, setError }: { error: any; setError?: UseFormSetError<any> }) => {
+  if (error instanceof EntityError && setError) {
+    const { errors } = error
+    errors.map((err) => setError(err.field as any, { message: err.message }))
+  } else {
+    // Http Error (Bad Request | Not Found | Unauthorized | Internal Server Error)
+    // Ngoài ra còn có các lỗi khác như: ERRCONNECT | Unexpected Error
+    toast({
+      title: '❌ Đã có lỗi xảy ra',
+      description: error.message || 'Vui lòng thử lại'
+    })
   }
 }

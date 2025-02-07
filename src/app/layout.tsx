@@ -1,15 +1,21 @@
-import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
+import type { Metadata } from 'next'
+import ReactQueryProvider from '@/providers/react-query-provider'
+import { Toaster } from '@/components/ui/toaster'
+import { Inter, Roboto_Mono } from 'next/font/google'
+import { ThemeProvider } from '@/components/theme-provider'
+import RefreshToken from '@/components/refresh-token'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin']
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter'
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin']
+const roboto_mono = Roboto_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-roboto-mono'
 })
 
 export const metadata: Metadata = {
@@ -22,10 +28,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const a = 1
   return (
     <html lang='en' suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <main>{children}</main>
+      <body className={`${inter.className} ${inter.variable} ${roboto_mono.variable} antialiased`}>
+        <ReactQueryProvider>
+          <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+            <main>{children}</main>
+            <Toaster />
+            <RefreshToken />
+          </ThemeProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   )
