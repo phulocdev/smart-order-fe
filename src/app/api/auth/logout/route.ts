@@ -1,6 +1,7 @@
 import authApiRequest from '@/apiRequests/auth.api'
 import { cookies } from 'next/headers'
 import { ApiResponse } from '@/types/response.type'
+import { HttpError } from '@/lib/errors'
 
 export async function POST(request: Request) {
   try {
@@ -25,12 +26,12 @@ export async function POST(request: Request) {
     const response = await authApiRequest.sLogout({ accessToken, refreshToken })
     return Response.json(response)
   } catch (error) {
-    // if (error instanceof HttpError) {
-    //   return Response.json(error, { status: error.statusCode })
-    // }
     // if (((error as any)?.digest as string)?.startsWith('NEXT_REDIRECT')) {
     //   throw error
     // }
+    if (error instanceof HttpError) {
+      return Response.json(error, { status: error.statusCode })
+    }
     return Response.json(
       {
         title: 'Internal Next Server Error',

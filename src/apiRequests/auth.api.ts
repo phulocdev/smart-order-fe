@@ -1,6 +1,6 @@
 import http from '@/lib/http'
 import { LoginBodyType, RegisterBodyType } from '@/schemaValidations/auth.schema'
-import { IAccount, IAuthEmployee } from '@/types/auth.type'
+import { IAuthEmployee } from '@/types/auth.type'
 import { ApiResponse } from '@/types/response.type'
 
 const authApiRequest = {

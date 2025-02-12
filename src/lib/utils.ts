@@ -4,6 +4,8 @@ import { isClient } from '@/lib/http'
 import { clsx, type ClassValue } from 'clsx'
 import { UseFormSetError } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
+import jwt from 'jsonwebtoken'
+import authApiRequest from '@/apiRequests/auth.api'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -58,7 +60,33 @@ export const handleApiError = ({ error, setError }: { error: any; setError?: Use
     // Ngoài ra còn có các lỗi khác như: ERRCONNECT | Unexpected Error
     toast({
       title: '❌ Đã có lỗi xảy ra',
-      description: error.message || 'Vui lòng thử lại'
+      description: error?.message || 'Vui lòng thử lại'
     })
   }
+}
+
+export const checkAndRefreshToken = () => {
+  const accessToken = getAccessTokenFromLS()
+  const refreshToken = getRefreshTokenFromLS()
+
+  if (!accessToken || !refreshToken) {
+    return
+  }
+
+  const decodedAccessToken = jwt.decode(accessToken) as { iat: number; exp: number }
+  const decodedRefreshToken = jwt.decode(refreshToken) as { iat: number; exp: number }
+  const now = new Date().getTime() / 1000 // second
+
+  // TH: RT hết hạn
+  if (decodedRefreshToken.exp - now <= 0) {
+    return authApiRequest.logout()
+  }
+
+  if (decodedAccessToken.exp - now < (decodedAccessToken.exp - decodedAccessToken.iat) / 3) {
+    authApiRequest.refreshToken()
+  }
+}
+
+export const formatNumberToVnCurrency = (number: number) => {
+  return number.toLocaleString('it-IT') + 'đ'
 }

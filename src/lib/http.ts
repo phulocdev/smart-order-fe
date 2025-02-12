@@ -11,7 +11,6 @@ import {
 } from '@/lib/utils'
 import { IAuth } from '@/types/auth.type'
 import { ApiErrorResponse, ApiResponse } from '@/types/response.type'
-import { CloudHail } from 'lucide-react'
 import { redirect } from 'next/navigation'
 
 type OptionsType = Omit<RequestInit, 'method' | 'body'> & {
@@ -67,10 +66,13 @@ const request = async <Response>(
         // + AT không được gửi lên
         authApiRequest.logout().finally(() => {
           window.location.href = '/login'
+          removeAccessTokenFromLS()
+          removeRefreshTokenFromLS()
         })
       } else {
         // + AT không hợp lệ (do client chỉnh sửa)
         // + AT không được gửi lên / AT trong cookie không còn
+        console.log('>>>>> errorResponse', errorResponse)
         redirect(`/logout?logoutSecretKey=${envConfig.NEXT_PUBLIC_LOGOUT_SECRET_KEY}`)
       }
     } else if (statusCode === ENTITY_ERROR_STATUS_CODE) {

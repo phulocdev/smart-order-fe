@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import logo from '@/public/logo.svg'
 import Image from 'next/image'
@@ -25,8 +27,20 @@ import {
 import Link from 'next/link'
 import { ModeToggle } from '@/components/theme-mode-toggle'
 import { Button } from '@/components/ui/button'
+import authApiRequest from '@/apiRequests/auth.api'
+import { useRouter } from 'next/navigation'
 
 export default function Header() {
+  const router = useRouter()
+  const onLogout = async () => {
+    try {
+      await authApiRequest.logout()
+      router.push('/')
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  console.log('header render')
   return (
     <div className='sticky top-0 bg-white py-4 shadow-md dark:border-b dark:border-b-gray-700 dark:bg-background'>
       <div className='container mx-auto'>
@@ -72,7 +86,7 @@ export default function Header() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Hủy</AlertDialogCancel>
-                  <AlertDialogAction>Xác nhận</AlertDialogAction>
+                  <AlertDialogAction onClick={onLogout}>Xác nhận</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

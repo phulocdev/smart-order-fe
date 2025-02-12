@@ -34,7 +34,7 @@ export async function POST() {
     return Response.json(response)
   } catch (error) {
     if (error instanceof HttpError) {
-      // RT Invalid
+      // RT Invalid / Không nhận được RT (do cookie tự động xóa) - Unauthorized Error
       return Response.json(error, { status: error.statusCode })
     }
     return Response.json(

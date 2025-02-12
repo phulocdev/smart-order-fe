@@ -4,6 +4,11 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
+  @apply !min-w-full;
+}
+
+html {
+  @apply overflow-x-hidden;
 }
 
 @layer base {
