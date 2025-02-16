@@ -1,4 +1,4 @@
-import LoginForm from '@/app/(auth)/login/login-form'
+import LoginForm from '@/app/(public)/(auth)/login/login-form'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 

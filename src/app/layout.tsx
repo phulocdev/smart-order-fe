@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { Inter, Roboto_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import RefreshToken from '@/components/refresh-token'
+import SetUser from '@/components/set-user'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -28,7 +29,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const a = 1
   return (
     <html lang='en' suppressHydrationWarning>
       <body
@@ -39,6 +39,7 @@ export default function RootLayout({
             <main>{children}</main>
             <Toaster />
             <RefreshToken />
+            <SetUser />
           </ThemeProvider>
         </ReactQueryProvider>
       </body>

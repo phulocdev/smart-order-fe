@@ -40,10 +40,10 @@ export async function POST() {
     return Response.json(
       {
         title: 'Internal Next Server Error',
-        statusCode: 500,
-        message: 'Đã có lỗi khi Next Server gọi API đến Backend Server'
+        statusCode: 401,
+        message: 'Refresh Token thất bại'
       },
-      { status: 500 }
+      { status: 401 }
     )
   }
 }

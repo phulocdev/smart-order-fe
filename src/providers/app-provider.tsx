@@ -1,14 +1,15 @@
 'use client'
-import React, { createContext, useContext, useState } from 'react'
+import { getAccountFromLS, getCustomerFromLS } from '@/lib/utils'
+import { useAppStore } from '@/providers/zustand-provider'
+import { IAccount, ICustomer } from '@/types/auth.type'
+import React, { createContext, useContext, useEffect } from 'react'
 
 type AppContextType = {
-  number: number
-  setNumber: React.Dispatch<React.SetStateAction<number>>
+  user: IAccount | ICustomer | null
 }
 
 const AppContext = createContext<AppContextType>({
-  number: 0,
-  setNumber: () => null
+  user: null
 })
 
 export const useAppContext = () => {
@@ -16,7 +17,5 @@ export const useAppContext = () => {
 }
 
 export default function AppProvider({ children }: { children: React.ReactNode }) {
-  const [number, setNumber] = useState(1)
-
-  return <AppContext.Provider value={{ number, setNumber }}>{children}</AppContext.Provider>
+  return <AppContext.Provider value={{ user: null }}>{children}</AppContext.Provider>
 }

@@ -12,11 +12,9 @@ export default async function DashboardPage() {
     const response = await accountApiRequest.sGetList(accessToken)
     accountList = response.data
   } catch (error) {
-    console.log('Dashboard page error', error)
     if (((error as any)?.digest as string)?.startsWith('NEXT_REDIRECT')) {
       throw error
     }
-    console.log(error)
   }
   return (
     <div>

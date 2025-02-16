@@ -26,9 +26,9 @@ export async function POST(request: Request) {
     const response = await authApiRequest.sLogout({ accessToken, refreshToken })
     return Response.json(response)
   } catch (error) {
-    // if (((error as any)?.digest as string)?.startsWith('NEXT_REDIRECT')) {
-    //   throw error
-    // }
+    if (((error as any)?.digest as string)?.startsWith('NEXT_REDIRECT')) {
+      throw error
+    }
     if (error instanceof HttpError) {
       return Response.json(error, { status: error.statusCode })
     }

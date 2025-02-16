@@ -4,6 +4,8 @@ import { IAuthEmployee } from '@/types/auth.type'
 import { ApiResponse } from '@/types/response.type'
 
 const authApiRequest = {
+  refreshTokenRequest: undefined as Promise<ApiResponse<IAuthEmployee>> | undefined,
+
   sRegister: (body: RegisterBodyType) => {
     return http.post<ApiResponse<IAuthEmployee>>('/auth/register', body)
   },
@@ -37,8 +39,12 @@ const authApiRequest = {
   sRefreshToken: (refreshToken: string) => {
     return http.post<ApiResponse<IAuthEmployee>>('/auth/refresh-token', { refreshToken })
   },
-  refreshToken: () => {
-    return http.post<ApiResponse<IAuthEmployee>>('/api/auth/refresh-token', {}, { baseUrl: '' })
+  async refreshToken() {
+    if (this.refreshTokenRequest) {
+      return
+    }
+    this.refreshTokenRequest = http.post<ApiResponse<IAuthEmployee>>('/api/auth/refresh-token', {}, { baseUrl: '' })
+    return await this.refreshTokenRequest
   }
 }
 

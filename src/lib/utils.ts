@@ -1,11 +1,13 @@
 import { toast } from '@/hooks/use-toast'
-import { EntityError, HttpError } from '@/lib/errors'
+import { EntityError } from '@/lib/errors'
 import { isClient } from '@/lib/http'
 import { clsx, type ClassValue } from 'clsx'
 import { UseFormSetError } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
 import jwt from 'jsonwebtoken'
 import authApiRequest from '@/apiRequests/auth.api'
+import { AuthTokenPayload, IAccount, ICustomer } from '@/types/auth.type'
+import customerApiRequest from '@/apiRequests/customer.api'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -51,6 +53,43 @@ export const removeRefreshTokenFromLS = () => {
   }
 }
 
+export const getCustomerFromLS = () => {
+  if (!isClient) return null
+  const customer = localStorage.getItem('customer')
+  return customer ? JSON.parse(customer) : null
+}
+
+export const setCustomerToLS = (customer: ICustomer) => {
+  if (isClient) {
+    localStorage.setItem('customer', JSON.stringify(customer))
+  }
+}
+
+export const removeCustomerFromLS = () => {
+  if (isClient) {
+    console.log('removeCustomerFromLS')
+    localStorage.removeItem('customer')
+  }
+}
+
+export const getAccountFromLS = () => {
+  if (!isClient) return null
+  const account = localStorage.getItem('account')
+  return account ? JSON.parse(account) : null
+}
+
+export const setAccountToLS = (account: IAccount) => {
+  if (isClient) {
+    localStorage.setItem('account', JSON.stringify(account))
+  }
+}
+
+export const removeAccountFromLS = () => {
+  if (isClient) {
+    localStorage.removeItem('account')
+  }
+}
+
 export const handleApiError = ({ error, setError }: { error: any; setError?: UseFormSetError<any> }) => {
   if (error instanceof EntityError && setError) {
     const { errors } = error
@@ -65,7 +104,7 @@ export const handleApiError = ({ error, setError }: { error: any; setError?: Use
   }
 }
 
-export const checkAndRefreshToken = () => {
+export const checkAndRefreshToken = async () => {
   const accessToken = getAccessTokenFromLS()
   const refreshToken = getRefreshTokenFromLS()
 
@@ -73,8 +112,8 @@ export const checkAndRefreshToken = () => {
     return
   }
 
-  const decodedAccessToken = jwt.decode(accessToken) as { iat: number; exp: number }
-  const decodedRefreshToken = jwt.decode(refreshToken) as { iat: number; exp: number }
+  const decodedAccessToken = jwt.decode(accessToken) as AuthTokenPayload
+  const decodedRefreshToken = jwt.decode(refreshToken) as AuthTokenPayload
   const now = new Date().getTime() / 1000 // second
 
   // TH: RT hết hạn
@@ -83,7 +122,11 @@ export const checkAndRefreshToken = () => {
   }
 
   if (decodedAccessToken.exp - now < (decodedAccessToken.exp - decodedAccessToken.iat) / 3) {
-    authApiRequest.refreshToken()
+    if (decodedRefreshToken.role) {
+      await authApiRequest.refreshToken()
+    } else {
+      await customerApiRequest.refreshToken()
+    }
   }
 }
 

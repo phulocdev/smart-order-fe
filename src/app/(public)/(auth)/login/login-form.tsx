@@ -10,8 +10,10 @@ import Link from 'next/link'
 import { useLoginMutation } from '@/hooks/api/useAuth'
 import { handleApiError } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import { useAppStore } from '@/providers/zustand-provider'
 
 export default function LoginForm() {
+  const setAccount = useAppStore((state) => state.setAccount)
   const router = useRouter()
   const loginMutation = useLoginMutation()
 
@@ -25,8 +27,9 @@ export default function LoginForm() {
 
   async function onSubmit(values: LoginBodyType) {
     try {
-      await loginMutation.mutateAsync(values)
-      router.push('/customer/orders')
+      const response = await loginMutation.mutateAsync(values)
+      setAccount(response.data.account)
+      router.push('/')
     } catch (error) {
       handleApiError({ error, setError: form.setError })
     }

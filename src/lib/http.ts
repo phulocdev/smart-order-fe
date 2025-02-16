@@ -5,6 +5,8 @@ import {
   getAccessTokenFromLS,
   normalizePath,
   removeAccessTokenFromLS,
+  removeAccountFromLS,
+  removeCustomerFromLS,
   removeRefreshTokenFromLS,
   setAccessTokenToLS,
   setRefreshTokenToLS
@@ -84,15 +86,32 @@ const request = async <Response>(
   // ------------------------------------------- INTERCEPTOR SUCCESS RESPONSE  -------------------------------------------
   const successResponse: Response = await res.json()
 
-  if (['/api/auth/login', '/api/auth/register', '/api/auth/refresh-token'].includes(normalizedPath)) {
+  if (
+    [
+      '/api/auth/login',
+      '/api/auth/register',
+      '/api/auth/refresh-token',
+      '/api/customers/auth/login',
+      '/api/customers/auth/register',
+      '/api/customers/auth/refresh-token'
+    ].includes(normalizedPath)
+  ) {
     const data = (successResponse as ApiResponse<IAuth>).data
     const { accessToken, refreshToken } = data
     setAccessTokenToLS(accessToken)
     setRefreshTokenToLS(refreshToken)
-  } else if ('/api/auth/logout' === normalizedPath) {
+  } else if (['/api/auth/logout', '/api/customers/auth/logout'].includes(normalizedPath)) {
     removeAccessTokenFromLS()
     removeRefreshTokenFromLS()
+    removeCustomerFromLS()
+    removeAccountFromLS()
   }
+
+  // await new Promise((resolve) => {
+  //   setTimeout(() => {
+  //     resolve(true)
+  //   }, 5000)
+  // })
 
   return successResponse
 }

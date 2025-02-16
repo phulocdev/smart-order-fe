@@ -20,14 +20,21 @@ export type IAccount = {
   fullName: string
   avatarUrl: string
   role: Role
-  createdAt: string
-  updatedAt: string
 }
 
 export type ICustomer = {
   _id: string
+  code: string
   name: string
-  tableId: string
-  createdAt: string
-  updatedAt: string
+  table: string // String number
+}
+
+export type AuthTokenPayload = {
+  _id: string
+  email: string
+  fullName: string
+  avatarUrl: string
+  role: Role
+  iat: number
+  exp: number
 }
