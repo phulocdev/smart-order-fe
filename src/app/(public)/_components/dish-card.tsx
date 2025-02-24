@@ -62,11 +62,11 @@ export default function DishCard({ dish }: Props) {
         <div className='px-3 py-1'>
           {/* Note Butotn */}
           <div className='text-right'>
-            <OrderNote onSubmit={onOrderNoteSubmit} />
+            <OrderNote onSubmit={onOrderNoteSubmit} dishTitle={dish.title} />
           </div>
 
           {/* Dish Info */}
-          <h4 className='line-clamp-2 h-12 scroll-m-20 font-semibold tracking-tight'>{dish.title}</h4>
+          <h4 className='line-clamp-2 h-12 scroll-m-20 font-medium tracking-tight'>{dish.title}</h4>
           <div className='mt-1 text-[15px]'>
             <span>Giá: </span>
             <span className='font-semibold text-red-600'>{formatNumberToVnCurrency(dish.price)}</span>

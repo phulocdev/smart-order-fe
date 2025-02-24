@@ -1,9 +1,16 @@
 'use client'
 
-import { getAccountFromLS, getCustomerFromLS, setAccountToLS, setCustomerToLS } from '@/lib/utils'
+import { setAccountToLS, setCustomerToLS } from '@/lib/utils'
 import { IAccount, ICustomer } from '@/types/auth.type'
-import { OrderItem } from '@/types/backend.dto'
+import { IDish } from '@/types/backend.type'
 import { create } from 'zustand'
+
+export type OrderItem = {
+  dish: IDish
+  quantity: number
+  price: number
+  note: string
+}
 
 type State = {
   orderItems: OrderItem[]

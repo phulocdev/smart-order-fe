@@ -37,12 +37,8 @@ const customerApiRequest = {
   createOrder: (body: CreateOrderByCustomerBodyType) => {
     return http.post<ApiResponse<IOrderCreated>>('/customers/orders', body)
   },
-  sGetOrders: (accessToken: string) => {
-    return http.get<ApiResponse<IOrder>>('/customers/orders', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
+  getOrders: () => {
+    return http.get<ApiResponse<IOrder>>('/orders')
   }
 }
 

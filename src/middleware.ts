@@ -12,10 +12,10 @@ export async function middleware(request: NextRequest) {
 
   if (refreshToken) {
     // Lâu ngày không vào web thì AT hết hạn
-    // if (privatePaths.some((path) => pathname.startsWith(path)) && !accessToken) {
-    //   const url = new URL(`/refresh-token?callbackURL=${pathname}`, request.url)
-    //   return NextResponse.redirect(url)
-    // }
+    if (privatePaths.some((path) => pathname.startsWith(path)) && !accessToken) {
+      const url = new URL(`/refresh-token?callbackURL=${pathname}`, request.url)
+      return NextResponse.redirect(url)
+    }
 
     if (authenticatePaths.includes(pathname)) {
       return NextResponse.redirect(new URL('/', request.url))

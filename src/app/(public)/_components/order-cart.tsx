@@ -14,7 +14,7 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@/components/ui/sheet'
-import { useCreateOrderByCustomer } from '@/hooks/api/useCustomer'
+import { useCreateOrderByCustomerMutation } from '@/hooks/api/useCustomer'
 import { formatNumberToVnCurrency, handleApiError } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'
 import { OrderItemDto } from '@/types/backend.dto'
@@ -31,7 +31,7 @@ export default function OrderCart() {
   const totalPrice = orderItems.reduce((result, order) => (result += order.price * order.quantity), 0)
 
   const router = useRouter()
-  const createOrder = useCreateOrderByCustomer()
+  const createOrder = useCreateOrderByCustomerMutation()
 
   const handleRemoveOrder = (dishId: string) => {
     removeOrderItem(dishId)
@@ -47,7 +47,7 @@ export default function OrderCart() {
 
   const handleOrder = async () => {
     try {
-      const items: OrderItemDto[] = orderItems.map((order) => ({ ...order, dishId: order.dish._id }))
+      const items: OrderItemDto[] = orderItems.map((order) => ({ ...order, dish: order.dish._id }))
       await createOrder.mutateAsync({ items })
       router.push('/customer/orders')
     } catch (error) {

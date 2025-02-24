@@ -7,7 +7,7 @@ import NavItems from '@/app/(public)/_components/nav-items'
 
 export default function Header() {
   return (
-    <div className='sticky top-0 bg-white py-4 shadow-md dark:border-b dark:border-b-gray-700 dark:bg-background'>
+    <div className='sticky top-0 z-20 bg-white py-4 shadow-md dark:border-b dark:border-b-gray-700 dark:bg-background'>
       <div className='container mx-auto'>
         <div className='flex items-center justify-between'>
           <Link href={'/'}>

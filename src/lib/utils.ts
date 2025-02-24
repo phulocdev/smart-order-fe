@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'
 import authApiRequest from '@/apiRequests/auth.api'
 import { AuthTokenPayload, IAccount, ICustomer } from '@/types/auth.type'
 import customerApiRequest from '@/apiRequests/customer.api'
+import { OrderStatus } from '@/constants/enum'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -96,7 +97,7 @@ export const handleApiError = ({ error, setError }: { error: any; setError?: Use
     errors.map((err) => setError(err.field as any, { message: err.message }))
   } else {
     // Http Error (Bad Request | Not Found | Unauthorized | Internal Server Error)
-    // Ngoài ra còn có các lỗi khác như: ERRCONNECT | Unexpected Error
+    // Ngoài ra còn có các lỗi khác như: ERRCONNECT | Unexpected Error - Uncaught
     toast({
       title: '❌ Đã có lỗi xảy ra',
       description: error?.message || 'Vui lòng thử lại'
@@ -132,4 +133,31 @@ export const checkAndRefreshToken = async () => {
 
 export const formatNumberToVnCurrency = (number: number) => {
   return number.toLocaleString('it-IT') + 'đ'
+}
+
+export const getVietnameseOrderStatus = (status: OrderStatus) => {
+  switch (status) {
+    case OrderStatus.Canceled:
+      return 'Đã hủy'
+    case OrderStatus.Paid:
+      return 'Đã thanh toán'
+    case OrderStatus.Cooked:
+      return 'Đã nấu'
+    case OrderStatus.Processing:
+      return 'Đang xử lý'
+    case OrderStatus.Rejected:
+      return 'Từ chối'
+    case OrderStatus.Served:
+      return 'Đã phục vụ'
+    default:
+      return 'WRONG_ORDER_STATUS'
+  }
+}
+
+export const getVietnameseOrderStatusList = () => {
+  return Object.values(OrderStatus).map((status) => getVietnameseOrderStatus(status))
+}
+
+export const getOrderStatusByIndex = (index: number) => {
+  return Object.values(OrderStatus)[index]
 }

@@ -18,7 +18,6 @@ export interface IOrderItem {
   quantity: number
   price: number
   note: string
-  status: OrderStatus
   createdAt: string
   updatedAt: string
 }
@@ -38,6 +37,7 @@ export interface IOrder {
   customer: Omit<ICustomer, 'table'>
   items: IOrderItem[]
   totalPrice: number
+  status: OrderStatus
   table: ITable
   createdAt: string
   updatedAt: string

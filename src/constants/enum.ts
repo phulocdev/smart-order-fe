@@ -18,10 +18,10 @@ export enum TableStatus {
 }
 
 export enum OrderStatus {
-  Rejected = 'Rejected',
   Processing = 'Processing',
-  Canceled = 'Canceled',
   Cooked = 'Cooked',
   Served = 'Served',
+  Rejected = 'Rejected',
+  Canceled = 'Canceled',
   Paid = 'Paid'
 }
