@@ -9,6 +9,8 @@ import authApiRequest from '@/apiRequests/auth.api'
 import { AuthTokenPayload, IAccount, ICustomer } from '@/types/auth.type'
 import customerApiRequest from '@/apiRequests/customer.api'
 import { OrderStatus } from '@/constants/enum'
+import { getDay, parse, isValid, setDate } from 'date-fns'
+import { badgeVariants, variants } from '@/components/ui/badge'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -137,27 +139,95 @@ export const formatNumberToVnCurrency = (number: number) => {
 
 export const getVietnameseOrderStatus = (status: OrderStatus) => {
   switch (status) {
-    case OrderStatus.Canceled:
-      return 'Đã hủy'
-    case OrderStatus.Paid:
-      return 'Đã thanh toán'
-    case OrderStatus.Cooked:
-      return 'Đã nấu'
-    case OrderStatus.Processing:
-      return 'Đang xử lý'
-    case OrderStatus.Rejected:
-      return 'Từ chối'
+    case OrderStatus.Pending:
+      return 'Chờ xác nhận'
+    case OrderStatus.Confirmed:
+      return 'Đã xác nhận'
+    case OrderStatus.Preparing:
+      return 'Đang chuẩn bị'
+    case OrderStatus.ReadyToServe:
+      return 'Sẵn sàng phục vụ'
     case OrderStatus.Served:
       return 'Đã phục vụ'
+    case OrderStatus.Paid:
+      return 'Đã thanh toán'
+    case OrderStatus.Canceled:
+      return 'Đã hủy'
+    case OrderStatus.Rejected:
+      return 'Từ chối'
     default:
-      return 'WRONG_ORDER_STATUS'
+      return 'INVALID_ORDER_STATUS'
   }
 }
 
 export const getVietnameseOrderStatusList = () => {
-  return Object.values(OrderStatus).map((status) => getVietnameseOrderStatus(status))
+  return Object.values(OrderStatus).map((status, index) => ({
+    label: getVietnameseOrderStatus(status),
+    value: getOrderStatusByIndex(index)
+  }))
 }
 
-export const getOrderStatusByIndex = (index: number) => {
+const getOrderStatusByIndex = (index: number) => {
   return Object.values(OrderStatus)[index]
+}
+
+export const getVietnameseDayOfWeek = (date: string | Date) => {
+  const orderOfDay = getDay(date)
+  switch (orderOfDay) {
+    case 0:
+      return 'Chủ nhật'
+    case 1:
+      return 'Thứ hai'
+    case 2:
+      return 'Thứ ba'
+    case 3:
+      return 'Thứ tư'
+    case 4:
+      return 'Thứ năm'
+    case 5:
+      return 'Thứ sáu'
+    case 6:
+      return 'Thứ bảy'
+    default:
+      return 'INVALID_DAY_OF_WEEK'
+  }
+}
+
+export const getBadgeVariant = (status: OrderStatus): keyof typeof variants.variant => {
+  switch (status) {
+    case OrderStatus.Pending:
+      return 'yellow'
+    case OrderStatus.Confirmed:
+      return 'blue'
+    case OrderStatus.Preparing:
+      return 'orange'
+    case OrderStatus.ReadyToServe:
+      return 'purple'
+    case OrderStatus.Served:
+      return 'blue'
+    case OrderStatus.Rejected:
+      return 'red'
+    case OrderStatus.Canceled:
+      return 'outline'
+    case OrderStatus.Paid:
+      return 'green'
+    default:
+      return 'default'
+  }
+}
+
+export const removeVietNamAccent = (text: string) => {
+  const from = 'àáãảạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệđùúủũụưừứửữựòóỏõọôồốổỗộơờớởỡợìíỉĩịäëïîöüûñçýỳỹỵỷ',
+    to = 'aaaaaaaaaaaaaaaaaeeeeeeeeeeeduuuuuuuuuuuoooooooooooooooooiiiiiaeiiouuncyyyyy'
+  for (let i = 0, l = from.length; i < l; i++) {
+    text = text.replace(RegExp(from[i], 'gi'), to[i])
+  }
+
+  text = text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\-]/g, '-')
+    .replace(/-+/g, '-')
+
+  return text
 }

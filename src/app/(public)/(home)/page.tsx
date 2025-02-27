@@ -13,13 +13,12 @@ export default async function Page() {
     console.log(error)
     // notFound()
   }
+
   return (
     <div className='mt-12'>
-      <h2 className='mb-3 scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0'>
-        Món ăn tại cửa hàng 123
-      </h2>
+      <h2 className='mb-3 scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0'>Món ăn nổi bật</h2>
 
-      <div className='grid grid-cols-1 gap-x-8 md:grid-cols-2 lg:grid-cols-3'>
+      <div className='grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3'>
         {dishList.map((dish) => (
           <DishCard key={dish._id} dish={dish} />
         ))}

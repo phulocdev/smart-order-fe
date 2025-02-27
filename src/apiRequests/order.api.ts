@@ -1,13 +1,27 @@
 import http from '@/lib/http'
 import { IOrder } from '@/types/backend.type'
-import { DateRangeQuery } from '@/types/search-params.type'
-import { PaginatedResponse } from '@/types/response.type'
+import { DateRangeQuery, PaginationQuery } from '@/types/search-params.type'
+import { ApiResponse, PaginatedResponse } from '@/types/response.type'
+import qs from 'qs'
+import { UpdateOrderBodyType } from '@/types/backend.dto'
 
 const orderApiRequest = {
-  getList: (params: DateRangeQuery) => {
-    const { fromDate, toDate } = params
-    return http.get<PaginatedResponse<IOrder>>(`/orders?createdAt>${fromDate}&createdAt<${toDate}`)
+  getList: (params: DateRangeQuery & PaginationQuery) => {
+    return http.get<PaginatedResponse<IOrder>>(`/orders?${qs.stringify(params)}`)
+  },
+  getDetail: (id: string) => {
+    return http.get<ApiResponse<IOrder>>(`/orders/${id}`)
+  },
+  update: ({ id, body }: { id: string; body: UpdateOrderBodyType }) => {
+    return http.patch<ApiResponse<IOrder>>(`/orders/${id}`, body)
   }
+  // sGetDetail: (id: string, accessToken: string) => {
+  //   return http.get<ApiResponse<IOrder>>(`/orders/${id}`, {
+  //     headers: {
+  //       Authorization: `Bearer ${accessToken}`
+  //     }
+  //   })
+  // }
 }
 
 export default orderApiRequest

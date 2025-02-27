@@ -4,16 +4,16 @@ import { Button } from '@/components/ui/button'
 import { Column } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
-import queryString from 'query-string'
 import React from 'react'
+import qs from 'qs'
 
-export default function HeaderTable<T>({
+export default function HeaderColumn<T>({
   column,
   searchParams,
   children
 }: {
   column: Column<T, unknown>
-  searchParams: Record<string, string>
+  searchParams: Record<string, string | number>
   children: React.ReactNode
 }) {
   const router = useRouter()
@@ -29,10 +29,10 @@ export default function HeaderTable<T>({
         if (sortDirection === 'asc') {
           column.clearSorting()
           delete searchParams.sort
-          router.push(`${pathname}?${queryString.stringify(searchParams)}`)
+          router.push(`${pathname}?${qs.stringify(searchParams)}`)
         } else {
           column.toggleSorting(!isDescending)
-          router.push(`${pathname}?${queryString.stringify({ ...searchParams, sort: sortParamValue })}`)
+          router.push(`${pathname}?${qs.stringify({ ...searchParams, sort: sortParamValue })}`)
         }
       }}
     >

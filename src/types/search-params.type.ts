@@ -1,14 +1,17 @@
 export type DateRangeQuery = {
-  fromDate: string
-  toDate: string
+  from?: string
+  to?: string
 }
 
 export type PaginationQuery = {
-  page: string
-  limit: string
+  page?: string | number
+  limit?: string | number
 }
 
-export type OrderSearchParamsType = {
-  page: string
-  sort: string // createdAt.desc || createdAt.asc
-}
+export type OrderSearchParamsType = PaginationQuery &
+  DateRangeQuery & {
+    sort?: string // createdAt.desc || createdAt.asc
+    code?: string
+    customer?: string // name
+    status?: string
+  }

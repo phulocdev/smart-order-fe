@@ -1,34 +1,35 @@
 'use client'
 import React from 'react'
 import { Button } from '@/components/ui/button'
-import { formatNumberToVnCurrency, getVietnameseOrderStatus } from '@/lib/utils'
+import { formatNumberToVnCurrency, getBadgeVariant, getVietnameseOrderStatus, removeVietNamAccent } from '@/lib/utils'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { IOrder } from '@/types/backend.type'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { Ellipsis, Eye } from 'lucide-react'
-import { usePathname, useRouter } from 'next/navigation'
 import { OrderSearchParamsType } from '@/types/search-params.type'
-import HeaderTable from '@/components/header-table'
+import HeaderColumn from '@/components/header-column'
+import { OrderStatus } from '@/constants/enum'
 
 export default function useOrderColumns({ orderSearchParams }: { orderSearchParams: OrderSearchParamsType }) {
-  const router = useRouter()
-  const pathname = usePathname()
-
   const columns: ColumnDef<IOrder>[] = [
     {
       accessorKey: 'code',
       header: ({ column }) => (
-        <HeaderTable column={column} searchParams={orderSearchParams}>
+        <HeaderColumn column={column} searchParams={orderSearchParams}>
           Mã đơn
-        </HeaderTable>
+        </HeaderColumn>
       ),
       cell: ({ row }) => <Badge variant={'ghost'}>{row.original.code}</Badge>
     },
     {
       accessorKey: 'customer',
       header: 'Khách hàng',
+      filterFn: (row, _, filterValue) => {
+        const columnValue = removeVietNamAccent(`${row.original.customer.name}${row.original.table.number}`)
+        return columnValue.includes(removeVietNamAccent(filterValue))
+      },
       cell: ({ row }) => (
         <div>
           <div className='text-sm'>{row.original.customer.name}</div>
@@ -40,9 +41,9 @@ export default function useOrderColumns({ orderSearchParams }: { orderSearchPara
       accessorKey: 'createdAt',
       sortingFn: 'datetime',
       header: ({ column }) => (
-        <HeaderTable column={column} searchParams={orderSearchParams}>
+        <HeaderColumn column={column} searchParams={orderSearchParams}>
           <div> Ngày tạo</div>
-        </HeaderTable>
+        </HeaderColumn>
       ),
       cell: ({ row }) => (
         <>
@@ -60,23 +61,28 @@ export default function useOrderColumns({ orderSearchParams }: { orderSearchPara
     {
       accessorKey: 'totalPrice',
       header: ({ column }) => (
-        <HeaderTable column={column} searchParams={orderSearchParams}>
+        <HeaderColumn column={column} searchParams={orderSearchParams}>
           Tổng tiền
-        </HeaderTable>
+        </HeaderColumn>
       ),
       cell: ({ row }) => {
-        return <div className='pl-5'>{formatNumberToVnCurrency(row.original.totalPrice)}</div>
+        return <div className='pl-7'>{formatNumberToVnCurrency(row.original.totalPrice)}</div>
       }
     },
     {
       accessorKey: 'status',
       header: ({ column }) => (
-        <HeaderTable column={column} searchParams={orderSearchParams}>
+        <HeaderColumn column={column} searchParams={orderSearchParams}>
           Trạng thái
-        </HeaderTable>
+        </HeaderColumn>
       ),
       cell: ({ row }) => {
-        return <Badge variant={'green'}>{getVietnameseOrderStatus(row.original.status)}</Badge>
+        const status: OrderStatus = row.original.status
+        return (
+          <div className='pl-5'>
+            <Badge variant={getBadgeVariant(status)}>{getVietnameseOrderStatus(status)}</Badge>
+          </div>
+        )
       }
     },
     {

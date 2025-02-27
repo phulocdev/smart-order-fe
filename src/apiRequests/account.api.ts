@@ -1,7 +1,7 @@
 import http from '@/lib/http'
 import { IAccount } from '@/types/auth.type'
 import { PaginatedResponse } from '@/types/response.type'
-import queryString from 'query-string'
+import qs from 'qs'
 
 const prefix = '/accounts'
 
@@ -15,7 +15,7 @@ const accountApiRequest = {
   },
 
   getList: (params?: Record<string, string>) => {
-    return http.get<PaginatedResponse<IAccount>>(`${prefix}?${queryString.stringify(params || {})}`)
+    return http.get<PaginatedResponse<IAccount>>(`${prefix}?${qs.stringify(params || {})}`)
   }
 }
 

@@ -38,7 +38,7 @@ const customerApiRequest = {
     return http.post<ApiResponse<IOrderCreated>>('/customers/orders', body)
   },
   getOrders: () => {
-    return http.get<ApiResponse<IOrder>>('/orders')
+    return http.get<ApiResponse<IOrder>>('/customers/orders')
   }
 }
 

@@ -18,10 +18,12 @@ export enum TableStatus {
 }
 
 export enum OrderStatus {
-  Processing = 'Processing',
-  Cooked = 'Cooked',
-  Served = 'Served',
-  Rejected = 'Rejected',
-  Canceled = 'Canceled',
-  Paid = 'Paid'
+  Pending = 'Pending', // Đơn hàng mới tạo, chờ nhân viên xác nhận
+  Confirmed = 'Confirmed', // Nhân viên đã xác nhận đơn
+  Preparing = 'Preparing', // Bếp đang chuẩn bị món ăn
+  ReadyToServe = 'ReadyToServe', // Món ăn đã sẵn sàng để phục vụ
+  Served = 'Served', // Đã mang món ra bàn cho khách
+  Paid = 'Paid', // Khách đã thanh toán
+  Canceled = 'Canceled', // Đơn hàng bị hủy (do khách hoặc nhà hàng)
+  Rejected = 'Rejected' // Đơn hàng bị từ chối (hết món hoặc lý do khác)
 }

@@ -1,3 +1,5 @@
+import { OrderStatus } from '@/constants/enum'
+
 export type OrderItemDto = {
   dish: string // ObjectID
   quantity: number
@@ -7,4 +9,8 @@ export type OrderItemDto = {
 
 export type CreateOrderByCustomerBodyType = {
   items: OrderItemDto[]
+}
+
+export type UpdateOrderBodyType = {
+  status: OrderStatus
 }
