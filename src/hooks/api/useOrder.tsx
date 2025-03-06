@@ -2,7 +2,7 @@ import orderApiRequest from '@/apiRequests/order.api'
 import { DateRangeQuery, PaginationQuery } from '@/types/search-params.type'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 
-export function useGetOrderListQuery(params: DateRangeQuery & PaginationQuery) {
+export function useGetOrderListQuery(params?: DateRangeQuery & PaginationQuery) {
   return useQuery({
     queryKey: ['orders', params],
     queryFn: () => orderApiRequest.getList(params),
@@ -12,7 +12,7 @@ export function useGetOrderListQuery(params: DateRangeQuery & PaginationQuery) {
 
 export function useGetOrderDetailQuery(id?: string) {
   return useQuery({
-    queryKey: ['order', id],
+    queryKey: ['orders', id],
     queryFn: () => orderApiRequest.getDetail(id as string),
     enabled: Boolean(id)
   })
@@ -20,4 +20,8 @@ export function useGetOrderDetailQuery(id?: string) {
 
 export function useUpdateOrderMutation() {
   return useMutation({ mutationFn: orderApiRequest.update })
+}
+
+export function useCreateOrderMutation() {
+  return useMutation({ mutationFn: orderApiRequest.create })
 }

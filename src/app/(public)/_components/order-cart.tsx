@@ -31,24 +31,24 @@ export default function OrderCart() {
   const totalPrice = orderItems.reduce((result, order) => (result += order.price * order.quantity), 0)
 
   const router = useRouter()
-  const createOrder = useCreateOrderByCustomerMutation()
+  const createOrderMutation = useCreateOrderByCustomerMutation()
 
   const handleRemoveOrder = (dishId: string) => {
     removeOrderItem(dishId)
   }
 
-  const onChangeOrderNote = (dishId: string) => (noteContent: string) => {
+  const onOrderNoteChange = (dishId: string) => (noteContent: string) => {
     updateOrderItem(dishId, { note: noteContent })
   }
 
-  const onChangeOrderQuantity = (dishId: string) => (quantity: number) => {
+  const onOrderQuantityChange = (dishId: string) => (quantity: number) => {
     updateOrderItem(dishId, { quantity })
   }
 
   const handleOrder = async () => {
     try {
       const items: OrderItemDto[] = orderItems.map((order) => ({ ...order, dish: order.dish._id }))
-      await createOrder.mutateAsync({ items })
+      await createOrderMutation.mutateAsync({ items })
       router.push('/customer/orders')
     } catch (error) {
       handleApiError({ error })
@@ -87,7 +87,7 @@ export default function OrderCart() {
                   <OrderNote
                     initialValue={order.note}
                     dishTitle={order.dish.title}
-                    onSubmit={onChangeOrderNote(order.dish._id)}
+                    onSubmit={onOrderNoteChange(order.dish._id)}
                     className='absolute -left-4 -top-5 z-20 border border-gray-200 bg-white shadow-2xl'
                   />
                 </div>
@@ -101,7 +101,7 @@ export default function OrderCart() {
                 </div>
                 <div className='grid grid-cols-4 items-center'>
                   <div className='col-span-2'>
-                    <QuantitySelect initialValue={order.quantity} onChange={onChangeOrderQuantity(order.dish._id)} />
+                    <QuantitySelect initialValue={order.quantity} onChange={onOrderQuantityChange(order.dish._id)} />
                   </div>
                   <div className='col-span-1 col-start-4'>
                     <div className='text-sm font-semibold text-red-600'>{formatNumberToVnCurrency(order.price)}</div>

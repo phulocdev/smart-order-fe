@@ -45,7 +45,10 @@ export default function LogoutButton() {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Bạn có muốn đăng xuất?</AlertDialogTitle>
-          <AlertDialogDescription>Hành động này sẽ thoát khỏi phiên làm việc của bạn</AlertDialogDescription>
+          {customer && <AlertDialogDescription>Bạn sẽ không thể tiếp tục tự gọi món</AlertDialogDescription>}
+          {!customer && (
+            <AlertDialogDescription>Hành động này sẽ thoát khỏi phiên làm việc của bạn</AlertDialogDescription>
+          )}
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Hủy</AlertDialogCancel>

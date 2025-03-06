@@ -1,3 +1,8 @@
+export type TQueryParams = DateRangeQuery &
+  PaginationQuery & {
+    [key: string]: string
+  }
+
 export type DateRangeQuery = {
   from?: string
   to?: string
@@ -8,10 +13,10 @@ export type PaginationQuery = {
   limit?: string | number
 }
 
-export type OrderSearchParamsType = PaginationQuery &
-  DateRangeQuery & {
+export type OrderQuery = DateRangeQuery &
+  PaginationQuery & {
     sort?: string // createdAt.desc || createdAt.asc
     code?: string
-    customer?: string // name
+    customerCode?: string // code
     status?: string
   }

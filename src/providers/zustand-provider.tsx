@@ -5,7 +5,7 @@ import { IAccount, ICustomer } from '@/types/auth.type'
 import { IDish } from '@/types/backend.type'
 import { create } from 'zustand'
 
-export type OrderItem = {
+export type OrderItemState = {
   dish: IDish
   quantity: number
   price: number
@@ -13,13 +13,13 @@ export type OrderItem = {
 }
 
 type State = {
-  orderItems: OrderItem[]
+  orderItems: OrderItemState[]
   customer: ICustomer | null
   account: IAccount | null
 }
 
 type Action = {
-  addOrderItem: (newOrderItem: OrderItem) => void
+  addOrderItem: (newOrderItem: OrderItemState) => void
   removeOrderItem: (dishId: string) => void
   updateOrderItem: (dishId: string, payload: { quantity?: number; note?: string }) => void
   setCustomer: (customer: ICustomer | null) => void
@@ -28,7 +28,7 @@ type Action = {
 
 export const useAppStore = create<State & Action>((set) => ({
   orderItems: [],
-  addOrderItem: (newOrderItem: OrderItem) =>
+  addOrderItem: (newOrderItem: OrderItemState) =>
     set((state) => {
       const prevOrderItems = state.orderItems
       return { orderItems: [...prevOrderItems, newOrderItem] }

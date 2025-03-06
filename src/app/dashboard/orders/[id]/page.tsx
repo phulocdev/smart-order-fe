@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { notFound, useParams, useRouter } from 'next/navigation'
 import { useGetOrderDetailQuery, useUpdateOrderMutation } from '@/hooks/api/useOrder'
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -88,7 +88,12 @@ export default function Page() {
                             height={80}
                             className='h-20 w-20 shrink-0 rounded-md object-cover'
                           />
-                          <div className='line-clamp-2 text-sm'>{orderItem.dish.title}</div>
+                          <div className='w-[400px] text-sm'>
+                            <div className='line-clamp-1 text-[15px] font-medium'>
+                              <h3>{orderItem.dish.title}</h3>
+                            </div>
+                            <div className='mt-0.5 line-clamp-2 text-sm'>Ghi chú: {orderItem.note}</div>
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>{formatNumberToVnCurrency(orderItem.price)}</TableCell>
@@ -117,7 +122,7 @@ export default function Page() {
               <div className='mb-3'>Trạng thái đơn hàng</div>
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant='outline' role='combobox' aria-expanded={open} className='w-full justify-between'>
+                  <Button variant='outline' role='combobox' aria-expanded={open} className='w-[230px] justify-between'>
                     {orderStatus
                       ? orderStatusList.find((status) => status.value === orderStatus)?.label
                       : getVietnameseOrderStatus(order.status)}

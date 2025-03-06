@@ -1,16 +1,27 @@
-import { ShoppingCart } from 'lucide-react'
+import { ChartArea, ShoppingCart, Soup } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
+import Link from 'next/link'
 
-// Menu items.
 const items = [
+  {
+    title: 'Báo cáo',
+    url: '/dashboard',
+    icon: ChartArea
+  },
+  {
+    title: 'Món ăn',
+    url: '/dashboard/dishes',
+    icon: Soup
+  },
   {
     title: 'Đơn hàng',
     url: '/dashboard/orders',
@@ -22,6 +33,9 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible='icon'>
       <SidebarContent>
+        <SidebarHeader className='text-center'>
+          <Link href={'/'}>Smart Order</Link>
+        </SidebarHeader>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>

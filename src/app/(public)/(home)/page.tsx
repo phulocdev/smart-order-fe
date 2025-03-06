@@ -7,11 +7,10 @@ import OrderCart from '@/app/(public)/_components/order-cart'
 export default async function Page() {
   let dishList: IDish[] = []
   try {
-    const res = await dishApiRequest.sGetList()
+    const res = await dishApiRequest.getList()
     dishList = res.data
   } catch (error) {
     console.log(error)
-    // notFound()
   }
 
   return (

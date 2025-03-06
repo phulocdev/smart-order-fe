@@ -29,7 +29,7 @@ export default function LoginForm() {
     try {
       const response = await loginMutation.mutateAsync(values)
       setAccount(response.data.account)
-      router.push('/')
+      router.push('/dashboard')
     } catch (error) {
       handleApiError({ error, setError: form.setError })
     }

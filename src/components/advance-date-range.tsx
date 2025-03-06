@@ -77,13 +77,13 @@ export default function AdvanceDateRange<T>({ fromDate, toDate, searchParams }: 
     setDateRange({ from, to })
   }
 
-  const handleConfirmSelect = () => {
+  const handleConfirm = () => {
     if (!dateRange?.from || !dateRange?.to) {
       toast({ title: '🙅 Vui lòng chọn ngày bắt đầu và ngày kết thúc' })
       return
     }
 
-    router.push(
+    router.replace(
       `${pathname}?${qs.stringify({ ...searchParams, from: format(dateRange.from, 'yyyy-M-dd'), to: format(dateRange.to, 'yyyy-M-dd') })}`
     )
     setCalendarOpen(false)
@@ -148,7 +148,7 @@ export default function AdvanceDateRange<T>({ fromDate, toDate, searchParams }: 
           <Button variant={'ghost'} onClick={() => setCalendarOpen(false)}>
             Hủy
           </Button>
-          <Button onClick={handleConfirmSelect}>Xác nhận</Button>
+          <Button onClick={handleConfirm}>Xác nhận</Button>
         </div>
       </PopoverContent>
     </Popover>

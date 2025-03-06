@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils'
 interface Prop {
   initialValue?: string
   dishTitle?: string
-  onSubmit: (noteContent: string) => void
+  onSubmit?: (noteContent: string) => void
   className?: string
   resetAfterSubmit?: boolean
 }
@@ -30,6 +30,10 @@ export default function OrderNote({
 }: Prop) {
   const [note, setNote] = useState<string>(initialValue)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    setNote(initialValue)
+  }, [initialValue])
 
   const confirmNote = () => {
     if (textAreaRef.current) {

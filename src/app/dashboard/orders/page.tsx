@@ -1,7 +1,7 @@
-import { DataTable } from './data-table'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { OrderTable } from '@/app/dashboard/orders/order-table'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default async function Page() {
+export default function Page() {
   return (
     <div className='mx-auto px-20 py-8'>
       <Card>
@@ -9,7 +9,8 @@ export default async function Page() {
           <CardTitle className='text-xl font-medium'>Đơn hàng</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTable />
+          {/* <DataTable useDataQuery={useGetOrderListQuery} columns={columns} /> */}
+          <OrderTable />
         </CardContent>
       </Card>
     </div>

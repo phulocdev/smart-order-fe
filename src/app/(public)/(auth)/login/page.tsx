@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function Page() {
   return (
-    <div className='max-w-[400px] shrink-0 grow'>
+    <div className='max-w-[25rem] shrink-0 grow'>
       <Card>
         <CardHeader>
           <CardTitle className='text-xl'>Đăng nhập</CardTitle>

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import envConfig from '@/config'
+import envConfig from '@/config/env'
 import { useLogoutMutation } from '@/hooks/api/useAuth'
 import { removeAccessTokenFromLS, removeRefreshTokenFromLS } from '@/lib/utils'
 import { useRouter, useSearchParams } from 'next/navigation'

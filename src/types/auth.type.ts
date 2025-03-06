@@ -25,7 +25,6 @@ export type IAccount = {
 export type ICustomer = {
   _id: string
   code: string
-  name: string
   table: string // String number
 }
 

@@ -27,6 +27,7 @@ export interface ITable {
   number: number
   capacity: number
   status: TableStatus
+  customer: string // ObjectId
   createdAt: string
   updatedAt: string
 }

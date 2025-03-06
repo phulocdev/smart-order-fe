@@ -1,16 +1,16 @@
+import authApiRequest from '@/apiRequests/auth.api'
+import customerApiRequest from '@/apiRequests/customer.api'
+import { variants } from '@/components/ui/badge'
+import { OrderStatus } from '@/constants/enum'
 import { toast } from '@/hooks/use-toast'
 import { EntityError } from '@/lib/errors'
 import { isClient } from '@/lib/http'
+import { AuthTokenPayload, IAccount, ICustomer } from '@/types/auth.type'
 import { clsx, type ClassValue } from 'clsx'
+import { getDay } from 'date-fns'
+import jwt from 'jsonwebtoken'
 import { UseFormSetError } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
-import jwt from 'jsonwebtoken'
-import authApiRequest from '@/apiRequests/auth.api'
-import { AuthTokenPayload, IAccount, ICustomer } from '@/types/auth.type'
-import customerApiRequest from '@/apiRequests/customer.api'
-import { OrderStatus } from '@/constants/enum'
-import { getDay, parse, isValid, setDate } from 'date-fns'
-import { badgeVariants, variants } from '@/components/ui/badge'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -230,4 +230,23 @@ export const removeVietNamAccent = (text: string) => {
     .replace(/-+/g, '-')
 
   return text
+}
+
+export function toSentenceCase(str: string) {
+  return str
+    .replace(/_/g, ' ')
+    .replace(/([A-Z])/g, ' $1')
+    .toLowerCase()
+    .replace(/^\w/, (c) => c.toUpperCase())
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+export function formatDate(date: Date | string | number, opts: Intl.DateTimeFormatOptions = {}) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: opts.month ?? 'long',
+    day: opts.day ?? 'numeric',
+    year: opts.year ?? 'numeric',
+    ...opts
+  }).format(new Date(date))
 }

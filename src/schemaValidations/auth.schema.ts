@@ -39,11 +39,6 @@ export const registerSchema = z.object({
 export type RegisterBodyType = z.infer<typeof registerSchema>
 
 export const customerLoginSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, { message: 'Tên không được bỏ trống' })
-    .max(40, { message: 'Yêu cầu tối đa 40 kí tự' }),
   tableToken: z.string().trim()
 })
 

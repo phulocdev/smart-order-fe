@@ -1,4 +1,4 @@
-import React from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Pagination,
   PaginationContent,
@@ -6,26 +6,29 @@ import {
   PaginationItem,
   PaginationLink
 } from '@/components/ui/pagination'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
 import qs from 'qs'
-import { usePathname } from 'next/navigation'
 
 interface Props<T> {
   currentPage: number
   totalPages: number
+  onChange?: (pageIndex: number) => void
   offset?: number
-  searchParams: T
+  searchParams?: T // Nếu mà truyền searchParams thì đồng nghĩa với việc syncStateToUrl
 }
 
 const ellipsisCharacter = '...'
 
-export default function AutoPagination<SearchParams>({
+export default function NumberedPagination<SearchParams>({
   currentPage,
   totalPages,
   offset = 2,
+  onChange,
   searchParams
 }: Props<SearchParams>) {
+  const router = useRouter()
   const pathname = usePathname()
 
   const offsetNumber = currentPage <= offset || currentPage > totalPages - offset ? offset : offset - 1
@@ -38,7 +41,7 @@ export default function AutoPagination<SearchParams>({
         <PaginationContent>
           <PaginationItem>
             <PaginationLink href={'#'} size='default' className='pointer-events-none gap-1 pl-2.5'>
-              <ChevronLeft className='h-4 w-4' />
+              <ChevronLeft size={4} />
             </PaginationLink>
           </PaginationItem>
           <PaginationItem>
@@ -48,7 +51,7 @@ export default function AutoPagination<SearchParams>({
           </PaginationItem>
           <PaginationItem>
             <PaginationLink href={'#'} size='default' className='pointer-events-none gap-1 pr-2.5'>
-              <ChevronRight className='h-4 w-4' />
+              <ChevronRight size={4} />
             </PaginationLink>
           </PaginationItem>
         </PaginationContent>
@@ -80,24 +83,37 @@ export default function AutoPagination<SearchParams>({
     <Pagination className='w-fit'>
       <PaginationContent>
         <PaginationItem>
-          <PaginationLink
-            href={`${pathname}?${qs.stringify({ ...searchParams, page: currentPage - 1 })}`}
+          <Button
             size='icon'
             className={cn({ 'pointer-events-none': currentPage === 1 })}
+            variant={'outline'}
+            onClick={() => {
+              const previousPage = currentPage - 1
+              if (onChange) onChange(previousPage - 1)
+              if (searchParams) {
+                router.replace(`${pathname}?${qs.stringify({ ...searchParams, page: previousPage })}`)
+              }
+            }}
           >
-            <ChevronLeft className='h-4 w-4' />
-          </PaginationLink>
+            <ChevronLeft size={4} />
+          </Button>
         </PaginationItem>
         {numbersListWithDots.map((page, index) =>
           page !== ellipsisCharacter ? (
             <PaginationItem key={index}>
-              <PaginationLink
-                href={`${pathname}?${qs.stringify({ ...searchParams, page })}`}
+              <Button
                 size='icon'
-                className={cn({ 'border border-primary dark:border-white': currentPage === Number(page) })}
+                variant={'outline'}
+                className={cn({ 'border-primary': currentPage.toString() === page })}
+                onClick={() => {
+                  if (onChange) onChange(+page - 1)
+                  if (searchParams) {
+                    router.replace(`${pathname}?${qs.stringify({ ...searchParams, page })}`)
+                  }
+                }}
               >
                 {page}
-              </PaginationLink>
+              </Button>
             </PaginationItem>
           ) : (
             <PaginationItem key={index}>
@@ -106,13 +122,20 @@ export default function AutoPagination<SearchParams>({
           )
         )}
         <PaginationItem>
-          <PaginationLink
-            href={`${pathname}?${qs.stringify({ ...searchParams, page: currentPage + 1 })}`}
+          <Button
             size='icon'
             className={cn({ 'pointer-events-none': currentPage === totalPages })}
+            variant={'outline'}
+            onClick={() => {
+              const nextPage = currentPage + 1
+              if (onChange) onChange(nextPage - 1)
+              if (searchParams) {
+                router.replace(`${pathname}?${qs.stringify({ ...searchParams, page: nextPage })}`)
+              }
+            }}
           >
-            <ChevronRight className='h-4 w-4' />
-          </PaginationLink>
+            <ChevronRight size={4} />
+          </Button>
         </PaginationItem>
       </PaginationContent>
     </Pagination>

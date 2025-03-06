@@ -1,5 +1,5 @@
 import authApiRequest from '@/apiRequests/auth.api'
-import envConfig from '@/config'
+import envConfig from '@/config/env'
 import { ENTITY_ERROR_STATUS_CODE, EntityError, HttpError, UNAUTHORIZED_ERROR_STATUS_CODE } from '@/lib/errors'
 import {
   getAccessTokenFromLS,
@@ -60,6 +60,8 @@ const request = async <Response>(
     const errorResponse: ApiErrorResponse = await res.json()
     const { message, statusCode, errors } = errorResponse
     if (statusCode === UNAUTHORIZED_ERROR_STATUS_CODE) {
+      debugger
+      console.log(errorResponse)
       if (isClient) {
         // + RT hết hạn
         // + RT bị Server xóa đi / RT không hợp lệ
@@ -75,9 +77,11 @@ const request = async <Response>(
         // + AT không hợp lệ (do client chỉnh sửa)
         // + AT không được gửi lên / AT trong cookie không còn
         console.log('>>>>> errorResponse', errorResponse)
+        debugger
         redirect(`/logout?logoutSecretKey=${envConfig.NEXT_PUBLIC_LOGOUT_SECRET_KEY}`)
       }
     } else if (statusCode === ENTITY_ERROR_STATUS_CODE) {
+      console.log(errors)
       throw new EntityError({ message, errors })
     }
     throw new HttpError({ message, statusCode })

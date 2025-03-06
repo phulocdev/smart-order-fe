@@ -14,3 +14,8 @@ export type CreateOrderByCustomerBodyType = {
 export type UpdateOrderBodyType = {
   status: OrderStatus
 }
+
+export type CreateOrderBodyType = {
+  tableNumber: number
+  items: OrderItemDto[]
+}

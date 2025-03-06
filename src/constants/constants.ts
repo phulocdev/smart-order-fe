@@ -1,7 +1,7 @@
 export const PAGINATION = {
-  DEFAUT_PAGE_SIZE: 1,
-  DEFAULT_LIMIT: 10
-} as const
+  DEFAUT_PAGE_INDEX: 1,
+  DEFAULT_PAGE_SIZE: 10
+}
 
 export const DATE_RANGE_SELECT = {
   MAX_YEAR: 2100,

@@ -7,32 +7,37 @@ import { usePathname, useRouter } from 'next/navigation'
 import React from 'react'
 import qs from 'qs'
 
-export default function HeaderColumn<T>({
+export default function HeaderColumn<TData, TValue>({
   column,
   searchParams,
   children
 }: {
-  column: Column<T, unknown>
-  searchParams: Record<string, string | number>
+  column: Column<TData, TValue>
   children: React.ReactNode
+  searchParams?: Record<string, string | number>
 }) {
   const router = useRouter()
   const pathname = usePathname()
-
   const sortDirection = column.getIsSorted()
   const isDescending = sortDirection === 'desc'
-  const sortParamValue = isDescending ? `${column.id}.asc` : `${column.id}.desc`
+  const sortQueryParams = isDescending ? `${column.id}.asc` : `${column.id}.desc`
   return (
     <Button
+      type='button'
       variant='ghost'
       onClick={() => {
         if (sortDirection === 'asc') {
+          // Clear sorting trước khi nó chuyển sang false - Chu kì là: desc - asc - false
           column.clearSorting()
-          delete searchParams.sort
-          router.push(`${pathname}?${qs.stringify(searchParams)}`)
+          if (searchParams) {
+            delete searchParams.sort
+            router.replace(`${pathname}?${qs.stringify(searchParams)}`)
+          }
         } else {
           column.toggleSorting(!isDescending)
-          router.push(`${pathname}?${qs.stringify({ ...searchParams, sort: sortParamValue })}`)
+          if (searchParams) {
+            router.replace(`${pathname}?${qs.stringify({ ...searchParams, sort: sortQueryParams })}`)
+          }
         }
       }}
     >

@@ -6,6 +6,7 @@ import { Inter, Roboto_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import RefreshToken from '@/components/refresh-token'
 import SetUser from '@/components/set-user'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -36,7 +37,9 @@ export default function RootLayout({
       >
         <ReactQueryProvider>
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-            <main>{children}</main>
+            <NuqsAdapter>
+              <main>{children}</main>
+            </NuqsAdapter>
             <Toaster />
             <RefreshToken />
             <SetUser />

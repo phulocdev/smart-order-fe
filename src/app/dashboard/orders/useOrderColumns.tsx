@@ -1,18 +1,21 @@
 'use client'
-import React from 'react'
-import { Button } from '@/components/ui/button'
-import { formatNumberToVnCurrency, getBadgeVariant, getVietnameseOrderStatus, removeVietNamAccent } from '@/lib/utils'
-import { ColumnDef } from '@tanstack/react-table'
-import { format } from 'date-fns'
-import { IOrder } from '@/types/backend.type'
-import { Badge } from '@/components/ui/badge'
-import Link from 'next/link'
-import { Ellipsis, Eye } from 'lucide-react'
-import { OrderSearchParamsType } from '@/types/search-params.type'
 import HeaderColumn from '@/components/header-column'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { OrderStatus } from '@/constants/enum'
+import { formatNumberToVnCurrency, getBadgeVariant, getVietnameseOrderStatus, removeVietNamAccent } from '@/lib/utils'
+import { IOrder } from '@/types/backend.type'
+import { OrderQuery } from '@/types/search-params.type'
+import { ColumnDef } from '@tanstack/react-table'
+import { format, isEqual } from 'date-fns'
+import { Ellipsis, Eye } from 'lucide-react'
+import Link from 'next/link'
 
-export default function useOrderColumns({ orderSearchParams }: { orderSearchParams: OrderSearchParamsType }) {
+interface Props {
+  orderSearchParams: OrderQuery
+}
+
+export default function useOrderColumns({ orderSearchParams }: Props) {
   const columns: ColumnDef<IOrder>[] = [
     {
       accessorKey: 'code',
@@ -27,22 +30,29 @@ export default function useOrderColumns({ orderSearchParams }: { orderSearchPara
       accessorKey: 'customer',
       header: 'Khách hàng',
       filterFn: (row, _, filterValue) => {
-        const columnValue = removeVietNamAccent(`${row.original.customer.name}${row.original.table.number}`)
-        return columnValue.includes(removeVietNamAccent(filterValue))
+        const columnValue = `${row.original.customer.code}${row.original.table.number}`
+        return removeVietNamAccent(columnValue).includes(removeVietNamAccent(filterValue))
       },
       cell: ({ row }) => (
         <div>
-          <div className='text-sm'>{row.original.customer.name}</div>
+          <div className='text-sm font-medium'>{row.original.customer.code}</div>
           <div className='text-xs text-gray-500'>Bàn số: {row.original.table.number}</div>
         </div>
       )
     },
     {
       accessorKey: 'createdAt',
-      sortingFn: 'datetime',
+      sortingFn: (rowA, rowB) => {
+        const timestampA = new Date(rowA.original.createdAt).getTime()
+        const timestampB = new Date(rowB.original.createdAt).getTime()
+
+        if (isEqual(timestampA, timestampB)) return 0
+        return timestampA > timestampB ? 1 : -1
+      },
+      // sortingFn: 'datetime',
       header: ({ column }) => (
         <HeaderColumn column={column} searchParams={orderSearchParams}>
-          <div> Ngày tạo</div>
+          <div>Ngày tạo</div>
         </HeaderColumn>
       ),
       cell: ({ row }) => (

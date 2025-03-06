@@ -43,6 +43,8 @@ export default function DishCard({ dish }: Props) {
     } else {
       addOrderItem({ dish, note, quantity, price: dish.price })
     }
+    setQuantity(1)
+    setNote('')
     toast({ title: `🟢 Đặt món ăn thành công` })
   }
 
@@ -62,7 +64,7 @@ export default function DishCard({ dish }: Props) {
         <div className='px-3 py-1'>
           {/* Note Butotn */}
           <div className='text-right'>
-            <OrderNote onSubmit={onOrderNoteSubmit} dishTitle={dish.title} />
+            <OrderNote initialValue={note} onSubmit={onOrderNoteSubmit} dishTitle={dish.title} />
           </div>
 
           {/* Dish Info */}
