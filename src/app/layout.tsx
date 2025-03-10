@@ -1,12 +1,9 @@
-import './globals.css'
+import Providers from '@/providers/providers'
+import { ThemeProvider } from '@/providers/theme-provider'
 import type { Metadata } from 'next'
-import ReactQueryProvider from '@/providers/react-query-provider'
-import { Toaster } from '@/components/ui/toaster'
 import { Inter, Roboto_Mono } from 'next/font/google'
-import { ThemeProvider } from '@/components/theme-provider'
-import RefreshToken from '@/components/refresh-token'
-import SetUser from '@/components/set-user'
-import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import './globals.css'
+import { getSession } from '@/auth'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -22,29 +19,25 @@ const roboto_mono = Roboto_Mono({
 
 export const metadata: Metadata = {
   title: 'Smart Order',
-  description: 'SOA TDTU Midterm Project'
+  description: 'Demo dự án giữa kì môn Kiến trúc hướng dịch vụ'
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await getSession()
   return (
     <html lang='en' suppressHydrationWarning>
       <body
         className={`${inter.className} ${inter.variable} ${roboto_mono.variable} dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"> antialiased [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar]:w-2`}
       >
-        <ReactQueryProvider>
+        <Providers session={session}>
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-            <NuqsAdapter>
-              <main>{children}</main>
-            </NuqsAdapter>
-            <Toaster />
-            <RefreshToken />
-            <SetUser />
+            <main>{children}</main>
           </ThemeProvider>
-        </ReactQueryProvider>
+        </Providers>
       </body>
     </html>
   )

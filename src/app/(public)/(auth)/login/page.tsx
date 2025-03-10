@@ -8,7 +8,7 @@ export default function Page() {
       <Card>
         <CardHeader>
           <CardTitle className='text-xl'>Đăng nhập</CardTitle>
-          <CardDescription>Chỉ có nhân viên của quán ăn mới có thể sử đăng nhập vào hệ thống</CardDescription>
+          <CardDescription>Chỉ có nhân viên mới có thể đăng nhập vào hệ thống</CardDescription>
         </CardHeader>
         <CardContent>
           <LoginForm />

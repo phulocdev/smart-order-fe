@@ -1,15 +1,12 @@
-import authApiRequest from '@/apiRequests/auth.api'
-import customerApiRequest from '@/apiRequests/customer.api'
 import { variants } from '@/components/ui/badge'
-import { OrderStatus } from '@/constants/enum'
-import { toast } from '@/hooks/use-toast'
+import { DishStatus, OrderStatus } from '@/constants/enum'
 import { EntityError } from '@/lib/errors'
 import { isClient } from '@/lib/http'
-import { AuthTokenPayload, IAccount, ICustomer } from '@/types/auth.type'
+import { IDish, IOrder } from '@/types/backend.type'
 import { clsx, type ClassValue } from 'clsx'
 import { getDay } from 'date-fns'
-import jwt from 'jsonwebtoken'
 import { UseFormSetError } from 'react-hook-form'
+import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
@@ -24,23 +21,15 @@ export function normalizePath(path: string) {
   return path.startsWith('/') ? path : `/${path}`
 }
 
+// ---------------------- ACCESS_TOKEN UTILS --------------------
+
 export const getAccessTokenFromLS = () => {
   return (isClient && localStorage.getItem('accessToken')) || ''
-}
-
-export const getRefreshTokenFromLS = () => {
-  return (isClient && localStorage.getItem('refreshToken')) || ''
 }
 
 export const setAccessTokenToLS = (token: string) => {
   if (isClient) {
     localStorage.setItem('accessToken', token)
-  }
-}
-
-export const setRefreshTokenToLS = (token: string) => {
-  if (isClient) {
-    localStorage.setItem('refreshToken', token)
   }
 }
 
@@ -50,86 +39,77 @@ export const removeAccessTokenFromLS = () => {
   }
 }
 
-export const removeRefreshTokenFromLS = () => {
-  if (isClient) {
-    localStorage.removeItem('refreshToken')
-  }
-}
+// ---------------------- REFRESH_TOKEN UTILS --------------------
 
-export const getCustomerFromLS = () => {
-  if (!isClient) return null
-  const customer = localStorage.getItem('customer')
-  return customer ? JSON.parse(customer) : null
-}
+// export const getRefreshTokenFromLS = () => {
+//   return (isClient && localStorage.getItem('refreshToken')) || ''
+// }
 
-export const setCustomerToLS = (customer: ICustomer) => {
-  if (isClient) {
-    localStorage.setItem('customer', JSON.stringify(customer))
-  }
-}
+// export const setRefreshTokenToLS = (token: string) => {
+//   if (isClient) {
+//     localStorage.setItem('refreshToken', token)
+//   }
+// }
 
-export const removeCustomerFromLS = () => {
-  if (isClient) {
-    console.log('removeCustomerFromLS')
-    localStorage.removeItem('customer')
-  }
-}
+// export const removeRefreshTokenFromLS = () => {
+//   if (isClient) {
+//     localStorage.removeItem('refreshToken')
+//   }
+// }
 
-export const getAccountFromLS = () => {
-  if (!isClient) return null
-  const account = localStorage.getItem('account')
-  return account ? JSON.parse(account) : null
-}
+// export const getCustomerFromLS = () => {
+//   if (!isClient) return null
+//   const customer = localStorage.getItem('customer')
+//   return customer ? JSON.parse(customer) : null
+// }
 
-export const setAccountToLS = (account: IAccount) => {
-  if (isClient) {
-    localStorage.setItem('account', JSON.stringify(account))
-  }
-}
+// export const setCustomerToLS = (customer: ICustomer) => {
+//   if (isClient) {
+//     localStorage.setItem('customer', JSON.stringify(customer))
+//   }
+// }
 
-export const removeAccountFromLS = () => {
-  if (isClient) {
-    localStorage.removeItem('account')
-  }
-}
+// export const removeCustomerFromLS = () => {
+//   if (isClient) {
+//     console.log('removeCustomerFromLS')
+//     localStorage.removeItem('customer')
+//   }
+// }
 
-export const handleApiError = ({ error, setError }: { error: any; setError?: UseFormSetError<any> }) => {
+// export const getAccountFromLS = () => {
+//   if (!isClient) return null
+//   const account = localStorage.getItem('account')
+//   return account ? JSON.parse(account) : null
+// }
+
+// export const setAccountToLS = (account: IAccount) => {
+//   if (isClient) {
+//     localStorage.setItem('account', JSON.stringify(account))
+//   }
+// }
+
+// export const removeAccountFromLS = () => {
+//   if (isClient) {
+//     localStorage.removeItem('account')
+//   }
+// }
+
+export const handleApiError = ({
+  error,
+  setError,
+  duration = 3000
+}: {
+  error: any
+  setError?: UseFormSetError<any>
+  duration?: number
+}) => {
   if (error instanceof EntityError && setError) {
     const { errors } = error
-    errors.map((err) => setError(err.field as any, { message: err.message }))
+    errors.map((err) => setError(err.field, { message: err.message }))
   } else {
     // Http Error (Bad Request | Not Found | Unauthorized | Internal Server Error)
     // Ngoài ra còn có các lỗi khác như: ERRCONNECT | Unexpected Error - Uncaught
-    toast({
-      title: '❌ Đã có lỗi xảy ra',
-      description: error?.message || 'Vui lòng thử lại'
-    })
-  }
-}
-
-export const checkAndRefreshToken = async () => {
-  const accessToken = getAccessTokenFromLS()
-  const refreshToken = getRefreshTokenFromLS()
-
-  if (!accessToken || !refreshToken) {
-    return
-  }
-
-  const decodedAccessToken = jwt.decode(accessToken) as AuthTokenPayload
-  const decodedRefreshToken = jwt.decode(refreshToken) as AuthTokenPayload
-  const now = new Date().getTime() / 1000 // second
-
-  // TH: RT hết hạn
-  if (decodedRefreshToken.exp - now <= 0) {
-    return authApiRequest.logout()
-  }
-
-  if (decodedAccessToken.exp - now < (decodedAccessToken.exp - decodedAccessToken.iat) / 3) {
-    if (decodedRefreshToken.role) {
-      await authApiRequest.refreshToken()
-    } else {
-      await customerApiRequest.refreshToken()
-    }
+    toast.error(error?.message ?? 'Đã có lỗi xảy ra', { description: 'Vui lòng thử lại', duration })
   }
 }
 
@@ -160,6 +140,26 @@ export const getVietnameseOrderStatus = (status: OrderStatus) => {
   }
 }
 
+export const getVietnameseDishStatus = (status: DishStatus) => {
+  switch (status) {
+    case DishStatus.Available:
+      return 'Có sẵn'
+    case DishStatus.Unavailable:
+      return 'Không có sẵn'
+    case DishStatus.Hidden:
+      return 'Tạm ẩn'
+    default:
+      return 'INVALID_DISH_STATUS'
+  }
+}
+
+export const getVietnameseDishStatusList = () => {
+  return Object.values(DishStatus).map((status, index) => ({
+    label: getVietnameseDishStatus(status),
+    value: getDishStatusByIndex(index)
+  }))
+}
+
 export const getVietnameseOrderStatusList = () => {
   return Object.values(OrderStatus).map((status, index) => ({
     label: getVietnameseOrderStatus(status),
@@ -169,6 +169,10 @@ export const getVietnameseOrderStatusList = () => {
 
 const getOrderStatusByIndex = (index: number) => {
   return Object.values(OrderStatus)[index]
+}
+
+const getDishStatusByIndex = (index: number) => {
+  return Object.values(DishStatus)[index]
 }
 
 export const getVietnameseDayOfWeek = (date: string | Date) => {
@@ -232,21 +236,33 @@ export const removeVietNamAccent = (text: string) => {
   return text
 }
 
-export function toSentenceCase(str: string) {
-  return str
-    .replace(/_/g, ' ')
-    .replace(/([A-Z])/g, ' $1')
-    .toLowerCase()
-    .replace(/^\w/, (c) => c.toUpperCase())
-    .replace(/\s+/g, ' ')
-    .trim()
+const orderKeyTranslations: Record<keyof IOrder, string> = {
+  _id: 'Mã đơn hàng',
+  code: 'Mã đơn',
+  customer: 'Khách hàng',
+  items: 'Danh sách sản phẩm',
+  totalPrice: 'Tổng tiền',
+  status: 'Trạng thái',
+  table: 'Bàn',
+  createdAt: 'Ngày tạo',
+  updatedAt: 'Ngày cập nhật'
 }
 
-export function formatDate(date: Date | string | number, opts: Intl.DateTimeFormatOptions = {}) {
-  return new Intl.DateTimeFormat('en-US', {
-    month: opts.month ?? 'long',
-    day: opts.day ?? 'numeric',
-    year: opts.year ?? 'numeric',
-    ...opts
-  }).format(new Date(date))
+export function translateOrderKey(key: keyof IOrder): string {
+  return orderKeyTranslations[key]
+}
+
+export const dishKeyTranslations: Record<keyof IDish, string> = {
+  _id: 'Mã món ăn',
+  title: 'Tên món',
+  description: 'Mô tả',
+  price: 'Giá',
+  status: 'Trạng thái',
+  imageUrl: 'Hình ảnh',
+  createdAt: 'Ngày tạo',
+  updatedAt: 'Ngày cập nhật'
+}
+
+export function translateDishKey(key: keyof IDish): string {
+  return dishKeyTranslations[key]
 }

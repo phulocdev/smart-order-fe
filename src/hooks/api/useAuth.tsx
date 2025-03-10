@@ -8,26 +8,8 @@ export function useLoginMutation() {
   })
 }
 
-export function useRegisterMutation() {
-  return useMutation({
-    mutationFn: authApiRequest.register
-  })
-}
-
-export function useLogoutMutation() {
-  return useMutation({
-    mutationFn: authApiRequest.logout
-  })
-}
-
 export function useCustomerLoginMutation() {
   return useMutation({
     mutationFn: customerApiRequest.login
-  })
-}
-
-export function useCustomerLogoutMutation() {
-  return useMutation({
-    mutationFn: customerApiRequest.logout
   })
 }

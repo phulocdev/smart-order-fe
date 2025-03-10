@@ -11,13 +11,22 @@ export class HttpError extends Error {
   }
 }
 
+// export class EntityError extends HttpError {
+//   message: string
+//   errors: { field: string; message: string }[]
+//   statusCode: number = ENTITY_ERROR_STATUS_CODE
+//   constructor({ message, errors }: { message: string; errors?: { field: string; message: string }[] }) {
+//     super({ message, statusCode: ENTITY_ERROR_STATUS_CODE })
+//     this.errors = errors || []
+//     this.message = message
+//   }
+// }
+
 export class EntityError extends HttpError {
-  message: string
   errors: { field: string; message: string }[]
-  statusCode: number = ENTITY_ERROR_STATUS_CODE
-  constructor({ message, errors }: { message: string; errors?: { field: string; message: string }[] }) {
+
+  constructor({ message, errors = [] }: { message: string; errors?: { field: string; message: string }[] }) {
     super({ message, statusCode: ENTITY_ERROR_STATUS_CODE })
-    this.errors = errors || []
-    this.message = message
+    this.errors = errors
   }
 }

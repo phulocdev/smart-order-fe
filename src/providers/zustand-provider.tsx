@@ -1,6 +1,5 @@
 'use client'
 
-import { setAccountToLS, setCustomerToLS } from '@/lib/utils'
 import { IAccount, ICustomer } from '@/types/auth.type'
 import { IDish } from '@/types/backend.type'
 import { create } from 'zustand'
@@ -14,16 +13,13 @@ export type OrderItemState = {
 
 type State = {
   orderItems: OrderItemState[]
-  customer: ICustomer | null
-  account: IAccount | null
 }
 
 type Action = {
   addOrderItem: (newOrderItem: OrderItemState) => void
   removeOrderItem: (dishId: string) => void
   updateOrderItem: (dishId: string, payload: { quantity?: number; note?: string }) => void
-  setCustomer: (customer: ICustomer | null) => void
-  setAccount: (customer: IAccount | null) => void
+  clearOrderInCart: () => void
 }
 
 export const useAppStore = create<State & Action>((set) => ({
@@ -49,14 +45,7 @@ export const useAppStore = create<State & Action>((set) => ({
       return { orderItems: [...prevOrderItems] }
     })
   },
-  customer: null,
-  setCustomer: (customer: ICustomer | null) => {
-    if (customer) setCustomerToLS(customer)
-    return set(() => ({ customer }))
-  },
-  account: null,
-  setAccount: (account: IAccount | null) => {
-    if (account) setAccountToLS(account)
-    return set(() => ({ account }))
+  clearOrderInCart: () => {
+    set(() => ({ orderItems: [] }))
   }
 }))

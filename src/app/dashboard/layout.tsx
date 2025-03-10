@@ -1,5 +1,6 @@
+import LogoutButton from '@/app/(public)/_components/logout-button'
 import { AppSidebar } from '@/components/app-sidebar'
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { ModeToggle } from '@/components/theme-mode-toggle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -8,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import LogoutButton from '@/app/(public)/_components/logout-button'
+import { SidebarProvider } from '@/components/ui/sidebar'
 
 export default function DashboardLayout({
   children
@@ -19,7 +20,7 @@ export default function DashboardLayout({
     <SidebarProvider defaultOpen={true}>
       <AppSidebar />
       <section className='grow'>
-        <div className='flex justify-end py-3 pr-20 shadow'>
+        <div className='flex justify-end gap-x-3 border-b py-3 pr-20 shadow dark:border-b-gray-500'>
           {/* <SidebarTrigger /> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -34,8 +35,10 @@ export default function DashboardLayout({
               {<LogoutButton />}
             </DropdownMenuContent>
           </DropdownMenu>
+          {/* Dark Mode Toggle */}
+          <ModeToggle />
         </div>
-        <div>{children}</div>
+        {children}
       </section>
     </SidebarProvider>
   )

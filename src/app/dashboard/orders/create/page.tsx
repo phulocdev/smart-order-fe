@@ -1,7 +1,7 @@
 'use client'
 
-import { DishTable } from '@/app/dashboard/orders/create/dish-table'
-import useDishColumns from '@/app/dashboard/orders/create/useDishColumns'
+import getDishColumns from '@/app/dashboard/orders/create/get-dish-columns'
+import { Shell } from '@/components/shell'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { TableStatus } from '@/constants/enum'
 import { useCreateOrderMutation } from '@/hooks/api/useOrder'
 import { useGetTableListQuery } from '@/hooks/api/useTable'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 import { cn, handleApiError } from '@/lib/utils'
 import { OrderItemState } from '@/providers/zustand-provider'
 import { CreateCustomerBodyType, customerSchema } from '@/schemaValidations/customer.schema'
@@ -19,8 +19,9 @@ import { IDish } from '@/types/backend.type'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Check, CheckCircle, ChevronLeft, ChevronsUpDown, Users } from 'lucide-react'
 import Link from 'next/link'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { DishTableCreateOrder } from '@/app/dashboard/orders/create/dish-table-create-order'
 
 const getStatusIcon = (status: TableStatus) => {
   switch (status) {
@@ -74,26 +75,24 @@ export default function CreateOrderPage() {
     []
   )
 
-  const columns = useDishColumns({ handleSelectOrder })
-
   async function onSubmit(values: CreateCustomerBodyType) {
     try {
       const { tableNumber } = values
       if (orderItems.length === 0) {
-        toast({ title: 'Vui lòng chọn món ăn' })
+        toast('Vui lòng chọn món ăn')
         return
       }
       const items: OrderItemDto[] = orderItems.map((order) => ({ ...order, dish: order.dish._id }))
 
       await createOrderMutation.mutateAsync({ tableNumber, items })
-      toast({ title: 'Tạo mới đơn hàng thành công' })
+      toast('Tạo mới đơn hàng thành công')
     } catch (error) {
       handleApiError({ error })
     }
   }
-
+  const columns = useMemo(() => getDishColumns({ handleSelectOrder, orderItems }), [handleSelectOrder, orderItems])
   return (
-    <div className='px-8 py-10'>
+    <Shell className='gap-2'>
       <div className='mb-1 flex items-center gap-x-[2px] text-[13px]'>
         <ChevronLeft width={14} height={14} />
         <Link href={'/dashboard/orders'}>Quay lại</Link>
@@ -130,7 +129,7 @@ export default function CreateOrderPage() {
                           </PopoverTrigger>
                           <PopoverContent className='w-[300px] p-0'>
                             <Command>
-                              <CommandInput placeholder='Search table...' className='h-9' />
+                              <CommandInput placeholder='Tìm số bàn...' className='h-9' />
                               <CommandList>
                                 <CommandEmpty>Bàn không tồn tại</CommandEmpty>
                                 <CommandGroup>
@@ -174,7 +173,7 @@ export default function CreateOrderPage() {
                       <FormItem>
                         <FormLabel>Danh sách món ăn</FormLabel>
                         <FormControl>
-                          <DishTable columns={columns} totalPrice={totalPrice} />
+                          <DishTableCreateOrder columns={columns} totalPrice={totalPrice} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -189,6 +188,6 @@ export default function CreateOrderPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </Shell>
   )
 }

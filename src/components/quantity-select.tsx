@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { CircleMinus, CirclePlus } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
@@ -29,14 +29,14 @@ export default function QuantitySelect({ initialValue = 1, max, min = 1, onChang
     if (max && numberValue > max) {
       setQuantity(max)
       if (onChange) onChange(max)
-      toast({ title: `🔴 Số lượng món ăn phải <= ${max}` })
+      toast(`🔴 Số lượng món ăn phải <= ${max}`)
       return
     }
 
     if (numberValue < min) {
       setQuantity(min)
       if (onChange) onChange(min)
-      toast({ title: '🔴 Số lượng món ăn không hợp lệ' })
+      toast('🔴 Số lượng món ăn không hợp lệ')
       return
     }
 
@@ -47,7 +47,7 @@ export default function QuantitySelect({ initialValue = 1, max, min = 1, onChang
   const handleIncrease = () => {
     const newQuantity = quantity + 1
     if (max && newQuantity > max) {
-      toast({ title: `🔴 Số lượng món ăn phải <= ${max}` })
+      toast(`🔴 Số lượng món ăn phải <= ${max}`)
       return
     }
     setQuantity(newQuantity)
@@ -57,7 +57,7 @@ export default function QuantitySelect({ initialValue = 1, max, min = 1, onChang
   const handleDecrease = () => {
     const newQuantity = quantity - 1
     if (newQuantity < min) {
-      toast({ title: '🔴 Số lượng món ăn không hợp lệ' })
+      toast('🔴 Số lượng món ăn không hợp lệ')
       return
     }
     setQuantity(newQuantity)

@@ -55,7 +55,7 @@ export default function OrderNote({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Ghi chú: {dishTitle}</AlertDialogTitle>
+          <AlertDialogTitle>Ghi chú món: {dishTitle}</AlertDialogTitle>
           <AlertDialogDescription>
             <Textarea
               ref={textAreaRef}

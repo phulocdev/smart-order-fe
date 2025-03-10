@@ -1,6 +1,7 @@
 'use client'
 
-import React from 'react'
+import authApiRequest from '@/apiRequests/auth.api'
+import customerApiRequest from '@/apiRequests/customer.api'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,28 +14,30 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import { useRouter } from 'next/navigation'
-import authApiRequest from '@/apiRequests/auth.api'
+import { handleApiError, removeAccessTokenFromLS } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'
-import customerApiRequest from '@/apiRequests/customer.api'
+import { signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 export default function LogoutButton() {
-  const customer = useAppStore((state) => state.customer)
-  const setAccount = useAppStore((state) => state.setAccount)
-  const setCustomer = useAppStore((state) => state.setCustomer)
+  const { data: session } = useSession()
+  const refreshToken = session?.refreshToken ?? ''
   const router = useRouter()
+  const clearOrderInCart = useAppStore((state) => state.clearOrderInCart)
+
   const onLogout = async () => {
     try {
-      if (customer) {
-        setCustomer(null)
-        await customerApiRequest.logout()
-      } else {
-        setAccount(null)
-        await authApiRequest.logout()
+      if (session?.customer) {
+        await Promise.all([customerApiRequest.logout({ refreshToken }), signOut({ redirect: false })])
+      } else if (session?.account) {
+        await Promise.all([authApiRequest.logout({ refreshToken }), signOut({ redirect: false })])
       }
-      router.push('/')
+
+      router.replace('/login')
+      clearOrderInCart()
+      removeAccessTokenFromLS()
     } catch (error) {
-      console.log(error)
+      handleApiError({ error })
     }
   }
   return (
@@ -45,8 +48,8 @@ export default function LogoutButton() {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Bạn có muốn đăng xuất?</AlertDialogTitle>
-          {customer && <AlertDialogDescription>Bạn sẽ không thể tiếp tục tự gọi món</AlertDialogDescription>}
-          {!customer && (
+          {session?.customer && <AlertDialogDescription>Bạn sẽ không thể tiếp tục tự gọi món</AlertDialogDescription>}
+          {session?.account && (
             <AlertDialogDescription>Hành động này sẽ thoát khỏi phiên làm việc của bạn</AlertDialogDescription>
           )}
         </AlertDialogHeader>

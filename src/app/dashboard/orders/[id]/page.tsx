@@ -1,26 +1,26 @@
 'use client'
-import React from 'react'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { notFound, useParams, useRouter } from 'next/navigation'
-import { useGetOrderDetailQuery, useUpdateOrderMutation } from '@/hooks/api/useOrder'
+import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { format, getDay } from 'date-fns'
-import Image from 'next/image'
+import { OrderStatus } from '@/constants/enum'
+import { useGetOrderDetailQuery, useUpdateOrderMutation } from '@/hooks/api/useOrder'
+import { toast } from 'sonner'
 import {
+  cn,
   formatNumberToVnCurrency,
   getVietnameseOrderStatus,
   getVietnameseOrderStatusList,
   handleApiError
 } from '@/lib/utils'
+import { format } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { Check, ChevronLeft, ChevronsUpDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Button } from '@/components/ui/button'
-import { OrderStatus } from '@/constants/enum'
-import { toast } from '@/hooks/use-toast'
+import Image from 'next/image'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import React from 'react'
 
 const orderStatusList = getVietnameseOrderStatusList()
 export default function Page() {
@@ -41,7 +41,7 @@ export default function Page() {
     if (id) {
       try {
         await updateOrderMutation.mutateAsync({ id, body: { status: orderStatus as OrderStatus } })
-        toast({ title: '✅ Cập nhật đơn hàng thành công' })
+        toast('✅ Cập nhật đơn hàng thành công')
       } catch (error) {
         handleApiError({ error })
       }
@@ -92,7 +92,9 @@ export default function Page() {
                             <div className='line-clamp-1 text-[15px] font-medium'>
                               <h3>{orderItem.dish.title}</h3>
                             </div>
-                            <div className='mt-0.5 line-clamp-2 text-sm'>Ghi chú: {orderItem.note}</div>
+                            <div className='mt-0.5 line-clamp-2 text-sm'>
+                              Ghi chú: {orderItem.note.trim().length > 0 ? orderItem.note.trim() : 'Trống'}
+                            </div>
                           </div>
                         </div>
                       </TableCell>

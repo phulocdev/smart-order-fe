@@ -4,6 +4,7 @@ export interface ApiResponse<T> {
   data: T
 }
 
+// Type cho errorObject trả về từ backend
 export interface ApiErrorResponse {
   statusCode: number
   title: string
@@ -22,3 +23,8 @@ export interface PaginatedResponse<T> {
     totalDocuments: number
   }
 }
+
+export type DeleteResponse = ApiResponse<{
+  acknowledged: boolean
+  deletedCount: number
+}>

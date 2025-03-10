@@ -1,35 +1,42 @@
-import { cookies } from 'next/headers'
-import { NextResponse, type NextRequest } from 'next/server'
-
-const authenticatePaths = ['/login', '/register']
-const privatePaths = ['/dashboard']
-
-export async function middleware(request: NextRequest) {
-  const cookieStore = await cookies()
-  const accessToken = cookieStore.get('accessToken')?.value
-  const refreshToken = cookieStore.get('refreshToken')?.value
-  const { pathname } = request.nextUrl
-
-  if (refreshToken) {
-    // Lâu ngày không vào web thì AT hết hạn
-    if (privatePaths.some((path) => pathname.startsWith(path)) && !accessToken) {
-      const url = new URL(`/refresh-token?callbackURL=${pathname}`, request.url)
-      return NextResponse.redirect(url)
-    }
-
-    if (authenticatePaths.includes(pathname)) {
-      return NextResponse.redirect(new URL('/', request.url))
-    }
-  }
-
-  if (!refreshToken) {
-    if (privatePaths.some((path) => pathname.startsWith(path))) {
-      const url = new URL(`/login?clearTokens=true`, request.url)
-      return NextResponse.redirect(url)
-    }
-  }
-}
+import { withAuth } from 'next-auth/middleware'
+import { NextResponse } from 'next/server'
 
 export const config = {
-  matcher: ['/login', '/register', '/dashboard/:path*']
+  matcher: ['/login', '/dashboard/:path*', '/customer/:path*']
 }
+
+const authenticationPaths = ['/login']
+const employeePaths = ['/dashboard']
+const customerPaths = ['/customer', '/reservation']
+
+export default withAuth(
+  function middleware(req) {
+    const { pathname } = req.nextUrl
+    const accessToken = req.nextauth.token?.accessToken
+    const refreshToken = req.nextauth.token?.refreshToken
+    const isEmployee = Boolean(req.nextauth.token?.account)
+    const isCustomer = Boolean(req.nextauth.token?.customer)
+
+    if (refreshToken) {
+      if (
+        authenticationPaths.includes(pathname) ||
+        (customerPaths.some((path) => pathname.startsWith(path)) && !isCustomer) ||
+        (employeePaths.some((path) => pathname.startsWith(path)) && !isEmployee)
+      ) {
+        return NextResponse.redirect(new URL('/', req.url))
+      }
+    }
+
+    if (!refreshToken && [...customerPaths, ...employeePaths].some((path) => pathname.startsWith(path))) {
+      return NextResponse.redirect(new URL('/login', req.url))
+    }
+  },
+  {
+    //  jwt: { decode: authOptions.jwt?.decode },
+    callbacks: {
+      authorized: () => {
+        return true
+      }
+    }
+  }
+)

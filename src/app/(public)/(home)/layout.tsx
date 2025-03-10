@@ -7,10 +7,10 @@ export default function PublicLayout({
   children: React.ReactNode
 }>) {
   return (
-    <section>
+    <>
       <Header />
       <div className='container min-h-screen'>{children}</div>
       <Footer />
-    </section>
+    </>
   )
 }

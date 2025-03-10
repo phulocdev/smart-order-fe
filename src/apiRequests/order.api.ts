@@ -4,6 +4,7 @@ import { DateRangeQuery, OrderQuery, PaginationQuery } from '@/types/search-para
 import { ApiResponse, PaginatedResponse } from '@/types/response.type'
 import qs from 'qs'
 import { CreateOrderBodyType, UpdateOrderBodyType } from '@/types/backend.dto'
+import { CookingPot } from 'lucide-react'
 
 const orderApiRequest = {
   getList: (params?: DateRangeQuery & PaginationQuery & OrderQuery) => {
@@ -17,6 +18,13 @@ const orderApiRequest = {
   },
   create: (body: CreateOrderBodyType) => {
     return http.post<ApiResponse<IOrder>>('/orders', body)
+  },
+  sGetList: (accessToken: string, params?: OrderQuery) => {
+    return http.get<PaginatedResponse<IOrder>>(`/orders?${qs.stringify(params)}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
   }
   // sGetDetail: (id: string, accessToken: string) => {
   //   return http.get<ApiResponse<IOrder>>(`/orders/${id}`, {

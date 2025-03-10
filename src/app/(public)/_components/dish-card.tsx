@@ -8,14 +8,15 @@ import QuantitySelect from '@/components/quantity-select'
 import { IDish } from '@/types/backend.type'
 import { useAppStore } from '@/providers/zustand-provider'
 import OrderNote from '@/app/(public)/_components/order-note'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
 
 interface Props {
   dish: IDish
 }
 
 export default function DishCard({ dish }: Props) {
-  const customer = useAppStore((state) => state.customer)
+  const { data: session } = useSession()
   const orderItems = useAppStore((state) => state.orderItems)
   const addOrderItem = useAppStore((state) => state.addOrderItem)
   const updateOrderItem = useAppStore((state) => state.updateOrderItem)
@@ -32,8 +33,8 @@ export default function DishCard({ dish }: Props) {
   }
 
   const handleSelectDish = () => {
-    if (!customer) {
-      toast({ title: '🙅 Vui lòng quét mã QR để có thể đặt món', description: 'Mã QR được dán tại mỗi bàn' })
+    if (!session?.customer) {
+      toast.error('Vui lòng quét mã QR để có thể đặt món', { icon: '❌' })
       return
     }
 
@@ -45,7 +46,7 @@ export default function DishCard({ dish }: Props) {
     }
     setQuantity(1)
     setNote('')
-    toast({ title: `🟢 Đặt món ăn thành công` })
+    toast(`🟢 Đặt món ăn thành công`)
   }
 
   return (

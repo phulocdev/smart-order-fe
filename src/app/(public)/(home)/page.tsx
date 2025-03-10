@@ -1,28 +1,33 @@
-import React from 'react'
-import DishCard from '@/app/(public)/_components/dish-card'
 import dishApiRequest from '@/apiRequests/dish.api'
-import { IDish } from '@/types/backend.type'
+import DishCard from '@/app/(public)/_components/dish-card'
 import OrderCart from '@/app/(public)/_components/order-cart'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 
 export default async function Page() {
-  let dishList: IDish[] = []
-  try {
-    const res = await dishApiRequest.getList()
-    dishList = res.data
-  } catch (error) {
-    console.log(error)
-  }
-
+  const res = await dishApiRequest.getList()
+  const dishList = res.data
   return (
     <div className='mt-12'>
-      <h2 className='mb-3 scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0'>Món ăn nổi bật</h2>
-
-      <div className='grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3'>
-        {dishList.map((dish) => (
-          <DishCard key={dish._id} dish={dish} />
-        ))}
-      </div>
-
+      <section>
+        <h2 className='mb-3 scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0'>Món ăn nổi bật</h2>
+        <div className='py-8'>
+          <Carousel>
+            <CarouselContent className='-ml-8'>
+              {dishList.map((dish) => (
+                <CarouselItem key={dish._id} className='basis-1/3 pl-8'>
+                  <DishCard dish={dish} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className='absolute -top-7 right-12 flex items-center justify-center'>
+              <CarouselPrevious className='relative left-0 translate-x-0 hover:translate-x-0' />
+            </div>
+            <div className='absolute -top-7 right-2 flex items-center justify-center'>
+              <CarouselNext className='relative right-0 translate-x-0 hover:translate-x-0' />
+            </div>
+          </Carousel>
+        </div>
+      </section>
       <div className='fixed bottom-[50%] right-2 z-20 translate-y-[50%]'>
         <OrderCart />
       </div>

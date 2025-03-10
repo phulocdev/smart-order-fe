@@ -19,15 +19,17 @@ import { formatNumberToVnCurrency, handleApiError } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'
 import { OrderItemDto } from '@/types/backend.dto'
 import { ShoppingCart, Trash } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
 export default function OrderCart() {
-  const customer = useAppStore((state) => state.customer)
+  const { data: session } = useSession()
   const orderItems = useAppStore((state) => state.orderItems)
   const updateOrderItem = useAppStore((state) => state.updateOrderItem)
   const removeOrderItem = useAppStore((state) => state.removeOrderItem)
+  const clearOrderInCart = useAppStore((state) => state.clearOrderInCart)
   const totalPrice = orderItems.reduce((result, order) => (result += order.price * order.quantity), 0)
 
   const router = useRouter()
@@ -45,17 +47,18 @@ export default function OrderCart() {
     updateOrderItem(dishId, { quantity })
   }
 
-  const handleOrder = async () => {
+  const confirmOrders = async () => {
     try {
       const items: OrderItemDto[] = orderItems.map((order) => ({ ...order, dish: order.dish._id }))
       await createOrderMutation.mutateAsync({ items })
+      clearOrderInCart()
       router.push('/customer/orders')
     } catch (error) {
       handleApiError({ error })
     }
   }
 
-  if (!customer) return
+  if (!session?.customer) return
   return (
     <Sheet>
       <SheetTrigger>
@@ -69,7 +72,7 @@ export default function OrderCart() {
       </SheetTrigger>
       <SheetContent className='sm:w-[400px] sm:max-w-[540px] xl:w-[450px] xl:max-w-none' side={'right'}>
         <SheetHeader>
-          <SheetTitle>Món ăn đã chọn - {customer && <span>Bàn số {customer.table}</span>}</SheetTitle>
+          <SheetTitle>Món ăn đã chọn - {<span>Bàn số {session.customer.table}</span>}</SheetTitle>
         </SheetHeader>
         <ScrollArea className='mt-5 flex flex-col gap-5'>
           {orderItems.map((order, index) => (
@@ -126,7 +129,7 @@ export default function OrderCart() {
               </Button>
             </SheetClose>
             <SheetClose asChild>
-              <Button className='w-full' type='submit' onClick={handleOrder}>
+              <Button className='w-full' type='submit' onClick={confirmOrders}>
                 Xác nhận
               </Button>
             </SheetClose>
