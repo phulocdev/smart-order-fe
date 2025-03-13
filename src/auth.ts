@@ -2,29 +2,42 @@ import authApiRequest from '@/apiRequests/auth.api'
 import customerApiRequest from '@/apiRequests/customer.api'
 import envServerConfig from '@/config/env.server'
 import { HttpError } from '@/lib/errors'
-import { AuthOptions, getServerSession } from 'next-auth'
+import { SESSION_TIMEOUT } from '@/middleware'
+import { AuthOptions, getServerSession, Session } from 'next-auth'
+import { type JWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GitHubProvider from 'next-auth/providers/github'
 
 const authOptions: AuthOptions = {
   secret: envServerConfig.NEXTAUTH_SECRET,
-  // Configure one or more authentication providers
+  pages: { signIn: '/login' },
+  session: {
+    strategy: 'jwt',
+    maxAge: SESSION_TIMEOUT
+  },
+  jwt: {
+    maxAge: SESSION_TIMEOUT
+  },
   providers: [
     CredentialsProvider({
       id: 'employee-credentials',
       name: 'Employee',
       credentials: {
-        username: { label: 'Tên đăng nhập', type: 'text', placeholder: 'abc@gmail.com' },
-        password: { label: 'Mật khẩu', type: 'password' }
+        email: { label: 'Email', type: 'text', placeholder: 'loc01@gmail.com' },
+        password: { label: 'Password', type: 'password', placeholder: '123123123' }
       },
       async authorize(credentials) {
-        if (credentials?.username && credentials.password) {
-          const { username: email, password } = credentials
+        if (credentials?.email && credentials.password) {
+          const body = {
+            email: credentials.email,
+            password: credentials.password
+          }
           try {
-            const res = await authApiRequest.login({ email, password })
-            return res.data as any
+            const res = await authApiRequest.login(body)
+            const user = res.data as any
+            return user
           } catch (error) {
-            // Lỗi trả về từ http.ts file luôn là 1 HttpError (có thg con là EntityError)
+            // Lỗi trả về từ http.ts file luôn là 1 HttpError (có thg con là EntityError) - Lỗi từ Backend Server
             // Bad Request / Unauthorzied / ERRORCONNECT thì tương tự vs Http Error
             if (error instanceof HttpError) {
               // Phải chủ động thêm field message trong Error Obj bởi vì nếu ta JSON.stringify() error của NextAuth
@@ -41,9 +54,13 @@ const authOptions: AuthOptions = {
               // Đảm bảo việc luôn có message trong object error trả về
               throw new Error(JSON.stringify({ ...error, message: error.message }))
             }
+            // Lỗi trả về từ NextServer
             const loginError = new HttpError({ message: 'Đăng nhập thất bại', statusCode: 400 })
-            throw new Error(JSON.stringify({ ...loginError, message: loginError.message })) // Lỗi trả về từ NextServer
+            throw new Error(JSON.stringify({ ...loginError, message: loginError.message }))
           }
+        } else {
+          const loginError = new HttpError({ message: 'Vui lòng nhập email và password', statusCode: 400 })
+          throw new Error(JSON.stringify({ ...loginError, message: loginError.message }))
         }
       }
     }),
@@ -51,14 +68,15 @@ const authOptions: AuthOptions = {
       id: 'customer-credentials',
       name: 'Customer',
       credentials: {
-        tableToken: { label: 'Table Token', type: 'text' }
+        tableToken: { label: 'Table token', type: 'text' }
       },
       async authorize(credentials) {
         if (credentials?.tableToken) {
           const { tableToken } = credentials
           try {
             const res = await customerApiRequest.login({ tableToken: tableToken })
-            return res.data as any
+            const user = res.data as any
+            return user
           } catch (error) {
             if (error instanceof HttpError) {
               throw new Error(JSON.stringify({ ...error, message: error.message }))
@@ -67,7 +85,7 @@ const authOptions: AuthOptions = {
             throw new Error(JSON.stringify({ ...loginError, message: loginError.message })) // Lỗi trả về từ NextServer
           }
         } else {
-          const loginError = new HttpError({ message: 'Vui lòng quét mã để đặt bàn', statusCode: 400 })
+          const loginError = new HttpError({ message: 'Vui lòng quét mã QR để đặt bàn', statusCode: 400 })
           throw new Error(JSON.stringify({ ...loginError, message: loginError.message }))
         }
       }
@@ -77,23 +95,11 @@ const authOptions: AuthOptions = {
       clientSecret: envServerConfig.GITHUB_SECRET
     })
   ],
-  pages: { signIn: '/login' },
-  session: {
-    strategy: 'jwt'
-  },
-  // jwt: {
-  //   async encode({ secret, token }) {
-  //     return jwt.sign(token, secret)
-  //   },
-  //   async decode({ secret, token }) {
-  //     return jwt.verify(token, secret)
-  //   }
-  // },
   callbacks: {
     // user là biến có thể nhận từ hàm authorize() trong Credentials hoặc từ Providers(Github, Google) trả về
-    async jwt({ token, user, account, trigger }) {
+    async jwt({ token, user, account, trigger }): Promise<JWT> {
       // Chỉnh sửa JWT Token được lưu trong cookie Browser (NextServer tạo)
-      // Persist the OAuth access_token to the token right after signin
+      // Persist the OAuth access_token to the token right after signin - OAuth
       if (trigger === 'signIn' && account?.provider !== 'credentials' && user.email) {
         const res = await authApiRequest.loginOAuth({ email: user.email })
         const { accessToken, refreshToken, account } = res.data
@@ -118,7 +124,8 @@ const authOptions: AuthOptions = {
 
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token, trigger }): Promise<Session> {
+      if (!token) return session
       // Send properties to the client, like an access_token from a provider.
       session.accessToken = token.accessToken
       session.refreshToken = token.refreshToken
@@ -133,6 +140,6 @@ const authOptions: AuthOptions = {
  * Helper function to get the session on the server without having to import the authOptions object every single time
  * @returns The session object or null
  */
-const getSession = () => getServerSession(authOptions)
+const getAuthSession = async (): Promise<Session | null> => await getServerSession(authOptions)
 
-export { authOptions, getSession }
+export { authOptions, getAuthSession }

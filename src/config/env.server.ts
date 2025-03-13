@@ -4,13 +4,15 @@ import { z } from 'zod'
 const envServerConfigSchema = z.object({
   GITHUB_ID: z.string({ message: 'Hãy bổ sung GITHUB_ID trong file .env' }),
   GITHUB_SECRET: z.string({ message: 'Hãy bổ sung GITHUB_SECRET trong file .env' }),
-  NEXTAUTH_SECRET: z.string({ message: 'Hãy bổ sung NEXTAUTH_SECRET trong file .env' })
+  NEXTAUTH_SECRET: z.string({ message: 'Hãy bổ sung NEXTAUTH_SECRET trong file .env' }),
+  NEXTAUTH_URL: z.string({ message: 'Hãy bổ sung NEXTAUTH_URL trong file .env' })
 })
 
 const { success, data, error } = envServerConfigSchema.safeParse({
   GITHUB_ID: process.env.GITHUB_ID,
   GITHUB_SECRET: process.env.GITHUB_SECRET,
-  NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET
+  NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+  NEXTAUTH_URL: process.env.NEXTAUTH_URL
 })
 
 if (!success) {

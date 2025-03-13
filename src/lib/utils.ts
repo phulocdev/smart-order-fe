@@ -21,79 +21,6 @@ export function normalizePath(path: string) {
   return path.startsWith('/') ? path : `/${path}`
 }
 
-// ---------------------- ACCESS_TOKEN UTILS --------------------
-
-export const getAccessTokenFromLS = () => {
-  return (isClient && localStorage.getItem('accessToken')) || ''
-}
-
-export const setAccessTokenToLS = (token: string) => {
-  if (isClient) {
-    localStorage.setItem('accessToken', token)
-  }
-}
-
-export const removeAccessTokenFromLS = () => {
-  if (isClient) {
-    localStorage.removeItem('accessToken')
-  }
-}
-
-// ---------------------- REFRESH_TOKEN UTILS --------------------
-
-// export const getRefreshTokenFromLS = () => {
-//   return (isClient && localStorage.getItem('refreshToken')) || ''
-// }
-
-// export const setRefreshTokenToLS = (token: string) => {
-//   if (isClient) {
-//     localStorage.setItem('refreshToken', token)
-//   }
-// }
-
-// export const removeRefreshTokenFromLS = () => {
-//   if (isClient) {
-//     localStorage.removeItem('refreshToken')
-//   }
-// }
-
-// export const getCustomerFromLS = () => {
-//   if (!isClient) return null
-//   const customer = localStorage.getItem('customer')
-//   return customer ? JSON.parse(customer) : null
-// }
-
-// export const setCustomerToLS = (customer: ICustomer) => {
-//   if (isClient) {
-//     localStorage.setItem('customer', JSON.stringify(customer))
-//   }
-// }
-
-// export const removeCustomerFromLS = () => {
-//   if (isClient) {
-//     console.log('removeCustomerFromLS')
-//     localStorage.removeItem('customer')
-//   }
-// }
-
-// export const getAccountFromLS = () => {
-//   if (!isClient) return null
-//   const account = localStorage.getItem('account')
-//   return account ? JSON.parse(account) : null
-// }
-
-// export const setAccountToLS = (account: IAccount) => {
-//   if (isClient) {
-//     localStorage.setItem('account', JSON.stringify(account))
-//   }
-// }
-
-// export const removeAccountFromLS = () => {
-//   if (isClient) {
-//     localStorage.removeItem('account')
-//   }
-// }
-
 export const handleApiError = ({
   error,
   setError,
@@ -125,6 +52,8 @@ export const getVietnameseOrderStatus = (status: OrderStatus) => {
       return 'Đã xác nhận'
     case OrderStatus.Preparing:
       return 'Đang chuẩn bị'
+    case OrderStatus.Cooked:
+      return 'Đã nấu'
     case OrderStatus.ReadyToServe:
       return 'Sẵn sàng phục vụ'
     case OrderStatus.Served:

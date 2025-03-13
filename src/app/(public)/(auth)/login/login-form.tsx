@@ -3,11 +3,11 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { ENTITY_ERROR_STATUS_CODE, EntityError, HttpError } from '@/lib/errors'
-import { cn, getAccessTokenFromLS, handleApiError, setAccessTokenToLS } from '@/lib/utils'
+import { cn, handleApiError } from '@/lib/utils'
 import { LoginBodyType, loginSchema } from '@/schemaValidations/auth.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
-import { signIn, useSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
@@ -16,7 +16,6 @@ import { useForm } from 'react-hook-form'
 export default function LoginForm() {
   const [isLoading, setIsLoading] = React.useState(false)
   const router = useRouter()
-  const { data: session } = useSession()
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(loginSchema),
@@ -26,20 +25,13 @@ export default function LoginForm() {
     }
   })
 
-  React.useEffect(() => {
-    debugger
-    if (session && !getAccessTokenFromLS()) {
-      setAccessTokenToLS(session.accessToken)
-    }
-  }, [session])
-
   async function onSubmit(values: LoginBodyType) {
     try {
       setIsLoading(true)
       const { email, password } = values
       const response = await signIn('employee-credentials', {
         redirect: false,
-        username: email,
+        email,
         password
       }).finally(() => {
         setIsLoading(false)
@@ -55,7 +47,7 @@ export default function LoginForm() {
         }
         throw error
       }
-      router.replace('/')
+      router.replace('/dashboard/orders')
     } catch (error) {
       handleApiError({ error, setError: form.setError })
     }

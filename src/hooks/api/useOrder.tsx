@@ -12,7 +12,7 @@ export function useGetOrderListQuery(params?: DateRangeQuery & PaginationQuery) 
 
 export function useGetOrderDetailQuery(id?: string) {
   return useQuery({
-    queryKey: ['orders', id],
+    queryKey: ['order-detail', id],
     queryFn: () => orderApiRequest.getDetail(id as string),
     enabled: Boolean(id)
   })

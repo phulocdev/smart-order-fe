@@ -19,13 +19,12 @@ import { formatNumberToVnCurrency, handleApiError } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'
 import { OrderItemDto } from '@/types/backend.dto'
 import { ShoppingCart, Trash } from 'lucide-react'
-import { useSession } from 'next-auth/react'
+import { Session } from 'next-auth'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-export default function OrderCart() {
-  const { data: session } = useSession()
+export default function OrderCart({ session }: { session: Session | null }) {
   const orderItems = useAppStore((state) => state.orderItems)
   const updateOrderItem = useAppStore((state) => state.updateOrderItem)
   const removeOrderItem = useAppStore((state) => state.removeOrderItem)

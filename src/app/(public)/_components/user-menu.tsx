@@ -1,8 +1,6 @@
-'use client'
-
-import Link from 'next/link'
-import React from 'react'
-import { User } from 'lucide-react'
+import LogoutButton from '@/app/(public)/_components/logout-button'
+import { getAuthSession } from '@/auth'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,12 +9,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
-import LogoutButton from '@/app/(public)/_components/logout-button'
-import { useSession } from 'next-auth/react'
+import { User } from 'lucide-react'
+import Link from 'next/link'
 
-export default function UserMenu() {
-  const { data: session } = useSession()
+export default async function UserMenu() {
+  const session = await getAuthSession()
   const isEmployee = !!session?.account
   const isCustomer = !!session?.customer
 
@@ -51,7 +48,7 @@ export default function UserMenu() {
             </Link>
           </DropdownMenuItem>
         )}
-        {session && <LogoutButton />}
+        {session && <LogoutButton session={session} />}
       </DropdownMenuContent>
     </DropdownMenu>
   )

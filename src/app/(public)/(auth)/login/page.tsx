@@ -1,8 +1,14 @@
 import LoginForm from '@/app/(public)/(auth)/login/login-form'
+import { getAuthSession } from '@/auth'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
-export default function Page() {
+export default async function Page() {
+  const session = await getAuthSession()
+  if (session) {
+    redirect('/')
+  }
   return (
     <div className='max-w-[25rem] shrink-0 grow'>
       <Card>

@@ -30,8 +30,12 @@ export default function Page() {
   const [orderStatus, setOrderStatus] = React.useState('')
 
   const updateOrderMutation = useUpdateOrderMutation()
-  const { data: orderData, error } = useGetOrderDetailQuery(id)
+  const { data: orderData, error, isPending } = useGetOrderDetailQuery(id)
   const order = orderData?.data
+
+  if (isPending) {
+    return <div>Loading...</div>
+  }
 
   if (error) {
     return <div>Đơn hàng không tồn tại</div>

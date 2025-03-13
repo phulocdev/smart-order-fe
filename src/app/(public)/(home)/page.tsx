@@ -1,9 +1,11 @@
 import dishApiRequest from '@/apiRequests/dish.api'
 import DishCard from '@/app/(public)/_components/dish-card'
 import OrderCart from '@/app/(public)/_components/order-cart'
+import { getAuthSession } from '@/auth'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 
 export default async function Page() {
+  const session = await getAuthSession()
   const res = await dishApiRequest.getList()
   const dishList = res.data
   return (
@@ -15,7 +17,7 @@ export default async function Page() {
             <CarouselContent className='-ml-8'>
               {dishList.map((dish) => (
                 <CarouselItem key={dish._id} className='basis-1/3 pl-8'>
-                  <DishCard dish={dish} />
+                  <DishCard dish={dish} session={session} />
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -29,7 +31,7 @@ export default async function Page() {
         </div>
       </section>
       <div className='fixed bottom-[50%] right-2 z-20 translate-y-[50%]'>
-        <OrderCart />
+        <OrderCart session={session} />
       </div>
     </div>
   )

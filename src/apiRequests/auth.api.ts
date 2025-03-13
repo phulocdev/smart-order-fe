@@ -10,8 +10,19 @@ const authApiRequest = {
   loginOAuth: (body: LoginOAuthBodyType) => {
     return http.post<ApiResponse<IAuthEmployee>>('/auth/login/oauth', body)
   },
-  logout: ({ refreshToken }: { refreshToken: string }) => {
-    return http.post<ApiResponse<[]>>('/auth/logout', { refreshToken })
+  logout: ({ accessToken, refreshToken }: { refreshToken: string; accessToken: string }) => {
+    return http.post<ApiResponse<[]>>(
+      '/auth/logout',
+      { refreshToken },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    )
+  },
+  refreshToken: (refreshToken: string) => {
+    return http.post<ApiResponse<IAuthEmployee>>('/auth/refresh-token', { refreshToken })
   }
 }
 

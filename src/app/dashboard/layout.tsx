@@ -1,4 +1,5 @@
 import LogoutButton from '@/app/(public)/_components/logout-button'
+import { getAuthSession } from '@/auth'
 import { AppSidebar } from '@/components/app-sidebar'
 import { ModeToggle } from '@/components/theme-mode-toggle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -11,11 +12,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { SidebarProvider } from '@/components/ui/sidebar'
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await getAuthSession()
   return (
     <SidebarProvider defaultOpen={true}>
       <AppSidebar />
@@ -32,7 +34,7 @@ export default function DashboardLayout({
             <DropdownMenuContent>
               <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {<LogoutButton />}
+              {session && <LogoutButton session={session} />}
             </DropdownMenuContent>
           </DropdownMenu>
           {/* Dark Mode Toggle */}

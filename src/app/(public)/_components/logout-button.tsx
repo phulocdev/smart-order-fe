@@ -14,31 +14,29 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import { handleApiError, removeAccessTokenFromLS } from '@/lib/utils'
+import { handleApiError } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'
-import { signOut, useSession } from 'next-auth/react'
+import { Session } from 'next-auth'
+import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
-export default function LogoutButton() {
-  const { data: session } = useSession()
-  const refreshToken = session?.refreshToken ?? ''
+export default function LogoutButton({ session }: { session: Session }) {
+  const { accessToken, refreshToken } = session
   const router = useRouter()
   const clearOrderInCart = useAppStore((state) => state.clearOrderInCart)
 
   const onLogout = async () => {
     try {
-      if (session?.customer) {
-        await Promise.all([customerApiRequest.logout({ refreshToken }), signOut({ redirect: false })])
-      } else if (session?.account) {
-        await Promise.all([authApiRequest.logout({ refreshToken }), signOut({ redirect: false })])
+      if (session.account) {
+        await Promise.all([signOut({ redirect: false }), authApiRequest.logout({ accessToken, refreshToken })])
+      } else {
+        await Promise.all([signOut({ redirect: false }), customerApiRequest.logout({ accessToken, refreshToken })])
       }
-
-      router.replace('/login')
-      clearOrderInCart()
-      removeAccessTokenFromLS()
+      if (session.customer) clearOrderInCart()
     } catch (error) {
       handleApiError({ error })
     }
+    router.replace('/login')
   }
   return (
     <AlertDialog>

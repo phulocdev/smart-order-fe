@@ -1,13 +1,16 @@
 import envConfig from '@/config/env'
 import { ENTITY_ERROR_STATUS_CODE, EntityError, HttpError, UNAUTHORIZED_ERROR_STATUS_CODE } from '@/lib/errors'
-import { getAccessTokenFromLS, normalizePath } from '@/lib/utils'
+import { normalizePath } from '@/lib/utils'
 import { ApiErrorResponse } from '@/types/response.type'
+import { getSession } from 'next-auth/react'
+
+export const isClient = typeof window !== 'undefined'
 
 type OptionsType = Omit<RequestInit, 'method' | 'body'> & {
   baseUrl?: '' // khi cần gọi API đến NextServer
 }
 
-export const isClient = typeof window !== 'undefined'
+let isRecalling = false
 
 const request = async <Response>(
   method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
@@ -35,14 +38,14 @@ const request = async <Response>(
     }
   }
 
-  // ------------------------------------------- INTERCEPTOR REQUEST  -------------------------------------------
-  if (isClient) {
-    const accessToken = getAccessTokenFromLS()
+  // -------------------------------------------- INTERCEPTOR REQUEST  -------------------------------------------
+  if (isClient && !isRecalling) {
+    const session = await getSession()
+    const accessToken = session?.accessToken
     if (accessToken) {
       baseHeaders.Authorization = `Bearer ${accessToken}`
     }
   }
-
   const res = await fetch(fullUrl, {
     method,
     headers: { ...baseHeaders, ...options?.headers },
@@ -54,7 +57,17 @@ const request = async <Response>(
     const errorResponse: ApiErrorResponse = await res.json()
     const { message, statusCode, errors } = errorResponse
     if (statusCode === UNAUTHORIZED_ERROR_STATUS_CODE) {
-      console.log(errorResponse)
+      // re-call fail api
+      isRecalling = true
+      const session = await getSession()
+      const accessToken = session?.accessToken ?? ''
+      const response: Response = await request(method, path, payload, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      isRecalling = false
+      return response
     } else if (statusCode === ENTITY_ERROR_STATUS_CODE) {
       throw new EntityError({ message, errors })
     }
@@ -63,11 +76,12 @@ const request = async <Response>(
 
   // ------------------------------------------- INTERCEPTOR SUCCESS RESPONSE  -------------------------------------------
 
-  await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true)
-    }, 3000)
-  })
+  // await new Promise((resolve) => {
+  //   setTimeout(() => {
+  //     resolve(true)
+  //   }, 3000)
+  // })
+
   const successResponse: Response = await res.json()
   return successResponse
 }

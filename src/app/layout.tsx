@@ -3,7 +3,6 @@ import { ThemeProvider } from '@/providers/theme-provider'
 import type { Metadata } from 'next'
 import { Inter, Roboto_Mono } from 'next/font/google'
 import './globals.css'
-import { getSession } from '@/auth'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -27,13 +26,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await getSession()
   return (
     <html lang='en' suppressHydrationWarning>
       <body
-        className={`${inter.className} ${inter.variable} ${roboto_mono.variable} dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"> antialiased [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar]:w-2`}
+        className={`${inter.className} ${inter.variable} ${roboto_mono.variable} no-scrollbar no-scrollbar::-webkit-scrollbar`}
       >
-        <Providers session={session}>
+        <Providers>
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
             <main>{children}</main>
           </ThemeProvider>

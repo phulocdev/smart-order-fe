@@ -12,16 +12,15 @@ import { CirclePlus } from 'lucide-react'
 import Link from 'next/link'
 import * as React from 'react'
 import { searchParamsCache } from './_lib/validations'
-import { getSession } from '@/auth'
+import { getAuthSession } from '@/auth'
 
 interface IndexPageProps {
   searchParams: Promise<SearchParams>
 }
 
 export default async function IndexPage(props: IndexPageProps) {
-  const session = await getSession()
+  const session = await getAuthSession()
   const accessToken = session?.accessToken ?? ''
-
   const searchParams = await props.searchParams
   const search = searchParamsCache.parse(searchParams)
   const params = transformOrderQuery(search)

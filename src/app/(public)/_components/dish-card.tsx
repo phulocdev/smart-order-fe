@@ -9,14 +9,14 @@ import { IDish } from '@/types/backend.type'
 import { useAppStore } from '@/providers/zustand-provider'
 import OrderNote from '@/app/(public)/_components/order-note'
 import { toast } from 'sonner'
-import { useSession } from 'next-auth/react'
+import { Session } from 'next-auth'
 
 interface Props {
   dish: IDish
+  session: Session | null
 }
 
-export default function DishCard({ dish }: Props) {
-  const { data: session } = useSession()
+export default function DishCard({ dish, session }: Props) {
   const orderItems = useAppStore((state) => state.orderItems)
   const addOrderItem = useAppStore((state) => state.addOrderItem)
   const updateOrderItem = useAppStore((state) => state.updateOrderItem)
