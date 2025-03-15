@@ -26,8 +26,9 @@ export default async function IndexPage(props: IndexPageProps) {
   const params = transformOrderQuery(search)
   const promises = Promise.all([orderApiRequest.sGetList(accessToken, params), tableApiRequest.sGetList(accessToken)])
   return (
-    <Shell className='gap-2'>
-      <div className='mb-5 flex items-start justify-between'>
+    // <Shell className='gap-2'>
+    <div className='px-8 py-5'>
+      <div className='mb-4 flex items-start justify-between'>
         <h2 className='text-2xl font-medium'>Đơn hàng</h2>
         <Link href={'/dashboard/orders/create'}>
           <Button className='ml-auto'>
@@ -52,16 +53,17 @@ export default async function IndexPage(props: IndexPageProps) {
       <React.Suspense
         fallback={
           <DataTableSkeleton
-            columnCount={6}
+            columnCount={9}
             searchableColumnCount={2}
             filterableColumnCount={2}
-            cellWidths={['10rem', '12rem', '12rem', '12rem', '8rem', '8rem']}
+            cellWidths={['10rem', '12rem', '12rem', '8rem', '8rem', '8rem', '12rem', '8rem', '8rem']}
             shrinkZero
           />
         }
       >
         <OrdersTable promises={promises} />
       </React.Suspense>
-    </Shell>
+    </div>
+    // </Shell>
   )
 }

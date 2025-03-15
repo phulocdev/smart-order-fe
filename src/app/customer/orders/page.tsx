@@ -16,7 +16,7 @@ export default function Page() {
     return <div>Bạn chưa gọi món</div>
   }
 
-  const table = orderData?.data.table
+  const table = orderData?.data.tableNumber
   const order = orderData?.data
   const orderItems = order?.items || []
 

@@ -7,6 +7,7 @@ import { AuthOptions, getServerSession, Session } from 'next-auth'
 import { type JWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GitHubProvider from 'next-auth/providers/github'
+import GoogleProvider from 'next-auth/providers/google'
 
 const authOptions: AuthOptions = {
   secret: envServerConfig.NEXTAUTH_SECRET,
@@ -93,6 +94,18 @@ const authOptions: AuthOptions = {
     GitHubProvider({
       clientId: envServerConfig.GITHUB_ID,
       clientSecret: envServerConfig.GITHUB_SECRET
+    }),
+    GoogleProvider({
+      clientId: envServerConfig.GOOGLE_CLIENT_ID,
+      clientSecret: envServerConfig.GITHUB_SECRET,
+      client: { token_endpoint_auth_method: 'client_secret_post' },
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code'
+        }
+      }
     })
   ],
   callbacks: {
@@ -124,7 +137,7 @@ const authOptions: AuthOptions = {
 
       return token
     },
-    async session({ session, token, trigger }): Promise<Session> {
+    async session({ session, token }): Promise<Session> {
       if (!token) return session
       // Send properties to the client, like an access_token from a provider.
       session.accessToken = token.accessToken

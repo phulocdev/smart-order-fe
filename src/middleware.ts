@@ -7,8 +7,8 @@ import envServerConfig from '@/config/env.server'
 import customerApiRequest from '@/apiRequests/customer.api'
 
 export const SIGNIN_SUB_URL = '/api/auth/signin'
-export const SESSION_TIMEOUT = 60 * 60 * 24 * 365
-export const TOKEN_REFRESH_BUFFER_SECONDS = 2 // 5 minutes
+export const SESSION_TIMEOUT = 60 * 60 * 24 * 7 // 7 days
+export const TOKEN_REFRESH_BUFFER_SECONDS = 60 * 5 // 5 minutes
 export const SESSION_SECURE = process.env.NEXTAUTH_URL?.startsWith('https://')
 export const SESSION_COOKIE = SESSION_SECURE ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
 let isRefreshing = false
@@ -34,7 +34,7 @@ export async function refreshAccessToken(token: JWT): Promise<JWT> {
       return newSession
     }
     return token
-  } catch (e) {
+  } catch (e: any) {
     console.error(e)
     Sentry.captureException(e)
     return token
@@ -46,7 +46,8 @@ export async function refreshAccessToken(token: JWT): Promise<JWT> {
 export function updateCookie(
   sessionToken: string | null,
   request: NextRequest,
-  response: NextResponse
+  response: NextResponse,
+  maxAge?: number
 ): NextResponse<unknown> {
   /*
    * BASIC IDEA:
@@ -56,7 +57,7 @@ export function updateCookie(
    * 3. Set response cookies to send back to browser
    */
 
-  if (sessionToken && sessionToken !== null) {
+  if (sessionToken && sessionToken !== null && maxAge) {
     request?.cookies?.set(SESSION_COOKIE, sessionToken)
     response = NextResponse.next({
       request: {
@@ -65,16 +66,17 @@ export function updateCookie(
     })
     response?.cookies?.set(SESSION_COOKIE, sessionToken, {
       httpOnly: true,
-      maxAge: SESSION_TIMEOUT,
+      maxAge,
       secure: SESSION_SECURE,
       sameSite: 'lax'
     })
   } else {
-    request?.cookies?.delete(SESSION_COOKIE)
-    setTimeout(() => {
-      response = NextResponse.redirect(new URL(SIGNIN_SUB_URL, request?.url))
-    }, 300)
-    return response
+    return NextResponse.redirect(new URL('/logout', request?.url))
+    // request?.cookies?.delete(SESSION_COOKIE)
+    // setTimeout(() => {
+    //   response = NextResponse.redirect(new URL(SIGNIN_SUB_URL, request?.url))
+    //   return response
+    // }, 300)
   }
   return response
 }
@@ -137,27 +139,12 @@ export const middleware: NextMiddleware = async (request: NextRequest) => {
       // const size = 3933 // maximum size of each chunk
       // const regex = new RegExp('.{1,' + size + '}', 'g')
 
-      response = updateCookie(newSessionToken, request, response)
-
-      if (request.url.endsWith('refresh-session')) {
-        return Response.json(
-          {
-            ...newSession
-          },
-          {
-            status: 200,
-            headers: {
-              'Set-Cookie': `${encodeURIComponent(SESSION_COOKIE)}=${newSessionToken}; Path=/; Htt`
-            }
-          }
-        )
-      }
-    } catch (error) {
+      response = updateCookie(newSessionToken, request, response, decodedRefreshToken.exp)
+    } catch (error: any) {
       Sentry.captureException(error)
       console.error('Error refreshing token: ', error)
       return updateCookie(null, request, response)
     }
   }
-
   return response
 }

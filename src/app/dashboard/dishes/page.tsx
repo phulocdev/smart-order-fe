@@ -10,8 +10,9 @@ import { DishesTable } from '@/app/dashboard/dishes/dish-table'
 import { useGetDishListQuery, useUpdateDishMutation } from '@/hooks/api/useDish'
 import { DishStatus } from '@/constants/enum'
 import { toast } from 'sonner'
-import { handleApiError } from '@/lib/utils'
+import { cn, handleApiError } from '@/lib/utils'
 import UpsertDishDialog from '@/app/dashboard/dishes/upsert-dish-dialog'
+import { Loader } from 'lucide-react'
 
 export default function Page() {
   const [isCreating, setIsCreating] = React.useState<boolean>(false)
@@ -40,7 +41,15 @@ export default function Page() {
     <Shell>
       <div className='flex items-start justify-between'>
         <h1 className='text-2xl font-medium'>Danh sách món ăn</h1>
-        <Button onClick={() => setIsCreating(true)}>Thêm món</Button>
+        <Button
+          className={cn({
+            'cursor-not-allowed opacity-80': updateDishMutation.isPending
+          })}
+          onClick={() => setIsCreating(true)}
+        >
+          {updateDishMutation.isPending && <Loader className='mr-2 size-4 animate-spin' aria-hidden='true' />}
+          Thêm món
+        </Button>
       </div>
       <DishesTable columns={columns} data={data} />
 

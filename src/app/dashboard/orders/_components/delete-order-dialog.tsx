@@ -4,6 +4,7 @@ import type { Row } from '@tanstack/react-table'
 import { Loader, Trash } from 'lucide-react'
 import * as React from 'react'
 
+import orderApiRequest from '@/apiRequests/order.api'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -26,7 +27,9 @@ import {
   DrawerTrigger
 } from '@/components/ui/drawer'
 import { useMediaQuery } from '@/hooks/use-media-query'
+import { handleApiError } from '@/lib/utils'
 import { IOrder } from '@/types/backend.type'
+import { useRouter } from 'next/navigation'
 
 interface DeleteOrdersDialogProps extends React.ComponentPropsWithoutRef<typeof Dialog> {
   orders: Row<IOrder>['original'][]
@@ -37,21 +40,19 @@ interface DeleteOrdersDialogProps extends React.ComponentPropsWithoutRef<typeof 
 export function DeleteOrdersDialog({ orders, showTrigger = true, onSuccess, ...props }: DeleteOrdersDialogProps) {
   const [isDeletePending, startDeleteTransition] = React.useTransition()
   const isDesktop = useMediaQuery('(min-width: 640px)')
+  const router = useRouter()
 
   function onDelete() {
     // TODO: Code logic delete
-    // startDeleteTransition(async () => {
-    //   const { error } = await deleteTasks({
-    //     ids: tasks.map((task) => task.id)
-    //   })
-    //   if (error) {
-    //     toast.error(error)
-    //     return
-    //   }
-    //   props.onOpenChange?.(false)
-    //   toast.success('Tasks deleted')
-    //   onSuccess?.()
-    // })
+    startDeleteTransition(async () => {
+      try {
+        await orderApiRequest.removeBulk({ ids: orders.map((order) => order._id) })
+        onSuccess?.()
+        router.refresh()
+      } catch (error) {
+        handleApiError({ error })
+      }
+    })
   }
 
   if (isDesktop) {

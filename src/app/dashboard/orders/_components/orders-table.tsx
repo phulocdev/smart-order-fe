@@ -52,9 +52,9 @@ export function OrdersTable({ promises }: OrdersTableProps) {
       options: getVietnameseOrderStatusList().map((status) => status)
     },
     {
-      id: 'table',
+      id: 'tableNumber',
       label: 'Số bàn',
-      options: tableData.map((table) => ({
+      options: tableData?.map((table) => ({
         label: `Bàn số ${table.number}`,
         value: table.number
       }))

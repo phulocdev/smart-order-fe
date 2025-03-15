@@ -81,7 +81,7 @@ export default function Page() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {order.items.map((orderItem) => (
+                  {/* {order.items.map((orderItem) => (
                     <TableRow key={orderItem._id}>
                       <TableCell>
                         <div className='flex items-start gap-x-3'>
@@ -108,7 +108,7 @@ export default function Page() {
                         {formatNumberToVnCurrency(orderItem.quantity * orderItem.price)}
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ))} */}
                 </TableBody>
                 <TableFooter>
                   <TableRow>

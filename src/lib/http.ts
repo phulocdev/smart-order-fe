@@ -2,7 +2,8 @@ import envConfig from '@/config/env'
 import { ENTITY_ERROR_STATUS_CODE, EntityError, HttpError, UNAUTHORIZED_ERROR_STATUS_CODE } from '@/lib/errors'
 import { normalizePath } from '@/lib/utils'
 import { ApiErrorResponse } from '@/types/response.type'
-import { getSession } from 'next-auth/react'
+import { getSession, signOut } from 'next-auth/react'
+import { redirect } from 'next/navigation'
 
 export const isClient = typeof window !== 'undefined'
 
@@ -55,19 +56,30 @@ const request = async <Response>(
   // ------------------------------------------- INTERCEPTOR ERROR RESPONSE  -------------------------------------------
   if (!res.ok) {
     const errorResponse: ApiErrorResponse = await res.json()
+    console.log('>>>>>>>', { errorResponse })
     const { message, statusCode, errors } = errorResponse
     if (statusCode === UNAUTHORIZED_ERROR_STATUS_CODE) {
-      // re-call fail api
-      isRecalling = true
-      const session = await getSession()
-      const accessToken = session?.accessToken ?? ''
-      const response: Response = await request(method, path, payload, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
+      if (['REFRESH_TOKEN_EXPIRED', 'INVALID_REFRESH_TOKEN'].includes(message)) {
+        // Handle Logout in middleware.ts of route handler
+        throw errorResponse
+      } else {
+        // re-call previous request with 401 (execpt of Refresh Token Error) errorStatus fail api
+        const session = await getSession()
+        const accessToken = session?.accessToken ?? ''
+        if (!session) {
+          return [] as any
         }
-      })
-      isRecalling = false
-      return response
+
+        debugger
+        isRecalling = true
+        const response: Response = await request(method, path, payload, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        })
+        isRecalling = false
+        return response
+      }
     } else if (statusCode === ENTITY_ERROR_STATUS_CODE) {
       throw new EntityError({ message, errors })
     }
@@ -96,8 +108,8 @@ const http = {
   patch: <T>(path: string, body: any, options?: OptionsType) => {
     return request<T>('PATCH', path, body, options)
   },
-  delete: <T>(path: string, options?: OptionsType) => {
-    return request<T>('DELETE', path, undefined, options)
+  delete: <T>(path: string, options?: OptionsType, body?: any | undefined) => {
+    return request<T>('DELETE', path, body, options)
   }
 }
 

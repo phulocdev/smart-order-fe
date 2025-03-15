@@ -16,7 +16,7 @@ const orderApiRequest = {
     return http.patch<ApiResponse<IOrder>>(`/orders/${id}`, body)
   },
   create: (body: CreateOrderBodyType) => {
-    return http.post<ApiResponse<IOrder>>('/orders', body)
+    return http.post<ApiResponse<IOrder[]>>('/orders', body)
   },
   sGetList: (accessToken: string, params?: OrderQuery) => {
     return http.get<PaginatedResponse<IOrder>>(`/orders?${qs.stringify(params)}`, {
@@ -24,14 +24,13 @@ const orderApiRequest = {
         Authorization: `Bearer ${accessToken}`
       }
     })
+  },
+  remove: (id: string) => {
+    return http.delete<[]>(`/orders/${id}`)
+  },
+  removeBulk: ({ ids }: { ids: string[] }) => {
+    return http.delete('/orders/bulk-delete', {}, ids)
   }
-  // sGetDetail: (id: string, accessToken: string) => {
-  //   return http.get<ApiResponse<IOrder>>(`/orders/${id}`, {
-  //     headers: {
-  //       Authorization: `Bearer ${accessToken}`
-  //     }
-  //   })
-  // }
 }
 
 export default orderApiRequest

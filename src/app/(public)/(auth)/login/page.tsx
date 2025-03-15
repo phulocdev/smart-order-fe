@@ -1,7 +1,6 @@
 import LoginForm from '@/app/(public)/(auth)/login/login-form'
 import { getAuthSession } from '@/auth'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 export default async function Page() {
@@ -20,9 +19,9 @@ export default async function Page() {
           <LoginForm />
         </CardContent>
         <CardFooter>
-          <Link href={'/register'} className='w-full text-center text-sm text-red-500 dark:text-red-800'>
+          {/* <Link href={'/register'} className='w-full text-center text-sm text-red-500 dark:text-red-800'>
             Bạn chưa có tài khoản?
-          </Link>
+          </Link> */}
         </CardFooter>
       </Card>
     </div>

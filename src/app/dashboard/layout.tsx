@@ -19,13 +19,13 @@ export default async function DashboardLayout({
 }>) {
   const session = await getAuthSession()
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen={false}>
       <AppSidebar />
       <section className='grow'>
         <div className='flex justify-end gap-x-3 border-b py-3 pr-20 shadow dark:border-b-gray-500'>
           {/* <SidebarTrigger /> */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild className='cursor-pointer'>
               <Avatar>
                 <AvatarImage src='https://github.com/shadcn.png' />
                 <AvatarFallback>PL</AvatarFallback>

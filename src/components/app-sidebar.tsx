@@ -34,7 +34,7 @@ export function AppSidebar() {
     <Sidebar collapsible='icon'>
       <SidebarContent>
         <SidebarHeader className='text-center'>
-          <Link href={'/'}>Smart Order</Link>
+          <Link href={'/'}>SOA</Link>
         </SidebarHeader>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -42,10 +42,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

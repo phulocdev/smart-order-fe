@@ -36,7 +36,7 @@ export const handleApiError = ({
   } else {
     // Http Error (Bad Request | Not Found | Unauthorized | Internal Server Error)
     // Ngoài ra còn có các lỗi khác như: ERRCONNECT | Unexpected Error - Uncaught
-    toast.error(error?.message ?? 'Đã có lỗi xảy ra', { description: 'Vui lòng thử lại', duration })
+    toast.error(error?.message ?? 'Đã có lỗi xảy ra', { description: 'Vui lòng thử lại', duration, closeButton: true })
   }
 }
 
@@ -169,10 +169,13 @@ const orderKeyTranslations: Record<keyof IOrder, string> = {
   _id: 'Mã đơn hàng',
   code: 'Mã đơn',
   customer: 'Khách hàng',
-  items: 'Danh sách sản phẩm',
   totalPrice: 'Tổng tiền',
   status: 'Trạng thái',
-  table: 'Bàn',
+  dish: 'Món ăn',
+  note: 'Ghi chú',
+  price: 'Đơn giá',
+  quantity: 'Số lượng',
+  tableNumber: 'Bàn',
   createdAt: 'Ngày tạo',
   updatedAt: 'Ngày cập nhật'
 }

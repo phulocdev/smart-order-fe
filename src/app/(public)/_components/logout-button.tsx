@@ -21,22 +21,23 @@ import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
 export default function LogoutButton({ session }: { session: Session }) {
-  const { accessToken, refreshToken } = session
   const router = useRouter()
   const clearOrderInCart = useAppStore((state) => state.clearOrderInCart)
+  const { refreshToken } = session
 
   const onLogout = async () => {
     try {
       if (session.account) {
-        await Promise.all([signOut({ redirect: false }), authApiRequest.logout({ accessToken, refreshToken })])
+        await Promise.all([signOut({ redirect: false }), authApiRequest.logout(refreshToken)])
       } else {
-        await Promise.all([signOut({ redirect: false }), customerApiRequest.logout({ accessToken, refreshToken })])
+        await Promise.all([signOut({ redirect: false }), customerApiRequest.logout(refreshToken)])
       }
       if (session.customer) clearOrderInCart()
     } catch (error) {
       handleApiError({ error })
+    } finally {
+      router.replace('/login')
     }
-    router.replace('/login')
   }
   return (
     <AlertDialog>

@@ -1,10 +1,14 @@
+import authApiRequest from '@/apiRequests/auth.api'
+import customerApiRequest from '@/apiRequests/customer.api'
 import { authOptions } from '@/auth'
 import envServerConfig from '@/config/env.server'
 import { createAuthCookieString } from '@/lib/auth'
+import { isClient } from '@/lib/http'
 import { refreshAccessToken, shouldUpdateToken } from '@/middleware'
 import * as jwt from 'jsonwebtoken'
 import NextAuth from 'next-auth'
 import { decode, encode, getToken, JWT } from 'next-auth/jwt'
+import { redirect } from 'next/navigation'
 import { NextRequest, NextResponse } from 'next/server'
 
 const handler = NextAuth(authOptions)
@@ -47,13 +51,38 @@ async function maybePerformTokenRefresh(token: JWT | null, request: NextRequest,
   }
 
   let updatedSessionToken: JWT | undefined = undefined
+  const { refreshToken, account, customer } = decodedCookieAsToken
   const decodedRefreshToken = jwt.decode(decodedCookieAsToken?.refreshToken) as { exp: number }
 
   try {
-    const newSession = await refreshAccessToken(decodedCookieAsToken)
-    updatedSessionToken = newSession
-  } catch (e) {
-    console.error(`❌❌ [Middleware] Error refreshing tokens: ${e}`)
+    if (account) {
+      const response = await authApiRequest.refreshToken(refreshToken)
+      const { data: newSession } = response
+      updatedSessionToken = newSession
+    } else if (customer) {
+      const response = await customerApiRequest.refreshToken(refreshToken)
+      const { data: newSession } = response
+      updatedSessionToken = newSession
+    }
+  } catch (error: any) {
+    console.error(`❌❌ [Middleware] Error refreshing tokens: ${error}`)
+    redirect('/logout')
+    // const refreshErrorResponse = response.clone()
+    // refreshErrorResponse.headers.delete('Set-Cookie')
+    // refreshErrorResponse.headers.set(
+    //   'Set-Cookie',
+    //   createAuthCookieString(NEXT_AUTH_SESSION_TOKEN_COOKIE, '', {
+    //     maxAge: 0,
+    //     path: '/',
+    //     sameSite: 'Lax'
+    //   })
+    // )
+    // setTimeout(() => {
+    //   if (isClient) {
+    //     window.location.href = '/login'
+    //   }
+    // }, 300)
+    // return refreshErrorResponse
   }
   const newSessionToken = await encode({
     secret: process.env.NEXTAUTH_SECRET as string,
@@ -63,7 +92,7 @@ async function maybePerformTokenRefresh(token: JWT | null, request: NextRequest,
 
   const newCookieValue = createAuthCookieString(NEXT_AUTH_SESSION_TOKEN_COOKIE, newSessionToken, {
     httpOnly: true,
-    maxAge: decodedRefreshToken.exp,
+    maxAge: decodedRefreshToken.exp, // seconds
     secure: SESSION_SECURE,
     sameSite: 'Lax',
     path: '/'

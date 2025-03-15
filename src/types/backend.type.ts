@@ -12,16 +12,6 @@ export interface IDish {
   updatedAt: string
 }
 
-export interface IOrderItem {
-  _id: string
-  dish: IDish
-  quantity: number
-  price: number
-  note: string
-  createdAt: string
-  updatedAt: string
-}
-
 export interface ITable {
   _id: string
   number: number
@@ -36,19 +26,13 @@ export interface IOrder {
   _id: string
   code: string
   customer: Omit<ICustomer, 'table'>
-  items: IOrderItem[]
+  dish: IDish
+  quantity: number
+  price: number
+  note: string
   totalPrice: number
   status: OrderStatus
-  table: ITable
+  tableNumber: number
   createdAt: string
   updatedAt: string
-}
-
-export type IOrderCreated = Omit<IOrder, 'customer' | 'table' | 'items'> & {
-  customer: string
-  table: string
-  items: Omit<IOrderItem, 'dish'> &
-    {
-      dish: string
-    }[]
 }

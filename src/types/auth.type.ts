@@ -25,7 +25,7 @@ export type IAccount = {
 export type ICustomer = {
   _id: string
   code: string
-  table: string // String number
+  tableNumber: number
 }
 
 export type AuthTokenPayload = {

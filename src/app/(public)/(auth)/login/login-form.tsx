@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
+import Image from 'next/image'
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = React.useState(false)
@@ -79,20 +80,35 @@ export default function LoginForm() {
                 <Input type='password' placeholder='********' {...field} />
               </FormControl>
               <FormMessage />
-              <Link href={'/forgot-password'} className='mt-1 block text-sm text-red-500 dark:text-red-800'>
+              {/* <Link href={'/forgot-password'} className='mt-1 block text-sm text-red-500 dark:text-red-800'>
                 Quên mật khẩu?
-              </Link>
+              </Link> */}
             </FormItem>
           )}
         />
         <Button
+          type='submit'
           className={cn('w-full', {
             'cursor-not-allowed opacity-80': isLoading
           })}
-          type='submit'
         >
           {isLoading && <Loader className='mr-2 size-4 animate-spin' aria-hidden='true' />}
           Đăng nhập
+        </Button>
+        <Button
+          type='button'
+          variant={'outline'}
+          className='w-full py-5'
+          onClick={() => signIn('google', { callbackUrl: '/' })}
+        >
+          <Image
+            alt='googleIcon'
+            src={'/google.svg'}
+            width={28}
+            height={28}
+            className='aspect-square w-7 object-cover'
+          />
+          Đăng nhập với Google
         </Button>
         <Button
           type='button'
