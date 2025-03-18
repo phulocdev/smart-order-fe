@@ -1,6 +1,6 @@
 import type { DataTableRowAction } from '@/types/data-table.type'
 import type { ColumnDef } from '@tanstack/react-table'
-import { Eye, PenLine, Trash } from 'lucide-react'
+import { Trash } from 'lucide-react'
 import * as React from 'react'
 
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
@@ -8,30 +8,21 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import {
   formatNumberToVnCurrency,
-  getBadgeVariant,
   getVietnameseOrderStatus,
   getVietnameseOrderStatusList,
   translateOrderKey
 } from '@/lib/utils'
 
 import orderApiRequest from '@/apiRequests/order.api'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { OrderStatus } from '@/constants/enum'
 import { getErrorMessage } from '@/lib/handle-error'
 import { IOrder } from '@/types/backend.type'
 import { format } from 'date-fns'
-import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import Image from 'next/image'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface GetColumnsProps {
   setRowAction: React.Dispatch<React.SetStateAction<DataTableRowAction<IOrder> | null>>
@@ -84,7 +75,7 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
         const { dish } = row.original
         return (
           <div className='flex items-start gap-x-3'>
-            <div className='h-20 w-20 shrink-0'>
+            <div className='aspect-square w-16 shrink-0'>
               <Image
                 width={0}
                 height={0}
@@ -96,7 +87,9 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
             </div>
             <div className='grow text-sm'>
               <h4 className='line-clamp-2 text-ellipsis text-[15px] font-medium'>{dish.title}</h4>
-              <div className='line-clamp-2 text-ellipsis'>Ghi chú: {row.original.note}</div>
+              <div className='line-clamp-2 text-ellipsis'>
+                Ghi chú: {row.original.note ? row.original.note : 'Trống...'}
+              </div>
               <Badge className='font-medium italic' variant={'green'}>
                 x{row.original.quantity}
               </Badge>
@@ -161,7 +154,6 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
         return <div className='pl-7'>{formatNumberToVnCurrency(row.original.totalPrice)}</div>
       }
     },
-
     {
       accessorKey: 'createdAt',
       header: ({ column }) => <DataTableColumnHeader column={column} title={translateOrderKey('createdAt')} />,

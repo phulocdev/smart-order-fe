@@ -97,8 +97,7 @@ const authOptions: AuthOptions = {
     }),
     GoogleProvider({
       clientId: envServerConfig.GOOGLE_CLIENT_ID,
-      clientSecret: envServerConfig.GITHUB_SECRET,
-      client: { token_endpoint_auth_method: 'client_secret_post' },
+      clientSecret: envServerConfig.GOOGLE_CLIENT_SECRET,
       authorization: {
         params: {
           prompt: 'consent',
@@ -106,9 +105,29 @@ const authOptions: AuthOptions = {
           response_type: 'code'
         }
       }
+      // profile: async (profile) => {
+      //   const { name, email, picture: avatarUrl } = profile
+      //   const baseData = { name, email, avatarUrl }
+      //   try {
+      //     const response = await authApiRequest.loginOAuth({ email })
+      //     const { data } = response
+      //     return { ...baseData, ...data, error: undefined } as any
+      //   } catch (error: any) {
+      //     return { ...baseData, error: error.message }
+      //   }
+      // }
     })
   ],
   callbacks: {
+    // async signIn({ user, account }) {
+    //   const { error } = user
+    //   if (!error) return true
+    //   switch (account?.provider) {
+    //     case 'google':
+    //     default:
+    //       return `/signin?error=${error}` // This is where you set your error
+    //   }
+    // },
     // user là biến có thể nhận từ hàm authorize() trong Credentials hoặc từ Providers(Github, Google) trả về
     async jwt({ token, user, account, trigger }): Promise<JWT> {
       // Chỉnh sửa JWT Token được lưu trong cookie Browser (NextServer tạo)
@@ -120,7 +139,6 @@ const authOptions: AuthOptions = {
         token.refreshToken = refreshToken
         token.account = account
       }
-
       // Nhân viên đăng nhập
       if (trigger === 'signIn' && account?.provider === 'employee-credentials' && user) {
         token.accessToken = user.accessToken

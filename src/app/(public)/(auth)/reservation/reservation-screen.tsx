@@ -5,7 +5,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
-export default function ReservationScree() {
+export default function ReservationScreen() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const tableToken = searchParams.get('token') || ''
@@ -23,8 +23,7 @@ export default function ReservationScree() {
           const error = JSON.parse(response.error)
           throw error
         }
-
-        router.push('/')
+        router.replace('/')
       } catch (error) {
         handleApiError({ error, duration: Infinity })
       }
@@ -37,7 +36,7 @@ export default function ReservationScree() {
     <div>
       {loading && (
         <div className='absolute inset-0 flex items-center justify-center bg-black opacity-30'>
-          <Spinner size={'large'} className='' />
+          <Spinner size={'large'} className='text-white' />
         </div>
       )}
     </div>

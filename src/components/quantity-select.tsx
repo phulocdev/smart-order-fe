@@ -71,7 +71,7 @@ export default function QuantitySelect({ initialValue = 1, max, min = 1, onChang
       </Button>
       <Input
         value={quantity}
-        className='bg-white text-center placeholder:text-center'
+        className='bg-white text-center placeholder:text-center dark:bg-slate-800'
         pattern='[0-9]'
         onChange={handleInputChange}
       />

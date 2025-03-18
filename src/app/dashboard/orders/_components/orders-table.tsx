@@ -1,27 +1,33 @@
 'use client'
 
-import type { DataTableFilterField, DataTableRowAction } from '@/types/data-table.type'
-import * as React from 'react'
+import { DeleteOrdersDialog } from '@/app/dashboard/orders/_components/delete-order-dialog'
+import { OrdersTableToolbarActions } from '@/app/dashboard/orders/_components/orders-table-toolbar-actions'
+import { UpdateOrderSheet } from '@/app/dashboard/orders/_components/update-order-sheet'
 import { DataTable } from '@/components/data-table/data-table'
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar'
 import { useDataTable } from '@/hooks/use-data-table'
 import { getVietnameseOrderStatusList, translateOrderKey } from '@/lib/utils'
+import { useSocket } from '@/providers/socket-provider'
 import { IOrder, ITable } from '@/types/backend.type'
+import type { DataTableFilterField, DataTableRowAction } from '@/types/data-table.type'
 import { PaginatedResponse } from '@/types/response.type'
+import { useRouter } from 'next/navigation'
+import * as React from 'react'
+import { toast } from 'sonner'
 import { getColumns } from './orders-table-columns'
-import { OrdersTableToolbarActions } from '@/app/dashboard/orders/_components/orders-table-toolbar-actions'
-import { UpdateOrderSheet } from '@/app/dashboard/orders/_components/update-order-sheet'
-import { DeleteOrdersDialog } from '@/app/dashboard/orders/_components/delete-order-dialog'
 
 interface OrdersTableProps {
   promises: Promise<[Awaited<PaginatedResponse<IOrder>>, Awaited<PaginatedResponse<ITable>>]>
 }
 
 export function OrdersTable({ promises }: OrdersTableProps) {
+  const socket = useSocket()
+  const router = useRouter()
+  // const isDesktop = useMediaQuery('(min-width: 1000px)')
+  // console.log(isDesktop)
+
   const [{ data: orderData, meta }, { data: tableData }] = React.use(promises)
-
   const [rowAction, setRowAction] = React.useState<DataTableRowAction<IOrder> | null>(null)
-
   const columns = React.useMemo(() => getColumns({ setRowAction }), [])
 
   /**
@@ -68,12 +74,31 @@ export function OrdersTable({ promises }: OrdersTableProps) {
     // enableAdvancedFilter: enableAdvancedTable,
     initialState: {
       sorting: [{ id: 'createdAt', desc: true }],
-      columnPinning: { right: ['actions'] }
+      columnPinning: { right: ['actions'] },
+      columnVisibility: {
+        createdAt: false
+        // updatedAt: false
+      }
     },
     getRowId: (originalRow) => originalRow._id,
     shallow: false,
     clearOnDefault: true
   })
+
+  React.useEffect(() => {
+    if (!socket) return
+
+    const onNewOrders = ({ tableNumber, quantity }: { tableNumber: number; quantity: number }) => {
+      router.refresh()
+      toast('🔔 Đơn hàng mới', { description: `Bàn số ${tableNumber} đã gọi ${quantity} món ăn` })
+    }
+
+    socket.on('newOrders', onNewOrders)
+
+    return () => {
+      socket.off('newOrders', onNewOrders)
+    }
+  }, [router, socket])
 
   return (
     <>

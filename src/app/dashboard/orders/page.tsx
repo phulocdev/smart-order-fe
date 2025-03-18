@@ -4,7 +4,6 @@ import { OrdersTable } from '@/app/dashboard/orders/_components/orders-table'
 import { transformOrderQuery } from '@/app/dashboard/orders/_lib/utils'
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton'
 import { DateRangePicker } from '@/components/date-range-picker'
-import { Shell } from '@/components/shell'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { SearchParams } from '@/types/data-table.type'
@@ -24,11 +23,11 @@ export default async function IndexPage(props: IndexPageProps) {
   const searchParams = await props.searchParams
   const search = searchParamsCache.parse(searchParams)
   const params = transformOrderQuery(search)
-  const promises = Promise.all([orderApiRequest.sGetList(accessToken, params), tableApiRequest.sGetList(accessToken)])
+  const promises = Promise.all([orderApiRequest.getList(accessToken, params), tableApiRequest.getList(accessToken)])
   return (
     // <Shell className='gap-2'>
-    <div className='px-8 py-5'>
-      <div className='mb-4 flex items-start justify-between'>
+    <div className='px-1 py-5 md:px-4 lg:px-6'>
+      <div className='mb-3 flex items-start justify-between'>
         <h2 className='text-2xl font-medium'>Đơn hàng</h2>
         <Link href={'/dashboard/orders/create'}>
           <Button className='ml-auto'>

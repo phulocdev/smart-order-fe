@@ -22,6 +22,7 @@ export default async function Page() {
           {/* <Link href={'/register'} className='w-full text-center text-sm text-red-500 dark:text-red-800'>
             Bạn chưa có tài khoản?
           </Link> */}
+          <div className='w-full text-center text-xs italic'>CS504070 - Spring, 2025</div>
         </CardFooter>
       </Card>
     </div>

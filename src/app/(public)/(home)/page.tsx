@@ -11,12 +11,14 @@ export default async function Page() {
   return (
     <div className='mt-12'>
       <section>
-        <h2 className='mb-3 scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0'>Món ăn nổi bật</h2>
+        <h2 className='mb-3 scroll-m-20 pb-2 text-center text-3xl font-semibold tracking-tight first:mt-0'>
+          Menu cửa hàng 🍰
+        </h2>
         <div className='py-8'>
           <Carousel>
             <CarouselContent className='-ml-8'>
               {dishList.map((dish) => (
-                <CarouselItem key={dish._id} className='basis-1/3 pl-8'>
+                <CarouselItem key={dish._id} className='basis-[100%] pl-8 md:basis-1/2 xl:basis-1/3'>
                   <DishCard dish={dish} session={session} />
                 </CarouselItem>
               ))}

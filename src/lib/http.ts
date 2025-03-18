@@ -2,8 +2,7 @@ import envConfig from '@/config/env'
 import { ENTITY_ERROR_STATUS_CODE, EntityError, HttpError, UNAUTHORIZED_ERROR_STATUS_CODE } from '@/lib/errors'
 import { normalizePath } from '@/lib/utils'
 import { ApiErrorResponse } from '@/types/response.type'
-import { getSession, signOut } from 'next-auth/react'
-import { redirect } from 'next/navigation'
+import { getSession } from 'next-auth/react'
 
 export const isClient = typeof window !== 'undefined'
 
@@ -47,6 +46,7 @@ const request = async <Response>(
       baseHeaders.Authorization = `Bearer ${accessToken}`
     }
   }
+
   const res = await fetch(fullUrl, {
     method,
     headers: { ...baseHeaders, ...options?.headers },
@@ -56,21 +56,19 @@ const request = async <Response>(
   // ------------------------------------------- INTERCEPTOR ERROR RESPONSE  -------------------------------------------
   if (!res.ok) {
     const errorResponse: ApiErrorResponse = await res.json()
-    console.log('>>>>>>>', { errorResponse })
     const { message, statusCode, errors } = errorResponse
     if (statusCode === UNAUTHORIZED_ERROR_STATUS_CODE) {
       if (['REFRESH_TOKEN_EXPIRED', 'INVALID_REFRESH_TOKEN'].includes(message)) {
         // Handle Logout in middleware.ts of route handler
         throw errorResponse
-      } else {
-        // re-call previous request with 401 (execpt of Refresh Token Error) errorStatus fail api
+      } else if (isClient) {
+        // Gọi lại những request trước đó khi bị lỗi 401 | ngoại trừ rỗi RT hết hạn và
         const session = await getSession()
         const accessToken = session?.accessToken ?? ''
         if (!session) {
-          return [] as any
+          return {} as Response
         }
 
-        debugger
         isRecalling = true
         const response: Response = await request(method, path, payload, {
           headers: {

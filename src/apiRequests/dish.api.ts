@@ -4,10 +4,7 @@ import { IDish } from '@/types/backend.type'
 import { ApiResponse, DeleteResponse, PaginatedResponse } from '@/types/response.type'
 
 const dishApiRequest = {
-  getList: () => {
-    return http.get<PaginatedResponse<IDish>>('/dishes')
-  },
-  sGetList: (accessToken: string) => {
+  getList: (accessToken: string) => {
     return http.get<PaginatedResponse<IDish>>('/dishes', {
       headers: {
         Authorization: `Bearer ${accessToken}`

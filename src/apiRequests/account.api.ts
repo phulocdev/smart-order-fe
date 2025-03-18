@@ -6,16 +6,12 @@ import qs from 'qs'
 const prefix = '/accounts'
 
 const accountApiRequest = {
-  sGetList: (accessToken: string) => {
-    return http.get<PaginatedResponse<IAccount>>(prefix, {
+  getList: (accessToken: string, params?: Record<string, string>) => {
+    return http.get<PaginatedResponse<IAccount>>(`${prefix}?${qs.stringify(params)}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
     })
-  },
-
-  getList: (params?: Record<string, string>) => {
-    return http.get<PaginatedResponse<IAccount>>(`${prefix}?${qs.stringify(params || {})}`)
   }
 }
 

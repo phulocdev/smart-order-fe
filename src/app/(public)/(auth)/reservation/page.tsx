@@ -1,4 +1,4 @@
-import ReservationScree from '@/app/(public)/(auth)/reservation/reservation-screen'
+import ReservationScreen from '@/app/(public)/(auth)/reservation/reservation-screen'
 import { getAuthSession } from '@/auth'
 import { redirect } from 'next/navigation'
 
@@ -7,5 +7,5 @@ export default async function Page() {
   if (session) {
     redirect('/')
   }
-  return <ReservationScree />
+  return <ReservationScreen />
 }

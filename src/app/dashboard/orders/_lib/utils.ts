@@ -13,7 +13,7 @@ interface OrderQueryValues {
   sort: ExtendedSortingState<IOrder>
   status: OrderStatus[]
   customer: string
-  table: number[]
+  tableNumber: number[]
 }
 
 export function transformOrderQuery(query: OrderQueryValues): OrderQuery {
@@ -26,6 +26,6 @@ export function transformOrderQuery(query: OrderQueryValues): OrderQuery {
     code: query.code || undefined,
     customerCode: query.customer || undefined,
     status: query.status.length > 0 ? Array.from(new Set(query.status)).join(',') : undefined,
-    tableNumber: query.table.length > 0 ? Array.from(new Set(query.table)).join(',') : undefined
+    tableNumber: query.tableNumber.length > 0 ? Array.from(new Set(query.tableNumber)).join(',') : undefined
   }
 }

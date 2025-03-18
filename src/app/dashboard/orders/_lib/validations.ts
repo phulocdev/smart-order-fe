@@ -12,11 +12,12 @@ export const searchParamsCache = createSearchParamsCache({
   from: parseAsString.withDefault(''),
   to: parseAsString.withDefault(''),
 
+  // Filter by keys of column - các key này phải có trong accessorKey trong ordertableColumns
   sort: getSortingStateParser<IOrder>().withDefault([{ id: 'createdAt', desc: true }]),
   code: parseAsString.withDefault(''),
   // Dùng zod để parse bởi vì nếu client thêm những filter value không hợp lệ vào url thì sẽ làm crash app
   status: parseAsArrayOf(z.nativeEnum(OrderStatus)).withDefault([]),
-  table: parseAsArrayOf(
+  tableNumber: parseAsArrayOf(
     z
       .string()
       .transform((val) => parseInt(val))

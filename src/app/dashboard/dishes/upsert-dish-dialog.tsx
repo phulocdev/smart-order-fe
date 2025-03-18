@@ -52,6 +52,7 @@ export default function UpsertDishDialog({ onSuccess, open = false, onOpenChange
     }
   })
 
+  // Update case
   React.useEffect(() => {
     if (dish) {
       form.reset(dish)
@@ -76,13 +77,13 @@ export default function UpsertDishDialog({ onSuccess, open = false, onOpenChange
 
       if (type === 'create') {
         await createDishMutation.mutateAsync({ ...values, imageUrl: imageUrl ?? '' })
+        toast('✅ Tạo mới món ăn thành công!')
       } else if (dish) {
         await updateDishMutation.mutateAsync({ id: dish._id, body: { ...values, imageUrl } })
+        toast('✅ Cập nhật món ăn thành công!')
       }
-
-      if (type === 'create') toast('✅ Tạo mới món ăn thành công!')
-      else toast('✅ Cập nhật món ăn thành công!')
       resetForm()
+      setFile(undefined)
       onSuccess?.()
     } catch (error) {
       handleApiError({ error, setError: form.setError })

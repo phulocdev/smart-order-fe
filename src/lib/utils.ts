@@ -126,7 +126,7 @@ export const getVietnameseDayOfWeek = (date: string | Date) => {
   }
 }
 
-export const getBadgeVariant = (status: OrderStatus): keyof typeof variants.variant => {
+export const getBadgeVariantByOrderStatus = (status: OrderStatus): keyof typeof variants.variant => {
   switch (status) {
     case OrderStatus.Pending:
       return 'yellow'

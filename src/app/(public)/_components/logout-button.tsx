@@ -18,25 +18,27 @@ import { handleApiError } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'
 import { Session } from 'next-auth'
 import { signOut } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 
 export default function LogoutButton({ session }: { session: Session }) {
-  const router = useRouter()
-  const clearOrderInCart = useAppStore((state) => state.clearOrderInCart)
   const { refreshToken } = session
+  const clearOrderInCart = useAppStore((state) => state.clearOrderInCart)
 
   const onLogout = async () => {
     try {
       if (session.account) {
-        await Promise.all([signOut({ redirect: false }), authApiRequest.logout(refreshToken)])
+        // Không dùng redirect: false ở đây, vì nó sẽ k  reload lại page -> vẫn ở page đang thực hiện logout
+        // Ko dung promise.all boi vi trong th AT het hạn thi login khong thanh cong
+        // await Promise.all([signOut({ callbackUrl: '/login' }), authApiRequest.logout(refreshToken)])
+        await authApiRequest.logout(refreshToken)
+        await signOut({ callbackUrl: '/login' })
       } else {
-        await Promise.all([signOut({ redirect: false }), customerApiRequest.logout(refreshToken)])
+        // await Promise.all([signOut({ callbackUrl: '/' }), customerApiRequest.logout(refreshToken)])
+        await customerApiRequest.logout(refreshToken)
+        await signOut({ callbackUrl: '/' })
+        clearOrderInCart()
       }
-      if (session.customer) clearOrderInCart()
     } catch (error) {
       handleApiError({ error })
-    } finally {
-      router.replace('/login')
     }
   }
   return (

@@ -58,7 +58,10 @@ export function DataTableToolbar<TData>({
   }, [filterFields])
 
   return (
-    <div className={cn('flex w-full items-center justify-between gap-2 overflow-auto p-1', className)} {...props}>
+    <div
+      className={cn('flex w-full items-center justify-between gap-2 overflow-auto px-1 pb-1 pt-2', className)}
+      {...props}
+    >
       <div className='flex flex-1 items-center gap-2'>
         {searchableColumns.length > 0 &&
           searchableColumns.map(

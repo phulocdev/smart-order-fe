@@ -46,7 +46,7 @@ export default function DishCard({ dish, session }: Props) {
     }
     setQuantity(1)
     setNote('')
-    toast(`🟢 Đặt món ăn thành công`)
+    toast(`🟢 Đã thêm món ăn vào giỏ hàng`, { position: 'top-right' })
   }
 
   return (

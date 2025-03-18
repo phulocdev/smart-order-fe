@@ -22,7 +22,6 @@ import { ShoppingCart, Trash } from 'lucide-react'
 import { Session } from 'next-auth'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import React from 'react'
 
 export default function OrderCart({ session }: { session: Session | null }) {
   const orderItems = useAppStore((state) => state.orderItems)
@@ -71,47 +70,49 @@ export default function OrderCart({ session }: { session: Session | null }) {
       </SheetTrigger>
       <SheetContent className='sm:w-[400px] sm:max-w-[540px] xl:w-[450px] xl:max-w-none' side={'right'}>
         <SheetHeader>
-          <SheetTitle>Món ăn đã chọn - {<span>Bàn số {session.customer.table}</span>}</SheetTitle>
+          <SheetTitle>Món ăn đã chọn - {<span>Bàn số {session.customer.tableNumber}</span>}</SheetTitle>
         </SheetHeader>
         <ScrollArea className='mt-5 flex flex-col gap-5'>
-          {orderItems.map((order, index) => (
-            <div key={index} className='grid grid-cols-5 gap-x-2 px-[18px] py-1 first:pb-3 first:pt-5'>
-              <div className='col-span-1'>
-                <div className='relative'>
-                  <Image
-                    src={order.dish.imageUrl}
-                    alt={order.dish.title}
-                    width={0}
-                    height={0}
-                    sizes='100vw'
-                    className='aspect-square w-full rounded-md object-cover'
-                  />
-                  <OrderNote
-                    initialValue={order.note}
-                    dishTitle={order.dish.title}
-                    onSubmit={onOrderNoteChange(order.dish._id)}
-                    className='absolute -left-4 -top-5 z-20 border border-gray-200 bg-white shadow-2xl'
-                  />
-                </div>
-              </div>
-              <div className='col-span-4'>
-                <div className='flex items-start justify-between'>
-                  <h5 className='line-clamp-1 text-[15px]'>{order.dish.title}</h5>
-                  <Button onClick={() => handleRemoveOrder(order.dish._id)} variant={'ghost'} size={'icon'}>
-                    <Trash />
-                  </Button>
-                </div>
-                <div className='grid grid-cols-4 items-center'>
-                  <div className='col-span-2'>
-                    <QuantitySelect initialValue={order.quantity} onChange={onOrderQuantityChange(order.dish._id)} />
-                  </div>
-                  <div className='col-span-1 col-start-4'>
-                    <div className='text-sm font-semibold text-red-600'>{formatNumberToVnCurrency(order.price)}</div>
+          {orderItems.length === 0 && <div className='bg-red-400'>Giỏ hàng trống...</div>}
+          {orderItems.length > 0 &&
+            orderItems.map((order, index) => (
+              <div key={index} className='grid grid-cols-5 gap-x-2 px-[18px] py-1 first:pb-3 first:pt-5'>
+                <div className='col-span-1'>
+                  <div className='relative'>
+                    <Image
+                      src={order.dish.imageUrl}
+                      alt={order.dish.title}
+                      width={0}
+                      height={0}
+                      sizes='100vw'
+                      className='aspect-square w-full rounded-md object-cover'
+                    />
+                    <OrderNote
+                      initialValue={order.note}
+                      dishTitle={order.dish.title}
+                      onSubmit={onOrderNoteChange(order.dish._id)}
+                      className='absolute -left-4 -top-5 z-20 border border-gray-200 bg-white shadow-2xl'
+                    />
                   </div>
                 </div>
+                <div className='col-span-4'>
+                  <div className='flex items-start justify-between'>
+                    <h5 className='line-clamp-1 text-[15px]'>{order.dish.title}</h5>
+                    <Button onClick={() => handleRemoveOrder(order.dish._id)} variant={'ghost'} size={'icon'}>
+                      <Trash />
+                    </Button>
+                  </div>
+                  <div className='grid grid-cols-4 items-center gap-x-2'>
+                    <div className='col-span-3 md:col-span-2'>
+                      <QuantitySelect initialValue={order.quantity} onChange={onOrderQuantityChange(order.dish._id)} />
+                    </div>
+                    <div className='col-span-1 md:col-start-4'>
+                      <div className='text-sm font-semibold text-red-600'>{formatNumberToVnCurrency(order.price)}</div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </ScrollArea>
         <div className='absolute bottom-3 left-0 right-0 px-3'>
           <div className='sh flex items-center justify-between border-t py-7'>
@@ -122,7 +123,7 @@ export default function OrderCart({ session }: { session: Session | null }) {
             <span className='font-bold'>{formatNumberToVnCurrency(totalPrice)}</span>
           </div>
           <SheetFooter>
-            <SheetClose asChild>
+            <SheetClose asChild className='mt-3 md:mt-0'>
               <Button className='w-full' type='submit' variant={'outline'}>
                 Thêm món
               </Button>

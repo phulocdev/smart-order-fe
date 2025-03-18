@@ -4,19 +4,19 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { ENTITY_ERROR_STATUS_CODE, EntityError, HttpError } from '@/lib/errors'
 import { cn, handleApiError } from '@/lib/utils'
+import { useSocket } from '@/providers/socket-provider'
 import { LoginBodyType, loginSchema } from '@/schemaValidations/auth.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
 import { signIn } from 'next-auth/react'
-import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
-import Image from 'next/image'
 
 export default function LoginForm() {
-  const [isLoading, setIsLoading] = React.useState(false)
   const router = useRouter()
+  const [isLoading, setIsLoading] = React.useState(false)
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(loginSchema),
@@ -26,17 +26,18 @@ export default function LoginForm() {
     }
   })
 
-  async function onSubmit(values: LoginBodyType) {
+  async function onLoginWithCredential(values: LoginBodyType) {
     try {
       setIsLoading(true)
       const { email, password } = values
       const response = await signIn('employee-credentials', {
+        // Có lỗi trả về từ NextServer thì k redirect sang route lỗi
+        // Dù login success  nhưng mà nếu redirect: false & có callbackUrl thì sau đó vẫn không chuyển dang route: /dashboard/order
         redirect: false,
         email,
         password
-      }).finally(() => {
-        setIsLoading(false)
       })
+      setIsLoading(false)
 
       if (response?.error) {
         const error = JSON.parse(response.error) as HttpError
@@ -54,9 +55,14 @@ export default function LoginForm() {
     }
   }
 
+  function onLoginWithGoogle() {
+    // Login SSO với Social Provider thì mặc dù có redirect là false nhưng vẫn navigate sang trang /dashboard/orders được
+    signIn('google', { callbackUrl: '/dashboard/orders', redirect: false })
+  }
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
+      <form onSubmit={form.handleSubmit(onLoginWithCredential)} className='space-y-5'>
         <FormField
           control={form.control}
           name='email'
@@ -64,7 +70,7 @@ export default function LoginForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder='Hãy nhập email' {...field} />
+                <Input className='text-sm' placeholder='Hãy nhập email' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -86,38 +92,35 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        <Button
-          type='submit'
-          className={cn('w-full', {
-            'cursor-not-allowed opacity-80': isLoading
-          })}
-        >
-          {isLoading && <Loader className='mr-2 size-4 animate-spin' aria-hidden='true' />}
-          Đăng nhập
-        </Button>
-        <Button
-          type='button'
-          variant={'outline'}
-          className='w-full py-5'
-          onClick={() => signIn('google', { callbackUrl: '/' })}
-        >
-          <Image
-            alt='googleIcon'
-            src={'/google.svg'}
-            width={28}
-            height={28}
-            className='aspect-square w-7 object-cover'
-          />
-          Đăng nhập với Google
-        </Button>
-        <Button
+        <>
+          <Button
+            type='submit'
+            className={cn('w-full', {
+              'cursor-not-allowed opacity-80': isLoading
+            })}
+          >
+            {isLoading && <Loader className='mr-2 size-4 animate-spin' aria-hidden='true' />}
+            Đăng nhập
+          </Button>
+          <Button type='button' variant={'outline'} className='w-full' onClick={onLoginWithGoogle}>
+            <Image
+              alt='googleIcon'
+              src={'/google.svg'}
+              width={24}
+              height={24}
+              className='aspect-square w-6 object-cover'
+            />
+            Đăng nhập với Google
+          </Button>
+        </>
+        {/* <Button
           type='button'
           variant={'outline'}
           className='w-full'
           onClick={() => signIn('github', { callbackUrl: '/' })}
         >
           Đăng nhập với Github
-        </Button>
+        </Button> */}
       </form>
     </Form>
   )

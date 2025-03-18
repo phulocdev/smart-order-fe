@@ -26,5 +26,6 @@ declare module 'next-auth' {
     refreshToken: string
     account?: IAccount
     customer?: ICustomer
+    error?: string
   }
 }

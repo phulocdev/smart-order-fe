@@ -3,6 +3,9 @@ import { ThemeProvider } from '@/providers/theme-provider'
 import type { Metadata } from 'next'
 import { Inter, Roboto_Mono } from 'next/font/google'
 import './globals.css'
+import { Socket } from 'socket.io-client'
+import { SocketProvider } from '@/providers/socket-provider'
+import { getAuthSession } from '@/auth'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -26,15 +29,18 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await getAuthSession()
   return (
     <html lang='en' suppressHydrationWarning>
       <body
         className={`${inter.className} ${inter.variable} ${roboto_mono.variable} no-scrollbar no-scrollbar::-webkit-scrollbar`}
       >
-        <Providers>
-          <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-            <main>{children}</main>
-          </ThemeProvider>
+        <Providers session={session}>
+          <SocketProvider>
+            <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+              <main>{children}</main>
+            </ThemeProvider>
+          </SocketProvider>
         </Providers>
       </body>
     </html>
