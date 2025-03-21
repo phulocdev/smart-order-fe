@@ -2,21 +2,23 @@
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { OAUTH_LOGIN_ERROR_MESSAGE } from '@/constants/constants'
 import { ENTITY_ERROR_STATUS_CODE, EntityError, HttpError } from '@/lib/errors'
 import { cn, handleApiError } from '@/lib/utils'
-import { useSocket } from '@/providers/socket-provider'
 import { LoginBodyType, loginSchema } from '@/schemaValidations/auth.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
 
 export default function LoginForm() {
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState(false)
+  const searchParams = useSearchParams()
+  const oAuthLoginErrorMessage = searchParams.get('error')
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(loginSchema),
@@ -92,6 +94,9 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
+        {oAuthLoginErrorMessage === OAUTH_LOGIN_ERROR_MESSAGE && (
+          <div className='text-[13px] font-medium text-red-500'>Tài khoản không tồn tại trên hệ thống!</div>
+        )}
         <>
           <Button
             type='submit'

@@ -25,8 +25,8 @@ export interface ITable {
 export interface IOrder {
   _id: string
   code: string
-  customer: Omit<ICustomer, 'table'>
-  dish: IDish
+  customer: Omit<ICustomer, 'table'> | null
+  dish: IDish | null
   quantity: number
   price: number
   note: string

@@ -10,8 +10,8 @@ import type { SearchParams } from '@/types/data-table.type'
 import { CirclePlus } from 'lucide-react'
 import Link from 'next/link'
 import * as React from 'react'
-import { searchParamsCache } from './_lib/validations'
 import { getAuthSession } from '@/auth'
+import { orderSearchParamsCache } from '@/app/dashboard/orders/_lib/validations'
 
 interface IndexPageProps {
   searchParams: Promise<SearchParams>
@@ -21,7 +21,7 @@ export default async function IndexPage(props: IndexPageProps) {
   const session = await getAuthSession()
   const accessToken = session?.accessToken ?? ''
   const searchParams = await props.searchParams
-  const search = searchParamsCache.parse(searchParams)
+  const search = orderSearchParamsCache.parse(searchParams)
   const params = transformOrderQuery(search)
   const promises = Promise.all([orderApiRequest.getList(accessToken, params), tableApiRequest.getList(accessToken)])
   return (

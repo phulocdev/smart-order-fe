@@ -1,6 +1,7 @@
 import authApiRequest from '@/apiRequests/auth.api'
 import customerApiRequest from '@/apiRequests/customer.api'
 import envServerConfig from '@/config/env.server'
+import { SocialProvider } from '@/constants/enum'
 import { HttpError } from '@/lib/errors'
 import { SESSION_TIMEOUT } from '@/middleware'
 import { AuthOptions, getServerSession, Session } from 'next-auth'
@@ -105,27 +106,23 @@ const authOptions: AuthOptions = {
           response_type: 'code'
         }
       }
-      // profile: async (profile) => {
-      //   const { name, email, picture: avatarUrl } = profile
-      //   const baseData = { name, email, avatarUrl }
-      //   try {
-      //     const response = await authApiRequest.loginOAuth({ email })
-      //     const { data } = response
-      //     return { ...baseData, ...data, error: undefined } as any
-      //   } catch (error: any) {
-      //     return { ...baseData, error: error.message }
-      //   }
-      // }
     })
   ],
   callbacks: {
     // async signIn({ user, account }) {
-    //   const { error } = user
-    //   if (!error) return true
-    //   switch (account?.provider) {
-    //     case 'google':
-    //     default:
-    //       return `/signin?error=${error}` // This is where you set your error
+    //   if (account?.provider === 'credentials') {
+    //     return true
+    //   }
+    //   try {
+    //     await authApiRequest.loginOAuth({
+    //       email: user.email ?? '',
+    //       accessToken: account?.access_token ?? '',
+    //       provider: SocialProvider.Google,
+    //       avatarUrl: user.image ?? ''
+    //     })
+    //     return true
+    //   } catch (error: any) {
+    //     return `/login?error=${error.message}`
     //   }
     // },
     // user là biến có thể nhận từ hàm authorize() trong Credentials hoặc từ Providers(Github, Google) trả về
@@ -133,11 +130,16 @@ const authOptions: AuthOptions = {
       // Chỉnh sửa JWT Token được lưu trong cookie Browser (NextServer tạo)
       // Persist the OAuth access_token to the token right after signin - OAuth
       if (trigger === 'signIn' && account?.provider !== 'credentials' && user.email) {
-        const res = await authApiRequest.loginOAuth({ email: user.email })
-        const { accessToken, refreshToken, account } = res.data
+        const res = await authApiRequest.loginOAuth({
+          email: user.email ?? '',
+          accessToken: account?.access_token ?? '',
+          provider: SocialProvider.Google,
+          avatarUrl: user.image ?? ''
+        })
+        const { accessToken, refreshToken, account: accountData } = res.data
         token.accessToken = accessToken
         token.refreshToken = refreshToken
-        token.account = account
+        token.account = accountData
       }
       // Nhân viên đăng nhập
       if (trigger === 'signIn' && account?.provider === 'employee-credentials' && user) {

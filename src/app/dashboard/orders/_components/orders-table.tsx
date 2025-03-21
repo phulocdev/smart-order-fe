@@ -2,7 +2,6 @@
 
 import { DeleteOrdersDialog } from '@/app/dashboard/orders/_components/delete-order-dialog'
 import { OrdersTableToolbarActions } from '@/app/dashboard/orders/_components/orders-table-toolbar-actions'
-import { UpdateOrderSheet } from '@/app/dashboard/orders/_components/update-order-sheet'
 import { DataTable } from '@/components/data-table/data-table'
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar'
 import { useDataTable } from '@/hooks/use-data-table'
@@ -107,11 +106,6 @@ export function OrdersTable({ promises }: OrdersTableProps) {
           <OrdersTableToolbarActions table={table} />
         </DataTableToolbar>
       </DataTable>
-      <UpdateOrderSheet
-        open={rowAction?.type === 'update'}
-        onOpenChange={() => setRowAction(null)}
-        order={rowAction?.row.original ?? null}
-      />
       <DeleteOrdersDialog
         open={rowAction?.type === 'delete'}
         onOpenChange={() => setRowAction(null)}

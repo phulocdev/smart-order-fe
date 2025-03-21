@@ -1,4 +1,4 @@
-import { OrderStatus } from '@/constants/enum'
+import { OrderStatus, SocialProvider } from '@/constants/enum'
 
 export type OrderItemDto = {
   dish: string // ObjectID
@@ -18,4 +18,11 @@ export type UpdateOrderBodyType = {
 export type CreateOrderBodyType = {
   tableNumber: number
   items: OrderItemDto[]
+}
+
+export type LoginOAuthBodyType = {
+  email: string
+  avatarUrl?: string
+  provider: SocialProvider
+  accessToken: string
 }

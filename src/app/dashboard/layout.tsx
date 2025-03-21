@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { SidebarProvider } from '@/components/ui/sidebar'
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 
 export default async function DashboardLayout({
   children
@@ -18,27 +18,29 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }>) {
   const session = await getAuthSession()
+  const account = session?.account
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider>
       <AppSidebar />
       <section className='grow'>
-        <div className='flex justify-end gap-x-3 border-b py-3 pr-20 shadow dark:border-b-gray-500'>
-          {/* <SidebarTrigger /> */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild className='cursor-pointer'>
-              <Avatar>
-                <AvatarImage src='https://github.com/shadcn.png' />
-                <AvatarFallback>PL</AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {session && <LogoutButton session={session} />}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          {/* Dark Mode Toggle */}
-          <ModeToggle />
+        <div className='flex justify-between gap-x-3 border-b py-3 pr-20 shadow dark:border-b-gray-500'>
+          <SidebarTrigger />
+          <div className='flex items-center gap-x-3'>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild className='cursor-pointer'>
+                <Avatar>
+                  <AvatarImage src={account?.avatarUrl} />
+                  <AvatarFallback>{account?.fullName.substring(0, 2)}</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {session && <LogoutButton session={session} />}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <ModeToggle />
+          </div>
         </div>
         {children}
       </section>

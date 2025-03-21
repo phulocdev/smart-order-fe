@@ -34,7 +34,7 @@ const getStatusIcon = (status: TableStatus) => {
   }
 }
 
-export default function CreateOrderPage() {
+export default function Page() {
   const [orderItems, setOrderItems] = useState<OrderItemState[]>([])
   const tableListQuery = useGetTableListQuery()
   const tableList = tableListQuery.data?.data

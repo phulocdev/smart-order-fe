@@ -62,7 +62,7 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
       header: translateOrderKey('customer'),
       cell: ({ row }) => (
         <div>
-          <div className='text-sm font-medium'>{row.original.customer.code}</div>
+          <div className='text-sm font-medium'>{row.original.customer?.code}</div>
           <div className='text-xs text-gray-500'>Bàn số: {row.original.tableNumber}</div>
         </div>
       )
@@ -81,12 +81,12 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
                 height={0}
                 sizes='100vw'
                 className='aspect-square w-full rounded-sm object-cover'
-                alt={dish.title}
-                src={dish.imageUrl}
+                alt={dish?.title ?? ''}
+                src={dish?.imageUrl ?? ''}
               />
             </div>
             <div className='grow text-sm'>
-              <h4 className='line-clamp-2 text-ellipsis text-[15px] font-medium'>{dish.title}</h4>
+              <h4 className='line-clamp-2 text-ellipsis text-[15px] font-medium'>{dish?.title ?? ''}</h4>
               <div className='line-clamp-2 text-ellipsis'>
                 Ghi chú: {row.original.note ? row.original.note : 'Trống...'}
               </div>

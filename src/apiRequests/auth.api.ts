@@ -1,6 +1,7 @@
 import http from '@/lib/http'
-import { LoginBodyType, LoginOAuthBodyType } from '@/schemaValidations/auth.schema'
+import { LoginBodyType } from '@/schemaValidations/auth.schema'
 import { IAuthEmployee } from '@/types/auth.type'
+import { LoginOAuthBodyType } from '@/types/backend.dto'
 import { ApiResponse } from '@/types/response.type'
 
 const authApiRequest = {

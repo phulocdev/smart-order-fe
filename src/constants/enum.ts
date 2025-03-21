@@ -28,3 +28,8 @@ export enum OrderStatus {
   Canceled = 'Canceled', // Đơn hàng bị hủy (do khách hoặc nhà hàng)
   Rejected = 'Rejected' // Đơn hàng bị từ chối (hết món hoặc lý do khác)
 }
+
+export enum SocialProvider {
+  Google = 'google'
+  // Zalo = 'Zalo'
+}

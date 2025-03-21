@@ -105,7 +105,6 @@ export function DishesTable({ promise }: DishesTableProps) {
           if (isUpdating) setRowAction(null)
         }}
       />
-
       <DeleteDishDialog
         open={rowAction?.type === 'delete'}
         onOpenChange={() => setRowAction(null)}

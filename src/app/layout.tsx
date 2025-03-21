@@ -1,11 +1,10 @@
+import { getAuthSession } from '@/auth'
 import Providers from '@/providers/providers'
+import { SocketProvider } from '@/providers/socket-provider'
 import { ThemeProvider } from '@/providers/theme-provider'
 import type { Metadata } from 'next'
 import { Inter, Roboto_Mono } from 'next/font/google'
 import './globals.css'
-import { Socket } from 'socket.io-client'
-import { SocketProvider } from '@/providers/socket-provider'
-import { getAuthSession } from '@/auth'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -35,8 +34,8 @@ export default async function RootLayout({
       <body
         className={`${inter.className} ${inter.variable} ${roboto_mono.variable} no-scrollbar no-scrollbar::-webkit-scrollbar`}
       >
-        <Providers session={session}>
-          <SocketProvider>
+        <Providers>
+          <SocketProvider session={session}>
             <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
               <main>{children}</main>
             </ThemeProvider>

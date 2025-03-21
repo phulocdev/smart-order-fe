@@ -8,6 +8,13 @@ const mediaApiRequest = {
         ['folder-name']: folderName as any
       }
     })
+  },
+  uploadMultipleImage: ({ body, folderName }: { body: FormData; folderName?: string }) => {
+    return http.post<ApiResponse<{ result: string[] }>>('/media/upload/multiple', body, {
+      headers: {
+        ['folder-name']: folderName as any
+      }
+    })
   }
 }
 

@@ -16,8 +16,6 @@ export const loginSchema = z.object({
 
 export type LoginBodyType = z.infer<typeof loginSchema>
 
-export type LoginOAuthBodyType = Pick<LoginBodyType, 'email'>
-
 export const registerSchema = z.object({
   fullName: z
     .string()

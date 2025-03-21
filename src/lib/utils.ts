@@ -108,19 +108,19 @@ export const getVietnameseDayOfWeek = (date: string | Date) => {
   const orderOfDay = getDay(date)
   switch (orderOfDay) {
     case 0:
-      return 'Chủ nhật'
+      return 'Chủ Nhật'
     case 1:
-      return 'Thứ hai'
+      return 'Thứ Hai'
     case 2:
-      return 'Thứ ba'
+      return 'Thứ Ba'
     case 3:
-      return 'Thứ tư'
+      return 'Thứ Tư'
     case 4:
-      return 'Thứ năm'
+      return 'Thứ Năm'
     case 5:
-      return 'Thứ sáu'
+      return 'Thứ Sáu'
     case 6:
-      return 'Thứ bảy'
+      return 'Thứ Bảy'
     default:
       return 'INVALID_DAY_OF_WEEK'
   }

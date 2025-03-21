@@ -1,4 +1,5 @@
-import { ChartArea, ShoppingCart, Soup } from 'lucide-react'
+'use client'
+
 import {
   Sidebar,
   SidebarContent,
@@ -9,7 +10,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
+import { ChartArea, ShoppingCart, Soup } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const items = [
   {
@@ -30,18 +33,22 @@ const items = [
 ]
 
 export function AppSidebar() {
+  const pathname = usePathname()
+
   return (
     <Sidebar collapsible='icon'>
       <SidebarContent>
         <SidebarHeader className='text-center'>
-          <Link href={'/'}>SOA</Link>
+          <Link href={'/'} className='text-black'>
+            SOA
+          </Link>
         </SidebarHeader>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton isActive={pathname === item.url} asChild>
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
