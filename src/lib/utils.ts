@@ -4,7 +4,7 @@ import { EntityError } from '@/lib/errors'
 import { IDish, IOrder } from '@/types/backend.type'
 import { clsx, type ClassValue } from 'clsx'
 import { getDay } from 'date-fns'
-import { CheckCircle, Users } from 'lucide-react'
+import { Banknote, CheckCircle, CookingPot, HandPlatter, Loader, Users } from 'lucide-react'
 import { UseFormSetError } from 'react-hook-form'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -199,12 +199,27 @@ export function translateDishKey(key: keyof IDish): string {
   return dishKeyTranslations[key]
 }
 
-export function getStatusIcon(status: TableStatus) {
+export function getIconOfTableStatus(status: TableStatus) {
   switch (status) {
     case TableStatus.Available:
       return CheckCircle
     case TableStatus.Occupied:
       return Users
+    default:
+      return null
+  }
+}
+
+export function getIconOfOrderStatus(status: OrderStatus) {
+  switch (status) {
+    case OrderStatus.Pending:
+      return Loader
+    case OrderStatus.Cooked:
+      return CookingPot
+    case OrderStatus.Served:
+      return HandPlatter
+    case OrderStatus.Paid:
+      return Banknote
     default:
       return null
   }

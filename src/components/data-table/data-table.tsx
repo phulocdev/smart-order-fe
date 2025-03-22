@@ -26,7 +26,7 @@ export function DataTable<TData>({ table, floatingBar = null, children, classNam
   return (
     <div className={cn('w-full space-y-2.5 overflow-auto', className)} {...props}>
       {children}
-      <div className='overflow-x-hidden rounded-md border'>
+      <div className='overflow-x-auto rounded-md border'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

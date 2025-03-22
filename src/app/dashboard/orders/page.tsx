@@ -23,7 +23,11 @@ export default async function IndexPage(props: IndexPageProps) {
   const searchParams = await props.searchParams
   const search = orderSearchParamsCache.parse(searchParams)
   const params = transformOrderQuery(search)
-  const promises = Promise.all([orderApiRequest.getList(accessToken, params), tableApiRequest.getList(accessToken)])
+  const promises = Promise.all([
+    orderApiRequest.getList(accessToken, params),
+    tableApiRequest.getList(accessToken),
+    orderApiRequest.statisticsByTables(accessToken)
+  ])
   return (
     // <Shell className='gap-2'>
     <div className='px-1 py-5 md:px-4 lg:px-6'>
@@ -39,8 +43,8 @@ export default async function IndexPage(props: IndexPageProps) {
       <React.Suspense fallback={<Skeleton className='h-7 w-52' />}>
         <DateRangePicker
           triggerSize='sm'
-          triggerClassName='ml-auto w-56 sm:w-60'
-          align='end'
+          triggerClassName='w-56 sm:w-60'
+          align='start'
           shallow={false}
           placeholder='Chọn ngày'
           // defaultDateRange={{

@@ -11,6 +11,7 @@ import { IOrder } from '@/types/backend.type'
 import { PaginatedResponse } from '@/types/response.type'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
 
@@ -21,6 +22,7 @@ interface CustomerOrderProps {
 export default function CustomerOrder({ promise }: CustomerOrderProps) {
   const { data: orderList } = React.use(promise)
   const socket = useSocket()
+  const router = useRouter()
 
   const totalQuantity = orderList.reduce((result, order) => result + order.quantity, 0)
   const totalPrice = orderList.reduce((result, order) => result + order.totalPrice, 0)
@@ -30,6 +32,7 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
 
     const onUpdatedOrder = ({ dishTitle, status }: { dishTitle: string; status: OrderStatus }) => {
       toast(`📢 Món "${dishTitle}" vừa được chuyển sang trạng thái "${getVietnameseOrderStatus(status)}"`)
+      router.refresh()
     }
 
     socket.on('updatedOrder', onUpdatedOrder)
@@ -37,7 +40,7 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
     return () => {
       socket.off('updatedOrder', onUpdatedOrder)
     }
-  }, [socket])
+  }, [router, socket])
 
   if (orderList.length === 0) {
     return (
@@ -53,7 +56,7 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
   const { tableNumber, code } = orderList[0]
 
   return (
-    <Card className='mx-auto my-12 w-[750px]'>
+    <Card className='mx-auto my-12 max-w-[750px]'>
       <CardHeader>
         <CardTitle className='text-center text-2xl'>Món ăn đã gọi - Bàn số {tableNumber}</CardTitle>
         <div className='flex flex-row items-center justify-between pt-4 text-base'>
@@ -62,14 +65,11 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
       </CardHeader>
 
       <CardContent>
-        <Table className=''>
+        <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Món ăn</TableHead>
-              <TableHead>Trạng thái</TableHead>
               <TableHead>Đơn giá</TableHead>
-              <TableHead>Số lượng</TableHead>
-              <TableHead className='text-right'>Tổng tiền</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -80,28 +80,27 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
                     <Image
                       width={80}
                       height={80}
+                      sizes='100vw'
                       className='h-20 w-20 rounded-sm object-cover'
                       alt={order.dish?.title ?? ''}
                       src={order.dish?.imageUrl ?? ''}
                     />
-
-                    <h3 className='line-clamp-2 w-52'>{order.dish?.title}</h3>
+                    <div>
+                      <h3 className='line-clamp-2 w-52'>{order.dish?.title}</h3>
+                      <Badge variant={getBadgeVariantByOrderStatus(order.status)} className='my-1'>
+                        {getVietnameseOrderStatus(order.status)}
+                      </Badge>
+                      <div className='text-[13px] italic'>x{order.quantity}</div>
+                    </div>
                   </div>
                 </TableCell>
-                <TableCell>
-                  <Badge variant={getBadgeVariantByOrderStatus(order.status)}>
-                    {getVietnameseOrderStatus(order.status)}
-                  </Badge>
-                </TableCell>
                 <TableCell>{formatNumberToVnCurrency(order.price)}</TableCell>
-                <TableCell className='text-center'>x{order.quantity}</TableCell>
-                <TableCell className='text-right'>{formatNumberToVnCurrency(order.price * order.quantity)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={4}>Tổng ({totalQuantity} món):</TableCell>
+              <TableCell colSpan={1}>Tổng ({totalQuantity} phần):</TableCell>
               <TableCell className='text-right text-lg'>{formatNumberToVnCurrency(totalPrice)}</TableCell>
             </TableRow>
           </TableFooter>

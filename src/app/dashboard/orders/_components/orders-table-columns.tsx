@@ -75,7 +75,7 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
         const { dish } = row.original
         return (
           <div className='flex items-start gap-x-3'>
-            <div className='aspect-square w-16 shrink-0'>
+            <div className='relative aspect-square w-16 shrink-0'>
               <Image
                 width={0}
                 height={0}
@@ -84,6 +84,14 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
                 alt={dish?.title ?? ''}
                 src={dish?.imageUrl ?? ''}
               />
+              {row.original.status === OrderStatus.Pending && (
+                <Badge
+                  className='absolute -left-4 -top-1 px-1.5 py-0.5 text-[10px] font-medium italic'
+                  variant={'destructive'}
+                >
+                  New
+                </Badge>
+              )}
             </div>
             <div className='grow text-sm'>
               <h4 className='line-clamp-2 text-ellipsis text-[15px] font-medium'>{dish?.title ?? ''}</h4>

@@ -10,9 +10,9 @@ export default async function Page() {
   const res = await dishApiRequest.getList(accessToken)
   const dishList = res.data
   return (
-    <div className='mt-12'>
-      <section>
-        <h2 className='mb-3 scroll-m-20 pb-2 text-center text-3xl font-semibold tracking-tight first:mt-0'>
+    <div className='mt-8 md:mt-12'>
+      <section className='px-14 md:px-0'>
+        <h2 className='mb-3 scroll-m-20 pb-2 text-center text-2xl font-semibold tracking-tight first:mt-0 md:text-3xl'>
           Menu cửa hàng 🍰
         </h2>
         <div className='py-8'>

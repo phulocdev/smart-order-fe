@@ -36,3 +36,9 @@ export interface IOrder {
   createdAt: string
   updatedAt: string
 }
+
+export interface IStatisticOrders {
+  tableNumber: number
+  orders: IOrder[]
+  statusCounts: Record<OrderStatus, number>
+}

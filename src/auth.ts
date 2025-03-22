@@ -129,7 +129,12 @@ const authOptions: AuthOptions = {
     async jwt({ token, user, account, trigger }): Promise<JWT> {
       // Chỉnh sửa JWT Token được lưu trong cookie Browser (NextServer tạo)
       // Persist the OAuth access_token to the token right after signin - OAuth
-      if (trigger === 'signIn' && account?.provider !== 'credentials' && user.email) {
+      if (
+        trigger === 'signIn' &&
+        account?.provider &&
+        !['employee-credentials', 'customer-credentials'].includes(account.provider) &&
+        user.email
+      ) {
         const res = await authApiRequest.loginOAuth({
           email: user.email ?? '',
           accessToken: account?.access_token ?? '',

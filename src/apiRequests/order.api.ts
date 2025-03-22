@@ -1,6 +1,6 @@
 import http from '@/lib/http'
 import { CreateOrderBodyType, UpdateOrderBodyType } from '@/types/backend.dto'
-import { IOrder } from '@/types/backend.type'
+import { IOrder, IStatisticOrders } from '@/types/backend.type'
 import { ApiResponse, PaginatedResponse } from '@/types/response.type'
 import { DateRangeQuery, OrderQuery, PaginationQuery } from '@/types/search-params.type'
 import qs from 'qs'
@@ -8,6 +8,13 @@ import qs from 'qs'
 const orderApiRequest = {
   getList: (accessToken: string, params?: DateRangeQuery & PaginationQuery & OrderQuery) => {
     return http.get<PaginatedResponse<IOrder>>(`/orders?${qs.stringify(params)}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+  },
+  statisticsByTables: (accessToken: string) => {
+    return http.get<ApiResponse<IStatisticOrders[]>>('/orders/statistics-by-tables', {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }

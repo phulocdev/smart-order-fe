@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { useMediaQuery } from '@/hooks/use-media-query'
 
 export default async function DashboardLayout({
   children
