@@ -29,7 +29,7 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
     if (!socket) return
 
     const onUpdatedOrder = ({ dishTitle, status }: { dishTitle: string; status: OrderStatus }) => {
-      toast(`📢 Món "${dishTitle}" đã được chuyển sang trạng thái "${getVietnameseOrderStatus(status)}"`)
+      toast(`📢 Món "${dishTitle}" vừa được chuyển sang trạng thái "${getVietnameseOrderStatus(status)}"`)
     }
 
     socket.on('updatedOrder', onUpdatedOrder)
@@ -53,7 +53,7 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
   const { tableNumber, code } = orderList[0]
 
   return (
-    <Card className='mx-auto my-12 max-w-[750px]'>
+    <Card className='mx-auto my-12 w-[750px]'>
       <CardHeader>
         <CardTitle className='text-center text-2xl'>Món ăn đã gọi - Bàn số {tableNumber}</CardTitle>
         <div className='flex flex-row items-center justify-between pt-4 text-base'>
@@ -81,11 +81,11 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
                       width={80}
                       height={80}
                       className='h-20 w-20 rounded-sm object-cover'
-                      alt={order.dish.title}
-                      src={order.dish.imageUrl}
+                      alt={order.dish?.title ?? ''}
+                      src={order.dish?.imageUrl ?? ''}
                     />
 
-                    <h3 className='line-clamp-2 w-52'>{order.dish.title}</h3>
+                    <h3 className='line-clamp-2 w-52'>{order.dish?.title}</h3>
                   </div>
                 </TableCell>
                 <TableCell>

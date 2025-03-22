@@ -1,10 +1,10 @@
 import { variants } from '@/components/ui/badge'
-import { DishStatus, OrderStatus } from '@/constants/enum'
+import { DishStatus, OrderStatus, TableStatus } from '@/constants/enum'
 import { EntityError } from '@/lib/errors'
-import { isClient } from '@/lib/http'
 import { IDish, IOrder } from '@/types/backend.type'
 import { clsx, type ClassValue } from 'clsx'
 import { getDay } from 'date-fns'
+import { CheckCircle, Users } from 'lucide-react'
 import { UseFormSetError } from 'react-hook-form'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -186,7 +186,7 @@ export function translateOrderKey(key: keyof IOrder): string {
 
 export const dishKeyTranslations: Record<keyof IDish, string> = {
   _id: 'Mã món ăn',
-  title: 'Tên món',
+  title: 'Món ăn',
   description: 'Mô tả',
   price: 'Giá',
   status: 'Trạng thái',
@@ -197,4 +197,15 @@ export const dishKeyTranslations: Record<keyof IDish, string> = {
 
 export function translateDishKey(key: keyof IDish): string {
   return dishKeyTranslations[key]
+}
+
+export function getStatusIcon(status: TableStatus) {
+  switch (status) {
+    case TableStatus.Available:
+      return CheckCircle
+    case TableStatus.Occupied:
+      return Users
+    default:
+      return null
+  }
 }

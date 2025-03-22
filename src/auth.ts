@@ -109,22 +109,22 @@ const authOptions: AuthOptions = {
     })
   ],
   callbacks: {
-    // async signIn({ user, account }) {
-    //   if (account?.provider === 'credentials') {
-    //     return true
-    //   }
-    //   try {
-    //     await authApiRequest.loginOAuth({
-    //       email: user.email ?? '',
-    //       accessToken: account?.access_token ?? '',
-    //       provider: SocialProvider.Google,
-    //       avatarUrl: user.image ?? ''
-    //     })
-    //     return true
-    //   } catch (error: any) {
-    //     return `/login?error=${error.message}`
-    //   }
-    // },
+    async signIn({ user, account }) {
+      if (account?.provider && !['employee-credentials', 'customer-credentials'].includes(account.provider)) {
+        try {
+          await authApiRequest.loginOAuth({
+            email: user.email ?? '',
+            accessToken: account?.access_token ?? '',
+            provider: account.provider as SocialProvider,
+            avatarUrl: user.image ?? ''
+          })
+          return true
+        } catch (error: any) {
+          return `/login?error=${error.message}`
+        }
+      }
+      return true
+    },
     // user là biến có thể nhận từ hàm authorize() trong Credentials hoặc từ Providers(Github, Google) trả về
     async jwt({ token, user, account, trigger }): Promise<JWT> {
       // Chỉnh sửa JWT Token được lưu trong cookie Browser (NextServer tạo)

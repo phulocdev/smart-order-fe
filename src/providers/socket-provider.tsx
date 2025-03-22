@@ -1,12 +1,10 @@
 'use client'
 
 import envConfig from '@/config/env'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
-import { useSession } from 'next-auth/react'
-import jwt from 'jsonwebtoken'
-import { useRouter } from 'next/navigation'
-import { Session } from 'next-auth'
 
 interface SocketContextType {
   socket: Socket | null
@@ -14,20 +12,17 @@ interface SocketContextType {
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined)
 
-export const SocketProvider: React.FC<{ children: React.ReactNode; session: Session | null }> = ({
-  children,
-  session
-}) => {
+export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null)
-  // const { data: session } = useSession()
+  const { data: session } = useSession()
   const accessToken = session?.accessToken ?? ''
   const now = Math.floor(new Date().getTime() / 1000) // second
   const router = useRouter()
 
   useEffect(() => {
-    console.log({ accessToken })
     if (!session) return
 
+    // Trong trường hợp AT hết hạn thì vẫn tạo ra 1 instance có url connect đến websocket server - Chỉ là chưa connect mà thôi
     const socketInstance = io(`${envConfig.NEXT_PUBLIC_WEBSOCKET_URL}`, {
       autoConnect: true,
       transports: ['websocket', 'polling'],

@@ -9,7 +9,7 @@ export default async function Page() {
   const accessToken = session?.accessToken ?? ''
   const promise = dishApiRequest.getList(accessToken)
   return (
-    <div className='px-2 py-5 md:px-4 lg:px-9'>
+    <div className='p-8'>
       <div className='mb-3 flex items-start justify-between'>
         <h2 className='text-2xl font-medium'>Danh sách món ăn</h2>
         {/* ------------------------- Add Button - Option 1 (Navigate to another page) ---------------------- */}

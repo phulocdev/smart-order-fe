@@ -87,6 +87,11 @@ export function OrdersTable({ promises }: OrdersTableProps) {
   React.useEffect(() => {
     if (!socket) return
 
+    // Trong trường hợp JWT Expired thì socket chưa connect đến server đâu nên ở đây sẽ re-connect lại
+    if (!socket.connected) {
+      socket.connect()
+    }
+
     const onNewOrders = ({ tableNumber, quantity }: { tableNumber: number; quantity: number }) => {
       router.refresh()
       toast('🔔 Đơn hàng mới', { description: `Bàn số ${tableNumber} đã gọi ${quantity} món ăn` })

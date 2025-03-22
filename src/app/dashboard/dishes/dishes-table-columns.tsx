@@ -28,12 +28,13 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IDish>[
         const { title } = row.original
         return removeVietNamAccent(title).includes(removeVietNamAccent(filterValue))
       },
-      header: 'Món ăn',
+      header: translateDishKey('title'),
       cell: ({ row }) => (
         <div className='flex items-start gap-x-3'>
           <Image
             width={128}
             height={128}
+            sizes='100vw'
             className='h-32 w-32 rounded-sm object-cover'
             alt={row.original.title}
             src={row.original.imageUrl}
@@ -52,12 +53,12 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IDish>[
 
     {
       accessorKey: 'description',
-      header: 'Mô tả',
+      header: translateDishKey('description'),
       cell: ({ row }) => <div>{row.original.description}</div>
     },
     {
       accessorKey: 'status',
-      header: 'Trạng thái',
+      header: translateDishKey('status'),
       cell: ({ row }) => {
         const status = row.original.status
         return (

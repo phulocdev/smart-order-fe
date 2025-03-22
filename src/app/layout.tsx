@@ -34,8 +34,8 @@ export default async function RootLayout({
       <body
         className={`${inter.className} ${inter.variable} ${roboto_mono.variable} no-scrollbar no-scrollbar::-webkit-scrollbar`}
       >
-        <Providers>
-          <SocketProvider session={session}>
+        <Providers session={session}>
+          <SocketProvider>
             <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
               <main>{children}</main>
             </ThemeProvider>

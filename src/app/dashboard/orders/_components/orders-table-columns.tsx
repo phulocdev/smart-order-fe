@@ -186,7 +186,6 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
         </>
       )
     },
-
     { accessorKey: 'tableNumber', header: '', cell: '', size: 0, enableHiding: false },
     {
       id: 'actions',

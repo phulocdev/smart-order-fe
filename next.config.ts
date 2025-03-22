@@ -9,7 +9,8 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'ik.imagekit.io'
+        hostname: 'res.cloudinary.com',
+        pathname: '/degyrxhon/image/upload/**'
       }
     ]
   }

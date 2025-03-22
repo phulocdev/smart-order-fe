@@ -6,7 +6,8 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 
 export default async function Page() {
   const session = await getAuthSession()
-  const res = await dishApiRequest.getList()
+  const accessToken = session?.accessToken ?? ''
+  const res = await dishApiRequest.getList(accessToken)
   const dishList = res.data
   return (
     <div className='mt-12'>

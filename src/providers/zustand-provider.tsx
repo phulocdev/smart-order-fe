@@ -1,6 +1,5 @@
 'use client'
 
-import { IAccount, ICustomer } from '@/types/auth.type'
 import { IDish } from '@/types/backend.type'
 import { create } from 'zustand'
 
