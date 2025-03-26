@@ -1,5 +1,5 @@
 import { DishStatus, OrderStatus, TableStatus } from '@/constants/enum'
-import { ICustomer } from '@/types/auth.type'
+import { IAccount, ICustomer } from '@/types/auth.type'
 
 export interface IDish {
   _id: string
@@ -41,4 +41,24 @@ export interface IStatisticOrders {
   tableNumber: number
   orders: IOrder[]
   statusCounts: Record<OrderStatus, number>
+}
+
+interface IOrderItem {
+  _id: string
+  dish: IDish | null
+  quantity: number
+  price: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface IBill {
+  billCode: string
+  customerCode: string
+  totalPrice: number
+  orderItems: IOrderItem[]
+  tableNumer: number
+  account: Omit<IAccount, 'avatarUrl'> | null
+  createdAt: string
+  updatedAt: string
 }

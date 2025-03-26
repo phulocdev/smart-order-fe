@@ -143,3 +143,21 @@ html {
     --chart-5: 340 75% 55%;
   }
 }
+
+@layer utilities {
+  .custom-scrollbar {
+    @apply overflow-y-auto;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply h-[3px] w-1;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-gray-300 dark:bg-neutral-500;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply rounded-full bg-gray-100 dark:bg-neutral-700;
+  }
+}

@@ -1,5 +1,5 @@
 import dishApiRequest from '@/apiRequests/dish.api'
-import { DishesTable } from '@/app/dashboard/dishes/dish-table'
+import { DishesTable } from '@/app/dashboard/dishes/dishes-table'
 import { getAuthSession } from '@/auth'
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton'
 import React from 'react'

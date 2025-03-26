@@ -7,7 +7,8 @@ const envServerConfigSchema = z.object({
   GOOGLE_CLIENT_ID: z.string({ message: 'Hãy bổ sung GOOGLE_CLIENT_ID trong file .env' }),
   GOOGLE_CLIENT_SECRET: z.string({ message: 'Hãy bổ sung GOOGLE_CLIENT_SECRET trong file .env' }),
   NEXTAUTH_SECRET: z.string({ message: 'Hãy bổ sung NEXTAUTH_SECRET trong file .env' }),
-  NEXTAUTH_URL: z.string({ message: 'Hãy bổ sung NEXTAUTH_URL trong file .env' })
+  NEXTAUTH_URL: z.string({ message: 'Hãy bổ sung NEXTAUTH_URL trong file .env' }),
+  LOGIN_PUBLIC_KEY: z.string({ message: 'Hãy bổ sung LOGIN_PUBLIC_KEY trong file .env' })
 })
 
 const { success, data, error } = envServerConfigSchema.safeParse({
@@ -16,7 +17,8 @@ const { success, data, error } = envServerConfigSchema.safeParse({
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-  NEXTAUTH_URL: process.env.NEXTAUTH_URL
+  NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+  LOGIN_PUBLIC_KEY: process.env.LOGIN_PUBLIC_KEY
 })
 
 if (!success) {

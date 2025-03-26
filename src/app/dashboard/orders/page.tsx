@@ -47,10 +47,10 @@ export default async function IndexPage(props: IndexPageProps) {
           align='start'
           shallow={false}
           placeholder='Chọn ngày'
-          // defaultDateRange={{
-          //   from: startOfWeek(startOfToday(), { locale: vi }),
-          //   to: endOfWeek(startOfToday(), { locale: vi })
-          // }}
+          defaultDateRange={{
+            from: search.from,
+            to: search.to
+          }}
         />
       </React.Suspense>
       <React.Suspense

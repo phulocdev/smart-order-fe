@@ -94,7 +94,6 @@ export default async function DashboardPage(props: Props) {
       {/* Charts */}
       <section className='grid grid-cols-2'>
         <div className='col-span-1'>
-          {' '}
           <FirstChart />
         </div>
       </section>

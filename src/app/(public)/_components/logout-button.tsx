@@ -29,13 +29,13 @@ export default function LogoutButton({ session }: { session: Session }) {
         // Không dùng redirect: false ở đây, vì nó sẽ k  reload lại page -> vẫn ở page đang thực hiện logout
         // Ko dung promise.all boi vi trong th AT het hạn thi login khong thanh cong
         // await Promise.all([signOut({ callbackUrl: '/login' }), authApiRequest.logout(refreshToken)])
-        await authApiRequest.logout(refreshToken)
         await signOut({ callbackUrl: '/login' })
+        await authApiRequest.logout(refreshToken)
       } else {
         // await Promise.all([signOut({ callbackUrl: '/' }), customerApiRequest.logout(refreshToken)])
-        await customerApiRequest.logout(refreshToken)
         await signOut({ callbackUrl: '/' })
         clearOrderInCart()
+        await customerApiRequest.logout(refreshToken)
       }
     } catch (error) {
       handleApiError({ error })

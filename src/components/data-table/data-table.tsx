@@ -5,6 +5,7 @@ import { DataTablePagination } from '@/components/data-table/data-table-paginati
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { getCommonPinningStyles } from '@/lib/data-table'
 import { cn } from '@/lib/utils'
+import { DataTableRowAction } from '@/types/data-table.type'
 
 interface DataTableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -20,9 +21,21 @@ interface DataTableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
    * @example floatingBar={<TasksTableFloatingBar table={table} />}
    */
   floatingBar?: React.ReactNode | null
+
+  actionType?: 'update' | 'delete' | 'view'
+
+  setRowAction?: React.Dispatch<React.SetStateAction<DataTableRowAction<TData> | null>>
 }
 
-export function DataTable<TData>({ table, floatingBar = null, children, className, ...props }: DataTableProps<TData>) {
+export function DataTable<TData>({
+  table,
+  floatingBar = null,
+  children,
+  className,
+  actionType,
+  setRowAction,
+  ...props
+}: DataTableProps<TData>) {
   return (
     <div className={cn('w-full space-y-2.5 overflow-auto', className)} {...props}>
       {children}
@@ -50,7 +63,15 @@ export function DataTable<TData>({ table, floatingBar = null, children, classNam
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                <TableRow
+                  key={row.id}
+                  className={cn({ 'cursor-pointer': setRowAction && actionType })}
+                  data-state={row.getIsSelected() && 'selected'}
+                  onClick={() => {
+                    if (!setRowAction || !actionType) return
+                    setRowAction({ row, type: actionType })
+                  }}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}

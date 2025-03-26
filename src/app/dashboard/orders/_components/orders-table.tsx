@@ -79,8 +79,7 @@ export function OrdersTable({ promises }: OrdersTableProps) {
       sorting: [{ id: 'createdAt', desc: true }],
       columnPinning: { right: ['actions'] },
       columnVisibility: {
-        createdAt: false
-        // updatedAt: false
+        updatedAt: false
       }
     },
     getRowId: (originalRow) => originalRow._id,
@@ -93,7 +92,8 @@ export function OrdersTable({ promises }: OrdersTableProps) {
 
     // Trong trường hợp JWT Expired thì socket chưa connect đến server đâu nên ở đây sẽ re-connect lại
     if (!socket.connected) {
-      socket.connect()
+      // socket.connect()
+      router.refresh()
     }
 
     const onNewOrders = ({ tableNumber, quantity }: { tableNumber: number; quantity: number }) => {

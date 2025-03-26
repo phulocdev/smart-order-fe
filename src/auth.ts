@@ -9,6 +9,7 @@ import { type JWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GitHubProvider from 'next-auth/providers/github'
 import GoogleProvider from 'next-auth/providers/google'
+import * as forge from 'node-forge'
 
 const authOptions: AuthOptions = {
   secret: envServerConfig.NEXTAUTH_SECRET,
@@ -30,9 +31,15 @@ const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         if (credentials?.email && credentials.password) {
+          const publicKey = envServerConfig.LOGIN_PUBLIC_KEY
+          const rsa = forge.pki.publicKeyFromPem(publicKey)
+          const encryptedBytes = rsa.encrypt(credentials.password, 'RSA-OAEP')
+          const encryptedPassword = Buffer.from(encryptedBytes, 'binary').toString('base64')
+
+          console.log({ encryptedPassword })
           const body = {
             email: credentials.email,
-            password: credentials.password
+            password: encryptedPassword
           }
           try {
             const res = await authApiRequest.login(body)

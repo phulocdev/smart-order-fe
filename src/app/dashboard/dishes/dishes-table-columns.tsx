@@ -1,20 +1,20 @@
-import * as React from 'react'
-import type { DataTableRowAction } from '@/types/data-table.type'
-import type { ColumnDef } from '@tanstack/react-table'
-import { SquarePen, Trash } from 'lucide-react'
+import dishApiRequest from '@/apiRequests/dish.api'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { formatNumberToVnCurrency, getVietnameseDishStatus, removeVietNamAccent, translateDishKey } from '@/lib/utils'
-import { DishStatus } from '@/constants/enum'
-import { IDish } from '@/types/backend.type'
-import { format } from 'date-fns'
-import Image from 'next/image'
 import { Switch } from '@/components/ui/switch'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
-import dishApiRequest from '@/apiRequests/dish.api'
+import { DishStatus } from '@/constants/enum'
 import { getErrorMessage } from '@/lib/handle-error'
+import { formatNumberToVnCurrency, getVietnameseDishStatus, removeVietNamAccent, translateDishKey } from '@/lib/utils'
+import { IDish } from '@/types/backend.type'
+import type { DataTableRowAction } from '@/types/data-table.type'
+import { ColumnDef } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import { SquarePen, Trash } from 'lucide-react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import * as React from 'react'
+import { toast } from 'sonner'
 
 interface GetColumnsProps {
   setRowAction: React.Dispatch<React.SetStateAction<DataTableRowAction<IDish> | null>>
@@ -50,7 +50,6 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IDish>[
       header: ({ column }) => <DataTableColumnHeader column={column} title={translateDishKey('price')} />,
       cell: ({ row }) => <div>{formatNumberToVnCurrency(row.original.price)}</div>
     },
-
     {
       accessorKey: 'description',
       header: translateDishKey('description'),

@@ -31,6 +31,9 @@ const orderApiRequest = {
   },
   removeBulk: ({ ids }: { ids: string[] }) => {
     return http.delete('/orders/bulk-delete', {}, ids)
+  },
+  checkout: (customerId: string) => {
+    return http.get<ApiResponse<[]>>(`/orders/checkout/${customerId}`)
   }
 }
 

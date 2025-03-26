@@ -18,15 +18,13 @@ export enum TableStatus {
 }
 
 export enum OrderStatus {
-  Pending = 'Pending', // Đơn hàng mới tạo, chờ nhân viên xác nhận
-  Confirmed = 'Confirmed', // Nhân viên đã xác nhận đơn
-  Preparing = 'Preparing', // Bếp đang chuẩn bị món ăn
-  ReadyToServe = 'ReadyToServe', // Món ăn đã sẵn sàng để phục vụ
-  Served = 'Served', // Đã mang món ra bàn cho khách
+  Pending = 'Pending',
+  Confirmed = 'Confirmed',
   Cooked = 'Cooked',
-  Paid = 'Paid', // Khách đã thanh toán
-  Canceled = 'Canceled', // Đơn hàng bị hủy (do khách hoặc nhà hàng)
-  Rejected = 'Rejected' // Đơn hàng bị từ chối (hết món hoặc lý do khác)
+  Served = 'Served',
+  Paid = 'Paid',
+  Canceled = 'Canceled',
+  Rejected = 'Rejected'
 }
 
 export enum SocialProvider {

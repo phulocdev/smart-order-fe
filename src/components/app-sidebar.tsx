@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
-import { ChartArea, ShoppingCart, Soup } from 'lucide-react'
+import { ChartArea, NotepadText, ShoppingCart, Soup } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -29,6 +29,11 @@ const items = [
     title: 'Đơn hàng',
     url: '/dashboard/orders',
     icon: ShoppingCart
+  },
+  {
+    title: 'Hóa đơn',
+    url: '/dashboard/invoices',
+    icon: NotepadText
   }
 ]
 

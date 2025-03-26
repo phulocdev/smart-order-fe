@@ -1,10 +1,21 @@
 import { variants } from '@/components/ui/badge'
 import { DishStatus, OrderStatus, TableStatus } from '@/constants/enum'
 import { EntityError } from '@/lib/errors'
-import { IDish, IOrder } from '@/types/backend.type'
+import { IBill, IDish, IOrder } from '@/types/backend.type'
 import { clsx, type ClassValue } from 'clsx'
 import { getDay } from 'date-fns'
-import { Banknote, CheckCircle, CookingPot, HandPlatter, Loader, Users } from 'lucide-react'
+import {
+  Ban,
+  Banknote,
+  CheckCircle,
+  CheckCircle2,
+  CircleCheck,
+  CookingPot,
+  HandPlatter,
+  Loader,
+  Users,
+  XCircle
+} from 'lucide-react'
 import { UseFormSetError } from 'react-hook-form'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -50,12 +61,8 @@ export const getVietnameseOrderStatus = (status: OrderStatus) => {
       return 'Chờ xác nhận'
     case OrderStatus.Confirmed:
       return 'Đã xác nhận'
-    case OrderStatus.Preparing:
-      return 'Đang chuẩn bị'
     case OrderStatus.Cooked:
       return 'Đã nấu'
-    case OrderStatus.ReadyToServe:
-      return 'Sẵn sàng phục vụ'
     case OrderStatus.Served:
       return 'Đã phục vụ'
     case OrderStatus.Paid:
@@ -132,10 +139,6 @@ export const getBadgeVariantByOrderStatus = (status: OrderStatus): keyof typeof 
       return 'yellow'
     case OrderStatus.Confirmed:
       return 'blue'
-    case OrderStatus.Preparing:
-      return 'orange'
-    case OrderStatus.ReadyToServe:
-      return 'purple'
     case OrderStatus.Served:
       return 'blue'
     case OrderStatus.Rejected:
@@ -195,6 +198,21 @@ export const dishKeyTranslations: Record<keyof IDish, string> = {
   updatedAt: 'Ngày cập nhật'
 }
 
+export const billKeyTranslations: Record<keyof IBill, string> = {
+  billCode: 'Mã phiếu',
+  totalPrice: 'Tổng tiền',
+  customerCode: 'Mã khách hàng',
+  tableNumer: 'Số bàn',
+  account: 'Người tạo',
+  orderItems: 'Chi tiết đơn hàng',
+  createdAt: 'Ngày tạo',
+  updatedAt: 'Ngày cập nhật'
+}
+
+export function translateBillKey(key: keyof IBill): string {
+  return billKeyTranslations[key]
+}
+
 export function translateDishKey(key: keyof IDish): string {
   return dishKeyTranslations[key]
 }
@@ -214,12 +232,18 @@ export function getIconOfOrderStatus(status: OrderStatus) {
   switch (status) {
     case OrderStatus.Pending:
       return Loader
+    case OrderStatus.Confirmed:
+      return CheckCircle2
     case OrderStatus.Cooked:
       return CookingPot
     case OrderStatus.Served:
       return HandPlatter
     case OrderStatus.Paid:
-      return Banknote
+      return CircleCheck
+    case OrderStatus.Canceled:
+      return XCircle
+    case OrderStatus.Rejected:
+      return Ban
     default:
       return null
   }

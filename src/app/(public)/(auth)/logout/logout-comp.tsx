@@ -13,16 +13,11 @@ import { useRouter } from 'next/navigation'
 export default function LogoutComponent({ session }: { session: Session | null }) {
   const router = useRouter()
   const clearOrderInCart = useAppStore((state) => state.clearOrderInCart)
-  const refreshToken = session?.refreshToken ?? ''
 
   React.useEffect(() => {
     async function handleLogout() {
       try {
-        if (session?.account) {
-          await Promise.all([signOut({ redirect: false })])
-        } else {
-          await Promise.all([signOut({ redirect: false })])
-        }
+        await signOut({ redirect: false })
         if (session?.customer) clearOrderInCart()
       } catch (error) {
         handleApiError({ error })
@@ -31,6 +26,6 @@ export default function LogoutComponent({ session }: { session: Session | null }
       }
     }
     handleLogout()
-  }, [clearOrderInCart, refreshToken, router, session?.account, session?.customer])
+  }, [clearOrderInCart, router, session?.customer])
   return null
 }

@@ -62,8 +62,8 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
       header: translateOrderKey('customer'),
       cell: ({ row }) => (
         <div>
-          <div className='text-sm font-medium'>{row.original.customer?.code}</div>
-          <div className='text-xs text-gray-500'>Bàn số: {row.original.tableNumber}</div>
+          <div className='text-sm font-medium'>Bàn số: {row.original.tableNumber}</div>
+          <div className='text-[13px] text-gray-500'>{row.original.customer?.code}</div>
         </div>
       )
     },
@@ -95,16 +95,16 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
             </div>
             <div className='grow text-sm'>
               <h4 className='line-clamp-2 text-ellipsis text-[15px] font-medium'>{dish?.title ?? ''}</h4>
-              <div className='line-clamp-2 text-ellipsis'>
-                Ghi chú: {row.original.note ? row.original.note : 'Trống...'}
-              </div>
-              <Badge className='font-medium italic' variant={'green'}>
-                x{row.original.quantity}
-              </Badge>
+              <span className='italic'>x{row.original.quantity}</span>
             </div>
           </div>
         )
       }
+    },
+    {
+      accessorKey: 'note',
+      header: 'Ghi chú',
+      cell: ({ row }) => <div className='line-clamp-2'>{row.original.note ? row.original.note : '(Trống)'}</div>
     },
     {
       accessorKey: 'status',
@@ -114,45 +114,54 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
         const [isUpdatePending, startUpdateTransition] = React.useTransition()
         const router = useRouter()
         return (
-          <Select
-            disabled={isUpdatePending}
-            onValueChange={(value) => {
-              startUpdateTransition(() => {
-                toast.promise(
-                  orderApiRequest
-                    .update({
-                      id: row.original._id,
-                      body: { status: value as OrderStatus }
-                    })
-                    .then(() => router.refresh()),
-                  {
-                    loading: 'Đang cập nhật...',
-                    success: 'Cập nhật trạng thái đơn hàng thành công',
-                    error: (err) => getErrorMessage(err)
-                  }
-                )
-              })
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={getVietnameseOrderStatus(status)} />
-            </SelectTrigger>
-            <SelectContent>
-              {getVietnameseOrderStatusList().map(({ label, value }) => (
-                <SelectItem value={value} key={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className='relative'>
+            {status === OrderStatus.Paid && (
+              <div className='absolute -left-2 -top-1 aspect-square w-5'>
+                <Image
+                  alt='checkIcon'
+                  src={'/check-icon.svg'}
+                  width={20}
+                  height={20}
+                  className='aspect-square w-5 object-cover'
+                />
+              </div>
+            )}
+            <Select
+              disabled={isUpdatePending}
+              onValueChange={(value) => {
+                startUpdateTransition(() => {
+                  toast.promise(
+                    orderApiRequest
+                      .update({
+                        id: row.original._id,
+                        body: { status: value as OrderStatus }
+                      })
+                      .then(() => router.refresh()),
+                    {
+                      loading: 'Đang cập nhật...',
+                      success: 'Cập nhật trạng thái đơn hàng thành công',
+                      error: (err) => getErrorMessage(err)
+                    }
+                  )
+                })
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={getVietnameseOrderStatus(status)} />
+              </SelectTrigger>
+              <SelectContent>
+                {getVietnameseOrderStatusList().map(({ label, value }) => {
+                  if (value === OrderStatus.Paid) return <div key={value}></div>
+                  return (
+                    <SelectItem value={value} key={value}>
+                      {label}
+                    </SelectItem>
+                  )
+                })}
+              </SelectContent>
+            </Select>
+          </div>
         )
-      }
-    },
-    {
-      accessorKey: 'price',
-      header: ({ column }) => <DataTableColumnHeader column={column} title={translateOrderKey('price')} />,
-      cell: ({ row }) => {
-        return <div className='pl-7'>{formatNumberToVnCurrency(row.original.price)}</div>
       }
     },
     {

@@ -49,7 +49,7 @@ const request = async <Response>(
 
   const res = await fetch(fullUrl, {
     method,
-    headers: { ...baseHeaders, ...options?.headers },
+    headers: { ...baseHeaders, 'x-api-key': envConfig.NEXT_PUBLIC_API_KEY, ...options?.headers },
     body
   })
 
