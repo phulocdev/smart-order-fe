@@ -4,16 +4,16 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatNumberToVnCurrency, translateBillKey } from '@/lib/utils'
 import { IBill } from '@/types/backend.type'
+import { DataTableRowAction } from '@/types/data-table.type'
 import type { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { Download } from 'lucide-react'
 
-// interface GetColumnsProps {
-//   setRowAction: React.Dispatch<React.SetStateAction<DataTableRowAction<IInvoice> | null>>
-// }
+interface GetColumnsProps {
+  setRowAction: React.Dispatch<React.SetStateAction<DataTableRowAction<IBill> | null>>
+}
 
-export function getColumns(): ColumnDef<IBill>[] {
-  // { setRowAction }: GetColumnsProps
+export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IBill>[] {
   return [
     {
       accessorKey: 'billCode',
@@ -85,6 +85,9 @@ export function getColumns(): ColumnDef<IBill>[] {
               type='button'
               variant={'ghost'}
               onClick={() => {
+                setTimeout(() => {
+                  setRowAction(null)
+                }, 0.1)
                 exportBillToPDF(row.original)
               }}
             >

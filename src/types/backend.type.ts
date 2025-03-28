@@ -62,3 +62,10 @@ export interface IBill {
   createdAt: string
   updatedAt: string
 }
+
+export interface IDashboardStatistics {
+  totalRevenue: number
+  countCustomers: number
+  countOrders: number
+  revenueChartData: { date: string; totalPrice: number }[]
+}

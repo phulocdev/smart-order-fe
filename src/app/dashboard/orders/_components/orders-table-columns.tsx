@@ -16,7 +16,7 @@ import {
 
 import orderApiRequest from '@/apiRequests/order.api'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { OrderStatus } from '@/constants/enum'
+import { OrderStatus, Role } from '@/constants/enum'
 import { getErrorMessage } from '@/lib/handle-error'
 import { IOrder } from '@/types/backend.type'
 import { format } from 'date-fns'
@@ -26,9 +26,10 @@ import { toast } from 'sonner'
 
 interface GetColumnsProps {
   setRowAction: React.Dispatch<React.SetStateAction<DataTableRowAction<IOrder> | null>>
+  role?: Role
 }
 
-export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>[] {
+export function getColumns({ setRowAction, role }: GetColumnsProps): ColumnDef<IOrder>[] {
   return [
     {
       id: 'select',
@@ -166,10 +167,11 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
     },
     {
       accessorKey: 'totalPrice',
-      header: ({ column }) => <DataTableColumnHeader column={column} title={translateOrderKey('totalPrice')} />,
-      cell: ({ row }) => {
-        return <div className='pl-7'>{formatNumberToVnCurrency(row.original.totalPrice)}</div>
-      }
+      header: ({ column }) =>
+        role !== Role.Chef && <DataTableColumnHeader column={column} title={translateOrderKey('totalPrice')} />,
+      cell: ({ row }) =>
+        role !== Role.Chef && <div className='pl-7'>{formatNumberToVnCurrency(row.original.totalPrice)}</div>,
+      size: role === Role.Chef ? 0 : undefined
     },
     {
       accessorKey: 'createdAt',
@@ -206,12 +208,14 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
     { accessorKey: 'tableNumber', header: '', cell: '', size: 0, enableHiding: false },
     {
       id: 'actions',
-      cell: function Cell({ row }) {
-        // const [isUpdatePending, startUpdateTransition] = React.useTransition()
-        // const router = useRouter()
-        return (
-          <div className='flex items-center gap-x-2'>
-            {/* <DropdownMenu>
+      cell:
+        role !== Role.Chef
+          ? function Cell({ row }) {
+              // const [isUpdatePending, startUpdateTransition] = React.useTransition()
+              // const router = useRouter()
+              return (
+                <div className='flex items-center gap-x-2'>
+                  {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button aria-label='Open menu' variant='ghost' className='flex size-8 p-0 data-[state=open]:bg-muted'>
                   <PenLine className='h-3 w-3' aria-hidden='true' />
@@ -251,20 +255,21 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IOrder>
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu> */}
-            <Button
-              size={'icon'}
-              type='button'
-              variant={'ghost'}
-              onClick={() => {
-                setRowAction({ row, type: 'delete' })
-              }}
-            >
-              <Trash />
-            </Button>
-          </div>
-        )
-      },
-      size: 80
+                  <Button
+                    size={'icon'}
+                    type='button'
+                    variant={'ghost'}
+                    onClick={() => {
+                      setRowAction({ row, type: 'delete' })
+                    }}
+                  >
+                    <Trash />
+                  </Button>
+                </div>
+              )
+            }
+          : () => <div></div>,
+      size: role !== Role.Chef ? 80 : 0
     }
   ]
 }

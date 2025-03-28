@@ -2,12 +2,19 @@ import dishApiRequest from '@/apiRequests/dish.api'
 import { DishesTable } from '@/app/dashboard/dishes/dishes-table'
 import { getAuthSession } from '@/auth'
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton'
+import { Role } from '@/constants/enum'
+import { redirect } from 'next/navigation'
 import React from 'react'
 
 export default async function Page() {
   const session = await getAuthSession()
   const accessToken = session?.accessToken ?? ''
   const promise = dishApiRequest.getList(accessToken)
+
+  if (session?.account?.role === Role.Waiter) {
+    redirect('/dashboard/orders')
+  }
+
   return (
     <div className='p-8'>
       <div className='mb-3 flex items-start justify-between'>

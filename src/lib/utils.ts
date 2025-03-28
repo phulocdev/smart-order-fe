@@ -55,6 +55,9 @@ export const formatNumberToVnCurrency = (number: number) => {
   return number.toLocaleString('it-IT') + 'đ'
 }
 
+export function formatNumberWithCommas(number: number): string {
+  return number.toLocaleString('en-US')
+}
 export const getVietnameseOrderStatus = (status: OrderStatus) => {
   switch (status) {
     case OrderStatus.Pending:

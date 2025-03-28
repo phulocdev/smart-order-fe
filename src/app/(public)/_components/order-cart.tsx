@@ -15,7 +15,7 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet'
 import { useCreateOrderByCustomerMutation } from '@/hooks/api/useCustomer'
-import { formatNumberToVnCurrency, handleApiError } from '@/lib/utils'
+import { cn, formatNumberToVnCurrency, handleApiError } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'
 import { OrderItemDto } from '@/types/backend.dto'
 import { ShoppingCart, Trash } from 'lucide-react'
@@ -23,12 +23,14 @@ import { Session } from 'next-auth'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
+const SHEET_FOOTER_HEIGHT = 220
+
 export default function OrderCart({ session }: { session: Session | null }) {
   const orderItems = useAppStore((state) => state.orderItems)
   const updateOrderItem = useAppStore((state) => state.updateOrderItem)
   const removeOrderItem = useAppStore((state) => state.removeOrderItem)
   const clearOrderInCart = useAppStore((state) => state.clearOrderInCart)
-  const totalPrice = orderItems.reduce((result, order) => (result += order.price * order.quantity), 0)
+  const totalPrice = orderItems.reduce((result, order) => result + order.price * order.quantity, 0)
 
   const router = useRouter()
   const createOrderMutation = useCreateOrderByCustomerMutation()
@@ -68,12 +70,12 @@ export default function OrderCart({ session }: { session: Session | null }) {
           </div>
         </div>
       </SheetTrigger>
-      <SheetContent className='sm:w-[400px] sm:max-w-[540px] xl:w-[450px] xl:max-w-none' side={'right'}>
+      <SheetContent className='w-[80%] md:w-[40%] xl:w-[450px] xl:max-w-none' side={'right'}>
         <SheetHeader>
           <SheetTitle>Món ăn đã chọn - {<span>Bàn số {session.customer.tableNumber}</span>}</SheetTitle>
         </SheetHeader>
-        <ScrollArea className='mt-5 flex flex-col gap-5'>
-          {orderItems.length === 0 && <div className='bg-red-400'>Giỏ hàng trống...</div>}
+        <ScrollArea className={`mt-5 flex h-[calc(100%-${SHEET_FOOTER_HEIGHT}px)] flex-col gap-5`}>
+          {orderItems.length === 0 && <div className={`py-40 text-center`}>Bạn chưa chọn món!</div>}
           {orderItems.length > 0 &&
             orderItems.map((order, index) => (
               <div key={index} className='grid grid-cols-5 gap-x-2 px-[18px] py-1 first:pb-3 first:pt-5'>
@@ -115,7 +117,7 @@ export default function OrderCart({ session }: { session: Session | null }) {
             ))}
         </ScrollArea>
         <div className='absolute bottom-3 left-0 right-0 px-3'>
-          <div className='sh flex items-center justify-between border-t py-7'>
+          <div className='flex items-center justify-between border-t py-7'>
             <div className='flex items-center gap-x-2'>
               <span className='font-semibold uppercase'>Tổng</span>
               <Badge>{orderItems.length} món</Badge>

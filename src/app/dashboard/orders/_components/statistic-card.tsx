@@ -40,80 +40,86 @@ export default function StatisticCard({ statistic }: { statistic: IStatisticOrde
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <Link href={`/dashboard/orders/create?tableNumber=${tableNumber}`}>
-          <Card key={statistic.tableNumber} className='h-full shrink-0 text-sm'>
-            <CardContent className='p-0'>
-              <div className='flex h-full items-center gap-x-2 px-4 py-3'>
-                <div className='shrink-0 font-medium'>
-                  <div className='flex items-center gap-x-1'>
-                    <Table size={20} />
-                    <div className='text-[17px]'>{tableNumber}</div>
-                  </div>
+        {/* Nếu không có đơn hàng thì đường link mới naviagte */}
+        <Card
+          onClick={() => {
+            if (orderList.length === 0) return
+            router.push(`/dashboard/orders/create?tableNumber=${tableNumber}`)
+          }}
+          key={statistic.tableNumber}
+          className={cn('h-full shrink-0 text-sm', { 'cursor-pointer': orderList.length === 0 })}
+        >
+          <CardContent className='p-0'>
+            <div className='flex h-full items-center gap-x-2 px-4 py-3'>
+              <div className='shrink-0 font-medium'>
+                <div className='flex items-center gap-x-1'>
+                  <Table size={20} />
+                  <div className='text-[17px]'>{tableNumber}</div>
                 </div>
-                <Separator orientation='vertical' className='mx-1 h-20 w-[1.5px] shrink-0' />
-                {orderList.length === 0 && (
-                  <div className='flex h-[92px] items-center pt-3 text-center text-[15px] capitalize'>Ready</div>
-                )}
-                {orderList.length > 0 && (
-                  <div className='flex flex-col gap-y-1'>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <div className='flex items-center space-x-2'>
-                            <Loader size={14} />
-                            <span>{statusCounts.Pending}</span>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{getVietnameseOrderStatus(OrderStatus.Pending)}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <div className='flex items-center space-x-2'>
-                            <CookingPot size={14} />
-                            <span>{statusCounts.Cooked}</span>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{getVietnameseOrderStatus(OrderStatus.Cooked)}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <div className='flex items-center space-x-2'>
-                            <HandPlatter size={14} />
-                            <span>{statusCounts.Served}</span>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{getVietnameseOrderStatus(OrderStatus.Served)}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <div className='flex items-center space-x-2'>
-                            <Banknote size={14} />
-                            <span>{statusCounts.Paid}</span>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{getVietnameseOrderStatus(OrderStatus.Paid)}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                )}
               </div>
-            </CardContent>
-          </Card>
-        </Link>
+              <Separator orientation='vertical' className='mx-1 h-20 w-[1.5px] shrink-0' />
+              {orderList.length === 0 && (
+                <div className='flex h-[92px] items-center pt-3 text-center text-[15px] capitalize'>Ready</div>
+              )}
+              {orderList.length > 0 && (
+                <div className='flex flex-col gap-y-1'>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div className='flex items-center space-x-2'>
+                          <Loader size={14} />
+                          <span>{statusCounts.Pending}</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{getVietnameseOrderStatus(OrderStatus.Pending)}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div className='flex items-center space-x-2'>
+                          <CookingPot size={14} />
+                          <span>{statusCounts.Cooked}</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{getVietnameseOrderStatus(OrderStatus.Cooked)}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div className='flex items-center space-x-2'>
+                          <HandPlatter size={14} />
+                          <span>{statusCounts.Served}</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{getVietnameseOrderStatus(OrderStatus.Served)}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div className='flex items-center space-x-2'>
+                          <Banknote size={14} />
+                          <span>{statusCounts.Paid}</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{getVietnameseOrderStatus(OrderStatus.Paid)}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </HoverCardTrigger>
       {orderList.length > 0 && (
         <HoverCardContent className='w-fit text-sm'>

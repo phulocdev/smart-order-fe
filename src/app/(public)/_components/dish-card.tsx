@@ -27,7 +27,7 @@ export default function DishCard({ dish, session }: Props) {
     setQuantity(newQuantity)
   }
 
-  const onOrderNoteSubmit = (noteContent: string) => {
+  const handleNoteSubmit = (noteContent: string) => {
     setNote(noteContent)
     updateOrderItem(dish._id, { note: noteContent })
   }
@@ -62,10 +62,10 @@ export default function DishCard({ dish, session }: Props) {
         />
       </div>
       <div className='col-span-2'>
-        <div className='px-3 py-1'>
+        <div className='px-3 py-1 md:py-4 lg:py-3 xl:py-1'>
           {/* Note Butotn */}
           <div className='text-right'>
-            <OrderNote initialValue={note} onSubmit={onOrderNoteSubmit} dishTitle={dish.title} />
+            <OrderNote initialValue={note} onSubmit={handleNoteSubmit} dishTitle={dish.title} />
           </div>
 
           {/* Dish Info */}
@@ -76,10 +76,10 @@ export default function DishCard({ dish, session }: Props) {
           </div>
           {/* Quantity Select */}
           <div className='mt-4'>
-            <QuantitySelect initialValue={quantity} onChange={onQuantityChange} />
+            <QuantitySelect initialValue={quantity} onChange={onQuantityChange} max={50} />
           </div>
           {/* Order Button */}
-          <Button onClick={handleSelectDish} className='mt-2 w-full'>
+          <Button onClick={handleSelectDish} className='mt-3 w-full'>
             Đặt món
           </Button>
         </div>

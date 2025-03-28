@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
-import { useMediaQuery } from '@/hooks/use-media-query'
 
 export default async function DashboardLayout({
   children
@@ -20,9 +19,10 @@ export default async function DashboardLayout({
 }>) {
   const session = await getAuthSession()
   const account = session?.account
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar role={account?.role} />
       <section className='grow'>
         <div className='flex justify-between gap-x-3 border-b py-3 pr-20 shadow dark:border-b-gray-500'>
           <SidebarTrigger />

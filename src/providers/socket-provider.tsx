@@ -28,7 +28,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     )
       return
 
-    // Trong trường hợp AT hết hạn thì vẫn tạo ra 1 instance có url connect đến websocket server - Chỉ là chưa connect mà thôi
+    // Trong trường hợp AT hết hạn thì vẫn tạo ra 1 instance có url connect thành công đến websocket server - Chỉ là chưa connect mà thôi
     const socketInstance = io(`${envConfig.NEXT_PUBLIC_WEBSOCKET_URL}`, {
       autoConnect: true,
       transports: ['websocket', 'polling'],

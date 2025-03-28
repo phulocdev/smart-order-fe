@@ -32,7 +32,7 @@ export function BillsTable({ promise }: BillsTableProps) {
 
   const [rowAction, setRowAction] = React.useState<DataTableRowAction<IBill> | null>(null)
   const { data } = React.use(promise)
-  const columns = React.useMemo(() => getColumns(), [])
+  const columns = React.useMemo(() => getColumns({ setRowAction }), [])
 
   const filterFields: DataTableFilterField<IBill>[] = [
     {

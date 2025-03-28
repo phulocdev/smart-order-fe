@@ -58,7 +58,7 @@ export default function LoginForm() {
   }
 
   function onLoginWithGoogle() {
-    // Login SSO với Social Provider thì mặc dù có redirect là false nhưng vẫn navigate sang trang /dashboard/orders được
+    // Login SSO với Social Provider thì mặc dù có redirect: false nhưng vẫn navigate sang trang /dashboard/orders được
     signIn('google', { callbackUrl: '/dashboard/orders', redirect: false })
   }
 

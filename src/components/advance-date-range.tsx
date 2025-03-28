@@ -88,7 +88,7 @@ export default function AdvanceDateRange({ from, to, className }: Props) {
 
   const handleConfirm = () => {
     if (!dateRange?.from || !dateRange?.to) {
-      toast('🙅 Vui lòng chọn ngày bắt đầu và ngày kết thúc')
+      toast('❌Vui lòng chọn ngày bắt đầu và ngày kết thúc')
       return
     }
     setDateParams({ from: format(dateRange.from, 'yyyy-M-dd'), to: format(dateRange.to, 'yyyy-M-dd') })

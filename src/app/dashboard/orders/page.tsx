@@ -12,6 +12,7 @@ import Link from 'next/link'
 import * as React from 'react'
 import { getAuthSession } from '@/auth'
 import { orderSearchParamsCache } from '@/app/dashboard/orders/_lib/validations'
+import { Role } from '@/constants/enum'
 
 interface IndexPageProps {
   searchParams: Promise<SearchParams>
@@ -28,31 +29,36 @@ export default async function IndexPage(props: IndexPageProps) {
     tableApiRequest.getList(accessToken),
     orderApiRequest.statisticsByTables(accessToken)
   ])
+
   return (
     // <Shell className='gap-2'>
     <div className='px-1 py-5 md:px-4 lg:px-6'>
       <div className='mb-3 flex items-start justify-between'>
         <h2 className='text-2xl font-medium'>Đơn hàng</h2>
-        <Link href={'/dashboard/orders/create'}>
-          <Button className='ml-auto'>
-            <CirclePlus />
-            <span>Tạo đơn hàng</span>
-          </Button>
-        </Link>
+        {session?.account?.role !== Role.Chef && (
+          <Link href={'/dashboard/orders/create'}>
+            <Button className='ml-auto'>
+              <CirclePlus />
+              <span>Tạo đơn hàng</span>
+            </Button>
+          </Link>
+        )}
       </div>
-      <React.Suspense fallback={<Skeleton className='h-7 w-52' />}>
-        <DateRangePicker
-          triggerSize='sm'
-          triggerClassName='w-56 sm:w-60'
-          align='start'
-          shallow={false}
-          placeholder='Chọn ngày'
-          defaultDateRange={{
-            from: search.from,
-            to: search.to
-          }}
-        />
-      </React.Suspense>
+      {session?.account?.role !== Role.Chef && (
+        <React.Suspense fallback={<Skeleton className='h-7 w-52' />}>
+          <DateRangePicker
+            triggerSize='sm'
+            triggerClassName='w-56 sm:w-60'
+            align='start'
+            shallow={false}
+            placeholder='Chọn ngày'
+            defaultDateRange={{
+              from: params.from ? new Date(params.from) : undefined,
+              to: params.to ? new Date(params.to) : undefined
+            }}
+          />
+        </React.Suspense>
+      )}
       <React.Suspense
         fallback={
           <DataTableSkeleton
@@ -64,7 +70,7 @@ export default async function IndexPage(props: IndexPageProps) {
           />
         }
       >
-        <OrdersTable promises={promises} />
+        <OrdersTable promises={promises} session={session} />
       </React.Suspense>
     </div>
     // </Shell>
