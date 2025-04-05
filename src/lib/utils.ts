@@ -52,7 +52,7 @@ export const handleApiError = ({
 }
 
 export const formatNumberToVnCurrency = (number: number) => {
-  return number.toLocaleString('it-IT') + 'đ'
+  return number.toLocaleString('it-IT') + '₫'
 }
 
 export function formatNumberWithCommas(number: number): string {
@@ -197,6 +197,7 @@ export const dishKeyTranslations: Record<keyof IDish, string> = {
   price: 'Giá',
   status: 'Trạng thái',
   imageUrl: 'Hình ảnh',
+  category: 'Danh mục',
   createdAt: 'Ngày tạo',
   updatedAt: 'Ngày cập nhật'
 }

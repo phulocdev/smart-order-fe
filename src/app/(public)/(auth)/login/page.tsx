@@ -12,7 +12,7 @@ export default async function Page() {
     <div className='max-w-[25rem] shrink-0 grow'>
       <Card>
         <CardHeader>
-          <CardTitle className='text-xl'>Đăng nhập</CardTitle>
+          <CardTitle className='text-xl font-semibold'>Đăng nhập</CardTitle>
           <CardDescription>Chỉ có nhân viên mới có thể đăng nhập vào hệ thống</CardDescription>
         </CardHeader>
         <CardContent>

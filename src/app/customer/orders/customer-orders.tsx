@@ -56,7 +56,7 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
   const { tableNumber, code } = orderList[0]
 
   return (
-    <Card className='mx-auto my-12 max-w-[750px]'>
+    <Card className='custom-scrollbar mx-auto my-12 max-h-[550px] max-w-[750px]'>
       <CardHeader>
         <CardTitle className='text-center text-2xl'>Món ăn đã gọi - Bàn số {tableNumber}</CardTitle>
         <div className='flex flex-row items-center justify-between pt-4 text-base'>

@@ -30,7 +30,7 @@ export function getColumns({ handleSelectOrder, selectedOrderItems }: GetColumns
             alt={row.original.title}
             src={row.original.imageUrl}
           />
-          <div className='line-clamp-2 font-normal'>{row.original.title}</div>
+          <div className='line-clamp-2'>{row.original.title}</div>
         </div>
       )
     },

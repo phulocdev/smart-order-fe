@@ -3,21 +3,19 @@ import Providers from '@/providers/providers'
 import { SocketProvider } from '@/providers/socket-provider'
 import { ThemeProvider } from '@/providers/theme-provider'
 import type { Metadata } from 'next'
-import { Inter, Roboto_Mono } from 'next/font/google'
+import { Oswald, Quicksand } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({
+const quicksand = Quicksand({
   subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter'
+  variable: '--font-quicksand'
 })
 
-const roboto_mono = Roboto_Mono({
+const oswald = Oswald({
   subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-roboto-mono'
+  variable: '--font-oswald',
+  weight: ['400', '500', '700']
 })
-
 export const metadata: Metadata = {
   title: 'Smart Order',
   description: 'Demo dự án giữa kì môn Kiến trúc hướng dịch vụ'
@@ -31,11 +29,13 @@ export default async function RootLayout({
   const session = await getAuthSession()
   return (
     <html lang='en' suppressHydrationWarning>
-      <body className={`${inter.className} ${inter.variable} ${roboto_mono.variable} custom-scrollbar`}>
+      <body
+        className={`${quicksand.className} ${quicksand.variable} ${oswald.variable} relative flex min-h-screen flex-col [&::-webkit-scrollbar]:w-0`}
+      >
         <Providers session={session}>
           <SocketProvider>
-            <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-              <main>{children}</main>
+            <ThemeProvider attribute='class' defaultTheme='light' enableSystem disableTransitionOnChange>
+              {children}
             </ThemeProvider>
           </SocketProvider>
         </Providers>

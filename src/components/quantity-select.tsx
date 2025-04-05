@@ -2,10 +2,10 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import { CircleMinus, CirclePlus } from 'lucide-react'
+import { Minus, Plus } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 interface Props {
   initialValue?: number
@@ -66,17 +66,29 @@ export default function QuantitySelect({ initialValue = 1, max, min = 1, onChang
 
   return (
     <div className={cn('inline-flex items-center gap-x-2', className)}>
-      <Button type='button' variant={'outline'} size={'icon'} className='shrink-0' onClick={handleDecrease}>
-        <CircleMinus />
+      <Button
+        type='button'
+        variant={'outline'}
+        size={'icon'}
+        className='shrink-0 border-third text-third'
+        onClick={handleDecrease}
+      >
+        <Minus />
       </Button>
       <Input
         value={quantity}
-        className='aspect-square w-10 bg-white text-center placeholder:text-center dark:bg-slate-800'
+        className='aspect-square w-16 border-gray-300 bg-white text-center text-sm placeholder:text-center focus:outline-none dark:bg-slate-800'
         pattern='[0-9]'
         onChange={handleInputChange}
       />
-      <Button type='button' variant={'outline'} size={'icon'} className='shrink-0' onClick={handleIncrease}>
-        <CirclePlus />
+      <Button
+        type='button'
+        variant={'outline'}
+        size={'icon'}
+        className='shrink-0 border-third text-third'
+        onClick={handleIncrease}
+      >
+        <Plus />
       </Button>
     </div>
   )

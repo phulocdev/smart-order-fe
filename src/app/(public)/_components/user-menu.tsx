@@ -18,7 +18,7 @@ export default async function UserMenu() {
   const isCustomer = !!session?.customer
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant='outline' size='icon'>
           <User />

@@ -8,6 +8,7 @@ export interface IDish {
   price: number
   status: DishStatus
   imageUrl: string
+  category: ICategory | null
   createdAt: string
   updatedAt: string
 }
@@ -68,4 +69,11 @@ export interface IDashboardStatistics {
   countCustomers: number
   countOrders: number
   revenueChartData: { date: string; totalPrice: number }[]
+}
+
+export interface ICategory {
+  _id: string
+  title: string
+  createdAt: string
+  updatedAt: string
 }

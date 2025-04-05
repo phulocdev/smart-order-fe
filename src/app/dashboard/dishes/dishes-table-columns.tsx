@@ -53,7 +53,8 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IDish>[
     {
       accessorKey: 'description',
       header: translateDishKey('description'),
-      cell: ({ row }) => <div>{row.original.description}</div>
+      size: 300,
+      cell: ({ row }) => <div className='line-clamp-3'>{row.original.description}</div>
     },
     {
       accessorKey: 'status',

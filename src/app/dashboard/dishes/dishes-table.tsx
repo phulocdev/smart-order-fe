@@ -7,7 +7,7 @@ import { DataTableToolbar } from '@/components/data-table/data-table-toolbar'
 import { Button } from '@/components/ui/button'
 import { PAGINATION } from '@/constants/constants'
 import { translateDishKey } from '@/lib/utils'
-import { IDish } from '@/types/backend.type'
+import { ICategory, IDish } from '@/types/backend.type'
 import { DataTableFilterField, DataTableRowAction } from '@/types/data-table.type'
 import { PaginatedResponse } from '@/types/response.type'
 import {
@@ -25,10 +25,10 @@ import { useRouter } from 'next/navigation'
 import * as React from 'react'
 
 interface DishesTableProps {
-  promise: Promise<Awaited<PaginatedResponse<IDish>>>
+  promises: Promise<[Awaited<PaginatedResponse<IDish>>, Awaited<PaginatedResponse<ICategory>>]>
 }
 
-export function DishesTable({ promise }: DishesTableProps) {
+export function DishesTable({ promises }: DishesTableProps) {
   const router = useRouter()
   const [sorting, setSorting] = React.useState<SortingState>([{ id: 'createdAt', desc: true }])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -38,7 +38,7 @@ export function DishesTable({ promise }: DishesTableProps) {
   const [rowAction, setRowAction] = React.useState<DataTableRowAction<IDish> | null>(null)
   const [isCreating, setIsCreating] = React.useState<boolean>(false)
   const isUpdating = rowAction?.type === 'update'
-  const { data } = React.use(promise)
+  const [{ data: dishListData }, { data: categoryListData }] = React.use(promises)
   const columns = React.useMemo(() => getColumns({ setRowAction }), [])
 
   const filterFields: DataTableFilterField<IDish>[] = [
@@ -50,7 +50,7 @@ export function DishesTable({ promise }: DishesTableProps) {
   ]
 
   const table = useReactTable({
-    data,
+    data: dishListData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -95,6 +95,7 @@ export function DishesTable({ promise }: DishesTableProps) {
         open={isCreating || isUpdating}
         dish={rowAction?.row.original}
         type={isUpdating ? 'update' : 'create'}
+        categoryListData={categoryListData}
         onSuccess={() => {
           if (isCreating) setIsCreating(false)
           if (isUpdating) setRowAction(null)

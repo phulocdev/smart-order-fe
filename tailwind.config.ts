@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import type { Config } from 'tailwindcss'
+const plugin = require('tailwindcss/plugin')
 
 export default {
   darkMode: ['class'],
@@ -17,7 +18,7 @@ export default {
         sm: '600px',
         md: '728px',
         lg: '1024px',
-        xl: '1320px'
+        xl: '1440px'
       }
     },
     extend: {
@@ -39,6 +40,10 @@ export default {
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))'
+        },
+        third: {
+          DEFAULT: 'hsl(var(--third))',
+          foreground: 'hsl(var( --third-foreground))'
         },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
@@ -79,8 +84,7 @@ export default {
         sm: 'calc(var(--radius) - 4px)'
       },
       fontFamily: {
-        sans: ['var(--font-inter)'],
-        mono: ['var(--font-roboto-mono)']
+        heading: ['var(--font-oswald)']
       },
       keyframes: {
         'caret-blink': {
@@ -108,6 +112,9 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'caret-blink': 'caret-blink 1.25s ease-out infinite'
+      },
+      gridTemplateColumns: {
+        24: 'repeat(24, minmax(0, 1fr))'
       }
     }
   },

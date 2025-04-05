@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -7,33 +7,41 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
-import { CreateDishBodyType, createDishSchema } from '@/schemaValidations/dish.schema'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { DishStatus } from '@/constants/enum'
-import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { cn, getVietnameseDishStatus, getVietnameseDishStatusList, handleApiError } from '@/lib/utils'
-import { Loader2, Trash, Upload } from 'lucide-react'
-import { useCreateDishMutation, useUpdateDishMutation } from '@/hooks/api/useDish'
 import { Label } from '@/components/ui/label'
-import Image from 'next/image'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { DishStatus } from '@/constants/enum'
+import { useCreateDishMutation, useUpdateDishMutation } from '@/hooks/api/useDish'
 import { useUploadSingleImageMutation } from '@/hooks/api/useMedia'
+import { cn, getVietnameseDishStatusList, handleApiError } from '@/lib/utils'
+import { CreateDishBodyType, createDishSchema } from '@/schemaValidations/dish.schema'
+import { ICategory, IDish } from '@/types/backend.type'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2, Trash, Upload } from 'lucide-react'
+import Image from 'next/image'
+import * as React from 'react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { IDish } from '@/types/backend.type'
 
 interface CreateDishDialogProp {
   open?: boolean
   type: 'update' | 'create'
   dish?: IDish
+  categoryListData: ICategory[]
   onSuccess?: () => void
   onOpenChange: () => void
 }
 
-export default function UpsertDishDialog({ onSuccess, open = false, onOpenChange, type, dish }: CreateDishDialogProp) {
+export default function UpsertDishDialog({
+  onSuccess,
+  open = false,
+  onOpenChange,
+  type,
+  dish,
+  categoryListData
+}: CreateDishDialogProp) {
   const [file, setFile] = React.useState<File>()
   const preview = file ? URL.createObjectURL(file) : dish?.imageUrl
 
@@ -48,6 +56,7 @@ export default function UpsertDishDialog({ onSuccess, open = false, onOpenChange
       description: '',
       imageUrl: '',
       price: 0,
+      category: categoryListData[0]._id,
       status: DishStatus.Available
     }
   })
@@ -55,7 +64,7 @@ export default function UpsertDishDialog({ onSuccess, open = false, onOpenChange
   // Update case
   React.useEffect(() => {
     if (dish) {
-      form.reset(dish)
+      form.reset({ ...dish, category: dish.category?._id })
     }
   }, [dish, form])
 
@@ -96,7 +105,8 @@ export default function UpsertDishDialog({ onSuccess, open = false, onOpenChange
       description: '',
       imageUrl: '',
       price: 0,
-      status: DishStatus.Available
+      status: DishStatus.Available,
+      category: categoryListData[0]._id
     })
   }
 
@@ -126,19 +136,49 @@ export default function UpsertDishDialog({ onSuccess, open = false, onOpenChange
               onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
               className='space-y-4'
             >
-              <FormField
-                control={form.control}
-                name='title'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tên món</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Hãy nhập tên món ăn...' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className='grid grid-cols-2 gap-x-3'>
+                <div className='col-span1'>
+                  <FormField
+                    control={form.control}
+                    name='title'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tên món</FormLabel>
+                        <FormControl>
+                          <Input placeholder='Hãy nhập tên món ăn...' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className='col-span-1'>
+                  <FormField
+                    control={form.control}
+                    name='category'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Danh mục</FormLabel>
+                        <FormControl>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {categoryListData.map((category) => (
+                                <SelectItem key={category._id} value={category._id}>
+                                  {category.title}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
               <FormField
                 control={form.control}
                 name='description'
@@ -178,7 +218,7 @@ export default function UpsertDishDialog({ onSuccess, open = false, onOpenChange
                         <FormControl>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <SelectTrigger>
-                              <SelectValue placeholder={getVietnameseDishStatus(form.getValues('status'))} />
+                              <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                               {getVietnameseDishStatusList().map(({ value, label }) => (
@@ -253,7 +293,7 @@ export default function UpsertDishDialog({ onSuccess, open = false, onOpenChange
           >
             {createDishMutation.isPending ||
               (uploadSingleImageMutation.isPending && <Loader2 className='animate-spin' />)}
-            Xác nhận
+            Lưu
           </Button>
         </DialogFooter>
       </DialogContent>

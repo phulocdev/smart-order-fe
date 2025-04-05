@@ -7,11 +7,7 @@ export const createDishSchema = z.object({
     .trim()
     .min(1, { message: 'Tên món ăn không được  bỏ trống' })
     .max(40, 'Tên món ăn chỉ được tối đa 40 kí tự'),
-  description: z
-    .string()
-    .trim()
-    .min(1, { message: 'Mô tả này không được  bỏ trống' })
-    .max(120, 'Mô tả chỉ được tối đa 120 kí tự'),
+  description: z.string().trim().max(300, 'Mô tả chỉ được tối đa 300 kí tự'),
   price: z.coerce
     .string({ required_error: 'Giá tiền không được bỏ trống' })
     .trim()
@@ -21,6 +17,7 @@ export const createDishSchema = z.object({
     message: 'Trạng thái món ăn không hợp lệ',
     required_error: 'Trạng thái món ăn không được bỏ trống'
   }),
+  category: z.string().trim().min(1, { message: 'Danh mục không được  bỏ trống' }),
   imageUrl: z
     .string({ required_error: 'Hình ảnh không được  bỏ trống' })
     .trim()

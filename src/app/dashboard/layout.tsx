@@ -24,7 +24,7 @@ export default async function DashboardLayout({
     <SidebarProvider>
       <AppSidebar role={account?.role} />
       <section className='grow'>
-        <div className='flex justify-between gap-x-3 border-b py-3 pr-20 shadow dark:border-b-gray-500'>
+        <div className='sticky flex justify-between gap-x-3 border-b py-3 pr-20 shadow dark:border-b-gray-500'>
           <SidebarTrigger />
           <div className='flex items-center gap-x-3'>
             <DropdownMenu>

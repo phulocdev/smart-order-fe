@@ -48,7 +48,9 @@ export default function LogoutButton({ session }: { session: Session }) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Bạn có muốn đăng xuất?</AlertDialogTitle>
+          <AlertDialogTitle>
+            <p>Bạn có muốn đăng xuất?</p>
+          </AlertDialogTitle>
           {session?.customer && <AlertDialogDescription>Bạn sẽ không thể tiếp tục tự gọi món</AlertDialogDescription>}
           {session?.account && (
             <AlertDialogDescription>Hành động này sẽ thoát khỏi phiên làm việc của bạn</AlertDialogDescription>

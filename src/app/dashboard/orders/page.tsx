@@ -34,7 +34,7 @@ export default async function IndexPage(props: IndexPageProps) {
     // <Shell className='gap-2'>
     <div className='px-1 py-5 md:px-4 lg:px-6'>
       <div className='mb-3 flex items-start justify-between'>
-        <h2 className='text-2xl font-medium'>Đơn hàng</h2>
+        <h2 className='text-2xl'>Đơn hàng</h2>
         {session?.account?.role !== Role.Chef && (
           <Link href={'/dashboard/orders/create'}>
             <Button className='ml-auto'>

@@ -11,7 +11,7 @@ export default function Providers({ children, session }: { children: React.React
     <SessionProvider session={session} refetchOnWindowFocus={false}>
       <ReactQueryProvider>
         <NuqsAdapter>
-          <main>{children}</main>
+          {children}
           <Toaster />
         </NuqsAdapter>
       </ReactQueryProvider>

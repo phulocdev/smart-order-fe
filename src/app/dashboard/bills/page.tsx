@@ -18,7 +18,7 @@ export default async function Page() {
   return (
     <div className='p-8'>
       <div className='mb-3 flex items-start justify-between'>
-        <h2 className='text-2xl font-medium'>Phiếu tính tiền</h2>
+        <h2 className='text-2xl'>Phiếu tính tiền</h2>
       </div>
       <React.Suspense
         fallback={

@@ -1,3 +1,4 @@
+import categoryApiRequest from '@/apiRequests/category.api'
 import dishApiRequest from '@/apiRequests/dish.api'
 import { DishesTable } from '@/app/dashboard/dishes/dishes-table'
 import { getAuthSession } from '@/auth'
@@ -9,7 +10,7 @@ import React from 'react'
 export default async function Page() {
   const session = await getAuthSession()
   const accessToken = session?.accessToken ?? ''
-  const promise = dishApiRequest.getList(accessToken)
+  const promises = Promise.all([dishApiRequest.getList(accessToken), categoryApiRequest.getList(accessToken)])
 
   if (session?.account?.role === Role.Waiter) {
     redirect('/dashboard/orders')
@@ -37,7 +38,7 @@ export default async function Page() {
           />
         }
       >
-        <DishesTable promise={promise} />
+        <DishesTable promises={promises} />
       </React.Suspense>
     </div>
   )

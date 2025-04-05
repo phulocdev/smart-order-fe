@@ -9,7 +9,7 @@ export default function PublicLayout({
   return (
     <>
       <Header />
-      <div className='container min-h-screen'>{children}</div>
+      <main className='flex-grow'>{children}</main>
       <Footer />
     </>
   )

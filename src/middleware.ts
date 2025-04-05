@@ -5,6 +5,7 @@ import { encode, getToken, type JWT } from 'next-auth/jwt'
 import authApiRequest from '@/apiRequests/auth.api'
 import envServerConfig from '@/config/env.server'
 import customerApiRequest from '@/apiRequests/customer.api'
+import { withAuth } from 'next-auth/middleware'
 
 export const SIGNIN_SUB_URL = '/api/auth/signin'
 export const SESSION_TIMEOUT = 60 * 60 * 24 * 7 // 7 days
@@ -83,10 +84,89 @@ export function updateCookie(
 
 const employeeBasePaths = ['/dashboard']
 const customerBasePaths = ['/customer']
+const authenticationBasePaths = ['/login', '/reservation']
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/customer/:path*']
+  matcher: ['/dashboard/:path*', '/customer/:path*'],
+  unstable_allowDynamic: ['/node_modules/@babel/runtime/**', '/node_modules/next-auth/**']
 }
+
+// export default withAuth(
+//   // `withAuth` augments your `Request` with the user's token.
+//   async function middleware(
+//     request
+//     // : NextRequest
+//   ) {
+//     // if (request.nextUrl.toString().includes('/api/auth/signin?error=OAuthCallback')) {
+//     //   return NextResponse.redirect(new URL(envServerConfig.NEXTAUTH_URL))
+//     // }
+
+//     // const token = await getToken({ req: request })
+//     const token = request.nextauth.token
+
+//     const pathname = request?.nextUrl?.pathname
+
+//     const isAuthenticated = !!token
+
+//     const isEmployee = !!token?.account
+//     const isEmployeePage = employeeBasePaths.some((path) => pathname.startsWith(path))
+
+//     const isCustomer = !!token?.customer
+//     const isCustomerPage = customerBasePaths.some((path) => pathname.startsWith(path))
+
+//     if (isAuthenticated && authenticationBasePaths.some((path) => pathname.startsWith(path))) {
+//       return NextResponse.redirect(new URL('/', request?.url))
+//     }
+
+//     if (!isAuthenticated && (isCustomerPage || isEmployeePage)) {
+//       return NextResponse.redirect(new URL('/login', request?.url))
+//     }
+
+//     if ((!isCustomer && isCustomerPage) || (!isEmployee && isEmployeePage)) {
+//       return NextResponse.redirect(new URL('/', request?.url))
+//     }
+
+//     let response = NextResponse.next()
+
+//     if (!token) {
+//       return NextResponse.redirect(new URL(envServerConfig.NEXTAUTH_URL))
+//     }
+
+//     const decodedRefreshToken = jwt.decode(token.refreshToken) as { exp: number }
+
+//     if (shouldUpdateToken(token.accessToken)) {
+//       try {
+//         const newSession = await refreshAccessToken(token)
+
+//         if (token === newSession) {
+//           console.error('Error refreshing token')
+//           return updateCookie(null, request, response)
+//         }
+
+//         const newSessionToken = await encode({
+//           secret: envServerConfig.NEXTAUTH_SECRET,
+//           token: newSession,
+//           maxAge: decodedRefreshToken.exp // equal with expire time of RT
+//         })
+
+//         // const size = 3933 // maximum size of each chunk
+//         // const regex = new RegExp('.{1,' + size + '}', 'g')
+
+//         response = updateCookie(newSessionToken, request, response, decodedRefreshToken.exp)
+//       } catch (error: any) {
+//         Sentry.captureException(error)
+//         console.error('Error refreshing token: ', error)
+//         return updateCookie(null, request, response)
+//       }
+//     }
+//     return response
+//   },
+//   {
+//     callbacks: {
+//       authorized: () => true
+//     }
+//   }
+// )
 
 export const middleware: NextMiddleware = async (request: NextRequest) => {
   // if (request.nextUrl.toString().includes('/api/auth/signin?error=OAuthCallback')) {
@@ -104,6 +184,10 @@ export const middleware: NextMiddleware = async (request: NextRequest) => {
 
   const isCustomer = !!token?.customer
   const isCustomerPage = customerBasePaths.some((path) => pathname.startsWith(path))
+
+  if (isAuthenticated && authenticationBasePaths.some((path) => pathname.startsWith(path))) {
+    return NextResponse.redirect(new URL('/', request?.url))
+  }
 
   if (!isAuthenticated && (isCustomerPage || isEmployeePage)) {
     return NextResponse.redirect(new URL('/login', request?.url))

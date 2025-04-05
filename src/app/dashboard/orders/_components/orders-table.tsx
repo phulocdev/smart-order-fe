@@ -119,7 +119,7 @@ export function OrdersTable({ promises, session }: OrdersTableProps) {
   return (
     <>
       {session?.account?.role !== Role.Chef && (
-        <div className='flex max-w-[1040px] space-x-4 overflow-x-auto py-4 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar]:h-[3px] [&::-webkit-scrollbar]:w-2'>
+        <div className='custom-scrollbar flex max-w-[1040px] space-x-4 overflow-x-auto py-4'>
           {statisticsByTablesData.map((statistic) => (
             <StatisticCard key={statistic.tableNumber} statistic={statistic} />
           ))}
