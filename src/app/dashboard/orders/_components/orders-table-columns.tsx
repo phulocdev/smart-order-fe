@@ -23,6 +23,7 @@ import { IOrder } from '@/types/backend.type'
 import { format } from 'date-fns'
 import Image from 'next/image'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 interface GetColumnsProps {
   setRowAction: React.Dispatch<React.SetStateAction<DataTableRowAction<IOrder> | null>>
@@ -113,6 +114,7 @@ export function getColumns({ setRowAction, role }: GetColumnsProps): ColumnDef<I
       cell: function Cell({ row }) {
         const currentStatus = row.original.status
         const [isUpdatePending, startUpdateTransition] = React.useTransition()
+        const router = useRouter()
         return (
           <div className='relative'>
             {currentStatus === OrderStatus.Paid && (
@@ -131,10 +133,14 @@ export function getColumns({ setRowAction, role }: GetColumnsProps): ColumnDef<I
               onValueChange={(value) => {
                 startUpdateTransition(() => {
                   toast.promise(
-                    orderApiRequest.update({
-                      id: row.original._id,
-                      body: { status: value as OrderStatus }
-                    }),
+                    orderApiRequest
+                      .update({
+                        id: row.original._id,
+                        body: { status: value as OrderStatus }
+                      })
+                      .then(() => {
+                        router.refresh()
+                      }),
                     {
                       loading: 'Đang cập nhật...',
                       success: 'Cập nhật trạng thái đơn hàng thành công',
@@ -150,7 +156,6 @@ export function getColumns({ setRowAction, role }: GetColumnsProps): ColumnDef<I
               <SelectContent>
                 {getVietnameseOrderStatusList().map(({ label, value }) => {
                   const nextStatus = value
-                  // if (canTransitionStatus(currentStatus, nextStatus)) {
                   return (
                     <SelectItem
                       value={value}
@@ -160,7 +165,6 @@ export function getColumns({ setRowAction, role }: GetColumnsProps): ColumnDef<I
                       {label}
                     </SelectItem>
                   )
-                  // }
                 })}
               </SelectContent>
             </Select>
