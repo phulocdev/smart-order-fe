@@ -15,13 +15,13 @@ import {
 } from '@/lib/utils'
 
 import orderApiRequest from '@/apiRequests/order.api'
+import { canTransitionStatus } from '@/app/dashboard/orders/_lib/order.machine'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { OrderStatus, Role } from '@/constants/enum'
 import { getErrorMessage } from '@/lib/handle-error'
 import { IOrder } from '@/types/backend.type'
 import { format } from 'date-fns'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 interface GetColumnsProps {
@@ -111,12 +111,11 @@ export function getColumns({ setRowAction, role }: GetColumnsProps): ColumnDef<I
       accessorKey: 'status',
       header: 'Trạng thái',
       cell: function Cell({ row }) {
-        const status = row.original.status
+        const currentStatus = row.original.status
         const [isUpdatePending, startUpdateTransition] = React.useTransition()
-        const router = useRouter()
         return (
           <div className='relative'>
-            {status === OrderStatus.Paid && (
+            {currentStatus === OrderStatus.Paid && (
               <div className='absolute -left-2 -top-1 aspect-square w-5'>
                 <Image
                   alt='checkIcon'
@@ -132,12 +131,10 @@ export function getColumns({ setRowAction, role }: GetColumnsProps): ColumnDef<I
               onValueChange={(value) => {
                 startUpdateTransition(() => {
                   toast.promise(
-                    orderApiRequest
-                      .update({
-                        id: row.original._id,
-                        body: { status: value as OrderStatus }
-                      })
-                      .then(() => router.refresh()),
+                    orderApiRequest.update({
+                      id: row.original._id,
+                      body: { status: value as OrderStatus }
+                    }),
                     {
                       loading: 'Đang cập nhật...',
                       success: 'Cập nhật trạng thái đơn hàng thành công',
@@ -148,16 +145,22 @@ export function getColumns({ setRowAction, role }: GetColumnsProps): ColumnDef<I
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder={getVietnameseOrderStatus(status)} />
+                <SelectValue placeholder={getVietnameseOrderStatus(currentStatus)} />
               </SelectTrigger>
               <SelectContent>
                 {getVietnameseOrderStatusList().map(({ label, value }) => {
-                  if (value === OrderStatus.Paid) return <div key={value}></div>
+                  const nextStatus = value
+                  // if (canTransitionStatus(currentStatus, nextStatus)) {
                   return (
-                    <SelectItem value={value} key={value}>
+                    <SelectItem
+                      value={value}
+                      key={value}
+                      className={!canTransitionStatus(currentStatus, nextStatus) ? 'hidden' : ''}
+                    >
                       {label}
                     </SelectItem>
                   )
+                  // }
                 })}
               </SelectContent>
             </Select>

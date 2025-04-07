@@ -76,6 +76,11 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IBill>[
       )
     },
     {
+      accessorKey: 'account',
+      header: translateBillKey('account'),
+      cell: ({ row }) => <div className=''>{row.original.account?.fullName}</div>
+    },
+    {
       id: 'actions',
       cell: function Cell({ row }) {
         return (

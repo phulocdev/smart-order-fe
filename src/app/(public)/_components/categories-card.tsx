@@ -43,8 +43,8 @@ export default function CategoriesCard({ categoryListData }: Props) {
 
   return (
     <div
-      className='sticky top-0 z-30 mb-3 flex w-full flex-wrap items-center bg-background px-3 dark:border-b dark:border-gray-700'
-      // style={{ top: `calc(${HEADER_HEIGHT}px + 0.5rem)` }}
+      className='sticky left-0 right-0 mb-3 flex w-full flex-wrap items-center bg-white px-3 dark:border-b dark:border-gray-700'
+      style={{ top: `calc(${2000}px + 0.5rem)` }}
     >
       {categoryListData.map((category, index) => (
         <Link

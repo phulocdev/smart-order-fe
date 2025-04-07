@@ -44,6 +44,7 @@ export default function UpsertDishDialog({
 }: CreateDishDialogProp) {
   const [file, setFile] = React.useState<File>()
   const preview = file ? URL.createObjectURL(file) : dish?.imageUrl
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null)
 
   const createDishMutation = useCreateDishMutation()
   const updateDishMutation = useUpdateDishMutation()
@@ -92,7 +93,6 @@ export default function UpsertDishDialog({
         toast('✅ Cập nhật món ăn thành công!')
       }
       resetForm()
-      setFile(undefined)
       onSuccess?.()
     } catch (error) {
       handleApiError({ error, setError: form.setError })
@@ -100,6 +100,7 @@ export default function UpsertDishDialog({
   }
 
   function resetForm() {
+    resetInputFile()
     form.reset({
       title: '',
       description: '',
@@ -110,9 +111,16 @@ export default function UpsertDishDialog({
     })
   }
 
+  function resetInputFile() {
+    setFile(undefined)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
   function onDialogClose() {
     onOpenChange()
-    setFile(undefined)
+    resetInputFile()
     resetForm()
   }
 
@@ -245,7 +253,13 @@ export default function UpsertDishDialog({
                     </FormLabel>
                     <div className='h-1'></div>
                     <div className='relative flex aspect-square w-36 items-center justify-center rounded-sm border border-gray-200'>
-                      <Button type='button' size={'icon'} variant={'destructive'} className='absolute -right-3 -top-2'>
+                      <Button
+                        type='button'
+                        size={'icon'}
+                        variant={'destructive'}
+                        className='absolute -right-3 -top-2'
+                        onClick={resetInputFile}
+                      >
                         <Trash size={10} />
                       </Button>
                       {preview ? (
@@ -263,7 +277,13 @@ export default function UpsertDishDialog({
                     </div>
                     <FormControl>
                       <div className='grid w-full max-w-sm items-center gap-1.5'>
-                        <Input id='dishImage' type='file' onChange={handleFileChange} className='hidden' />
+                        <Input
+                          id='dishImage'
+                          type='file'
+                          ref={fileInputRef}
+                          onChange={handleFileChange}
+                          className='hidden'
+                        />
                         <Label
                           htmlFor='dishImage'
                           className='flex w-36 cursor-pointer items-center justify-center gap-x-2 rounded-md border border-gray-200 py-2 text-sm shadow-sm'

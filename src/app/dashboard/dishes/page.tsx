@@ -18,7 +18,7 @@ export default async function Page() {
   return (
     <div className='p-8'>
       <div className='mb-3 flex items-start justify-between'>
-        <h2 className='text-2xl font-medium'>Danh sách món ăn</h2>
+        <h2 className='text-2xl font-semibold'>Danh sách món ăn</h2>
         {/* ------------------------- Add Button - Option 1 (Navigate to another page) ---------------------- */}
         {/* <Link href={'/dashboard/orders/create'}>
             <Button className='ml-auto'>

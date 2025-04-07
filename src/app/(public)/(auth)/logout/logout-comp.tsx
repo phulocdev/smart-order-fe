@@ -22,7 +22,7 @@ export default function LogoutComponent({ session }: { session: Session | null }
       } catch (error) {
         handleApiError({ error })
       } finally {
-        router.replace('/login')
+        router.replace('/')
       }
     }
     handleLogout()

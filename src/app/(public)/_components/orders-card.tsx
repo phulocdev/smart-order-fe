@@ -66,7 +66,7 @@ export default function OrdersCard({ session }: Props) {
       <Card className={`sticky`} style={{ top: `calc(${HEADER_HEIGHT}px + 2rem)` }}>
         {!session?.customer && (
           <CardHeader>
-            <CardTitle className='text-center font-normal'>Vui lòng quét mã QR để có thể gói món!</CardTitle>
+            <CardTitle className='text-center font-normal'>Vui lòng quét mã QR để có thể gọi món!</CardTitle>
           </CardHeader>
         )}
         {session?.customer && orderItems.length == 0 && (
@@ -75,7 +75,7 @@ export default function OrdersCard({ session }: Props) {
           </CardHeader>
         )}
         <CardContent className='pr-0'>
-          <h3 className='py-3 text-center'>Bàn số: {session?.customer?.tableNumber}</h3>
+          {session?.customer && <h3 className='py-3 text-center'>Bàn số: {session?.customer?.tableNumber}</h3>}
           <div className='custom-scrollbar flex max-h-[350px] flex-col gap-y-2 pr-4 pt-2 text-sm'>
             {orderItems.map((orderItem, index) => (
               <div className='border-b border-b-gray-200 py-2.5 pb-3 last:border-b-0 last:pb-0' key={index}>

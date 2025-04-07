@@ -52,6 +52,7 @@ export function RevenueChart({ from, to, chartData }: RevenueChartProps) {
               tickMargin={8}
               minTickGap={32}
               tickFormatter={(value) => {
+                console.log({ value })
                 const date = new Date(value)
                 return `${date.getDate()}/${date.getMonth() + 1}`
               }}

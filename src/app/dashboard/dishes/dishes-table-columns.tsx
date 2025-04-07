@@ -39,7 +39,7 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IDish>[
             alt={row.original.title}
             src={row.original.imageUrl}
           />
-          <div className='line-clamp-2 font-normal'>{row.original.title}</div>
+          <div className='line-clamp-2 font-medium'>{row.original.title}</div>
         </div>
       ),
       size: 600

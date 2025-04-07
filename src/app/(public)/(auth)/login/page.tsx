@@ -9,7 +9,7 @@ export default async function Page() {
     redirect('/')
   }
   return (
-    <div className='max-w-[25rem] shrink-0 grow'>
+    <div className='max-w-[25rem] shrink-0 grow px-3 sm:px-0'>
       <Card>
         <CardHeader>
           <CardTitle className='text-xl font-semibold'>Đăng nhập</CardTitle>

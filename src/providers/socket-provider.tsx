@@ -17,16 +17,10 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [socket, setSocket] = useState<Socket | null>(null)
   const { data: session } = useSession()
   const accessToken = session?.accessToken ?? ''
-  const decodedAccessToken = jwt.decode(accessToken) as { exp: number } | undefined
-  const now = Math.floor(new Date().getTime() / 1000) // second
   const router = useRouter()
 
   useEffect(() => {
-    if (
-      !session
-      // || (decodedAccessToken && decodedAccessToken.exp > now)
-    )
-      return
+    if (!session) return
 
     // Trong trường hợp AT hết hạn thì vẫn tạo ra 1 instance có url connect thành công đến websocket server - Chỉ là chưa connect mà thôi
     const socketInstance = io(`${envConfig.NEXT_PUBLIC_WEBSOCKET_URL}`, {
@@ -40,16 +34,16 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     setSocket(socketInstance)
 
-    // socketInstance.on('logout', () => {
-    //   router.push('/logout')
-    // })
+    socketInstance.on('logout', () => {
+      router.push('/logout')
+    })
 
     return () => {
       // Disconnect from client
       socketInstance.disconnect()
-      // socketInstance.off('logout')
+      socketInstance.off('logout')
     }
-  }, [accessToken, session])
+  }, [accessToken, router, session])
 
   return <SocketContext.Provider value={{ socket }}>{children}</SocketContext.Provider>
 }

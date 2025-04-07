@@ -110,7 +110,7 @@ export const exportBillToPDF = async (bill: IBill) => {
     pdf.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight)
 
     // Save the PDF
-    pdf.save(`bill-${bill.billCode}.pdf`)
+    pdf.save(`${bill.billCode}.pdf`)
   } catch (error) {
     console.error('Error generating PDF:', error)
     alert('Có lỗi khi tạo PDF. Vui lòng thử lại.')

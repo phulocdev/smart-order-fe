@@ -6,8 +6,7 @@ export enum Role {
 
 export enum DishStatus {
   Available = 'Available',
-  Unavailable = 'Unavailable',
-  Hidden = 'Hidden'
+  Unavailable = 'Unavailable'
 }
 
 export enum TableStatus {

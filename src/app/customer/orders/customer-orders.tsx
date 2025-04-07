@@ -30,6 +30,11 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
   React.useEffect(() => {
     if (!socket) return
 
+    // Trong trường hợp JWT Expired thì socket chưa connect đến server đâu nên ở đây sẽ re-connect lại
+    if (!socket.connected) {
+      router.refresh()
+    }
+
     const onUpdatedOrder = ({ dishTitle, status }: { dishTitle: string; status: OrderStatus }) => {
       toast(`📢 Món "${dishTitle}" vừa được chuyển sang trạng thái "${getVietnameseOrderStatus(status)}"`)
       router.refresh()
@@ -101,7 +106,9 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
           <TableFooter className='sticky bottom-0 rounded-sm bg-gray-100'>
             <TableRow>
               <TableCell colSpan={1}>Tổng ({totalQuantity} phần):</TableCell>
-              <TableCell className='text-right text-lg'>{formatNumberToVnCurrency(totalPrice)}</TableCell>
+              <TableCell className='text-right text-lg font-bold text-red-600'>
+                {formatNumberToVnCurrency(totalPrice)}
+              </TableCell>
             </TableRow>
           </TableFooter>
         </Table>

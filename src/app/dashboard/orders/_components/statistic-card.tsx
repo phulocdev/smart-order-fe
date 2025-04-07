@@ -21,6 +21,9 @@ export default function StatisticCard({ statistic }: { statistic: IStatisticOrde
   const { tableNumber, orders: orderList, statusCounts } = statistic
   const customer = orderList.length > 0 ? orderList[0].customer : undefined
   const totalPrice = orderList.reduce((result, order) => result + order.totalPrice, 0)
+  const orderShouldPaidList = orderList.filter(
+    (order) => ![OrderStatus.Paid, OrderStatus.Canceled, OrderStatus.Rejected].includes(order.status)
+  )
 
   const [isCheckoutPending, startCheckoutTransition] = React.useTransition()
   const checkoutOrders = () => {
@@ -29,9 +32,21 @@ export default function StatisticCard({ statistic }: { statistic: IStatisticOrde
       toast.promise(
         orderApiRequest.checkout(customer._id).then(() => router.refresh()),
         {
-          loading: 'Đang cập nhật...',
-          success: 'Thanh toán thành công',
-          error: (err) => getErrorMessage(err)
+          loading: orderShouldPaidList.length > 0 ? 'Đang thanh toán...' : 'Đang xuất hóa đơn...',
+          success: orderShouldPaidList.length > 0 ? 'Thanh toán thành công' : 'Xuất hóa đơn thành công',
+          error: (err) => getErrorMessage(err),
+          action: !isCheckoutPending ? (
+            <Button
+              size={'sm'}
+              onClick={() => {
+                router.push(`/dashboard/bills?customerCode=${customer.code}`)
+              }}
+            >
+              Xem hóa đơn
+            </Button>
+          ) : (
+            <span></span>
+          )
         }
       )
     })
@@ -178,7 +193,7 @@ export default function StatisticCard({ statistic }: { statistic: IStatisticOrde
               variant={'outline'}
               onClick={checkoutOrders}
             >
-              Thanh toán ({orderList.filter((order) => order.status !== OrderStatus.Paid).length}) đơn
+              {orderShouldPaidList.length > 0 ? `Thanh toán (${orderShouldPaidList.length}) đơn` : 'Xuất hóa đơn'}
             </Button>
           </>
         </HoverCardContent>

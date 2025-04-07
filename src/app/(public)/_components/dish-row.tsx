@@ -1,5 +1,6 @@
 'use client'
 import QuantitySelect from '@/components/quantity-select'
+import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import {
   Drawer,
@@ -10,6 +11,7 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from '@/components/ui/drawer'
+import { DishStatus } from '@/constants/enum'
 import { NOTE_MAX_LENGTH, QUANTITY_SELECT_MAX } from '@/constants/internal-data'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { cn, formatNumberToVnCurrency } from '@/lib/utils'
@@ -51,7 +53,7 @@ export default function DishRow({ dish, session }: Props) {
     }
     setQuantity(1)
     setNote('')
-    toast(`🟢 Đã thêm món ăn vào giỏ hàng`)
+    toast(`🟢 Đã thêm món ăn vào giỏ hàng`, { position: isDesktop ? 'bottom-right' : 'top-right' })
   }
 
   if (isDesktop) {
@@ -60,6 +62,10 @@ export default function DishRow({ dish, session }: Props) {
         <DialogTrigger
           asChild
           onClick={() => {
+            if (dish.status === DishStatus.Unavailable) {
+              return
+            }
+
             if (!session?.customer) {
               toast.error('Vui lòng quét mã QR để có thể đặt món!', { icon: <span>❌</span> })
             }
@@ -85,8 +91,16 @@ export default function DishRow({ dish, session }: Props) {
               </div>
               <div className='flex items-center gap-x-2 pt-4'>
                 <div className='font-heading font-semibold text-red-600'>{formatNumberToVnCurrency(dish.price)}</div>
-                <div className='ml-auto'>
-                  <button className='flex aspect-square w-9 items-center justify-center rounded-full bg-third text-third-foreground'>
+                <div className='ml-auto inline-flex gap-x-3'>
+                  {dish.status === DishStatus.Unavailable && <Badge variant={'ghost'}>Hết hàng</Badge>}
+                  <button
+                    className={cn(
+                      'flex aspect-square w-9 items-center justify-center rounded-full bg-third text-third-foreground',
+                      {
+                        'cursor-not-allowed opacity-70': dish.status === DishStatus.Unavailable
+                      }
+                    )}
+                  >
                     <Plus size={18} />
                   </button>
                 </div>

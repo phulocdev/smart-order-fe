@@ -42,13 +42,13 @@ export default async function DashboardPage(props: Props) {
     <div className='px-2 py-5 md:px-4 lg:px-9'>
       <section>
         <div>
-          <div className='text-2xl font-medium capitalize'>Xin chào!</div>
+          <div className='text-2xl font-semibold capitalize'>Xin chào!</div>
           <p className='mt-2 text-sm'>
             {day}, {date} tháng {month}, {year}
           </p>
         </div>
         <div className='pt-6'>
-          <p className='pb-3 text-sm text-gray-600'>Chọn khoảng thời gian</p>
+          <p className='pb-3 text-sm font-medium text-gray-600'>Chọn khoảng thời gian</p>
           <AdvanceDateRange from={search.from} to={search.to} />
         </div>
       </section>

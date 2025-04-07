@@ -84,8 +84,6 @@ export const getVietnameseDishStatus = (status: DishStatus) => {
       return 'Có sẵn'
     case DishStatus.Unavailable:
       return 'Không có sẵn'
-    case DishStatus.Hidden:
-      return 'Tạm ẩn'
     default:
       return 'INVALID_DISH_STATUS'
   }

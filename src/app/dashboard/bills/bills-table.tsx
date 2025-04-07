@@ -18,6 +18,7 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
+import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
 interface BillsTableProps {
@@ -29,6 +30,8 @@ export function BillsTable({ promise }: BillsTableProps) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const searchParams = useSearchParams()
+  const customerCode = searchParams.get('customerCode') ?? ''
 
   const [rowAction, setRowAction] = React.useState<DataTableRowAction<IBill> | null>(null)
   const { data } = React.use(promise)
@@ -39,6 +42,11 @@ export function BillsTable({ promise }: BillsTableProps) {
       id: 'billCode',
       label: 'Mã phiếu',
       placeholder: 'Lọc theo mã phiếu tính tiền'
+    },
+    {
+      id: 'customerCode',
+      label: 'Mã KH',
+      placeholder: 'Lọc theo mã khách hàng'
     }
   ]
 
@@ -67,6 +75,12 @@ export function BillsTable({ promise }: BillsTableProps) {
       rowSelection
     }
   })
+
+  React.useEffect(() => {
+    if (customerCode) {
+      setColumnFilters([{ id: 'customerCode', value: customerCode }])
+    }
+  }, [customerCode])
 
   return (
     <>
