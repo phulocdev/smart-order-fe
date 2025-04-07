@@ -8,13 +8,12 @@ export const exportBillToPDF = async (bill: IBill) => {
   if (!bill) return
 
   try {
-    // Create a new div for printing
     const printContainer = document.createElement('div')
     printContainer.style.position = 'absolute'
     printContainer.style.left = '-9999px'
     printContainer.style.top = '-9999px'
-    printContainer.style.width = '600px' // Fixed width for better rendering
-    printContainer.style.height = '500px' // Reduced height for more compact PDF
+    printContainer.style.width = '600px'
+    printContainer.style.height = '1000px'
     printContainer.style.padding = '40px'
     printContainer.style.backgroundColor = 'white'
     printContainer.style.zIndex = '-1'
@@ -31,6 +30,10 @@ export const exportBillToPDF = async (bill: IBill) => {
               <tr style="border-bottom: 1px solid #eee;">
                 <td style="padding: 10px; font-weight: bold;">${translateBillKey('customerCode')}</td>
                 <td style="padding: 10px;">${bill.customerCode}</td>
+              </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 10px; font-weight: bold; width: 200px;">${translateBillKey('tableNumber')}</td>
+                <td style="padding: 10px;">${bill.tableNumber}</td>
               </tr>
               <tr style="border-bottom: 1px solid #eee;">
                 <td style="padding: 10px; font-weight: bold;">${translateBillKey('orderItems')}</td>
@@ -49,6 +52,11 @@ export const exportBillToPDF = async (bill: IBill) => {
                       .join('')}
                   </div>
                 </td>
+              </tr>
+               </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 10px; font-weight: bold; width: 200px;">${translateBillKey('account')}</td>
+                <td style="padding: 10px;">${bill.account?.fullName}</td>
               </tr>
               <tr style="border-bottom: 1px solid #eee;">
                 <td style="padding: 10px; font-weight: bold;">${translateBillKey('createdAt')}</td>
@@ -96,7 +104,6 @@ export const exportBillToPDF = async (bill: IBill) => {
 
     // Calculate dimensions
     const imgWidth = 210 - 40 // A4 width minus margins
-    const pageHeight = 297 // A4 height
     const imgHeight = (canvas.height * imgWidth) / canvas.width
 
     // Add image to PDF with padding

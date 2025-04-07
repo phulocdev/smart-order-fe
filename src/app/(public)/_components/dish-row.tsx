@@ -10,7 +10,7 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from '@/components/ui/drawer'
-import { NOTE_MAX_LENGTH, QUANTITY_SELECT_MAX } from '@/config/internal-data'
+import { NOTE_MAX_LENGTH, QUANTITY_SELECT_MAX } from '@/constants/internal-data'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { cn, formatNumberToVnCurrency } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'

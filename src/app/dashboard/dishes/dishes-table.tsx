@@ -77,7 +77,7 @@ export function DishesTable({ promises }: DishesTableProps) {
 
   return (
     <>
-      <DataTable table={table}>
+      <DataTable table={table} tableDivClassName='max-h-[65vh] overflow-y-scroll custom-scrollbar rounded-sm'>
         {/* ------------------------- Add Button - Option 2 (Show Dialog Upsert) ---------------------- */}
         <div className='flex justify-end'>
           <Button onClick={() => setIsCreating(true)}>

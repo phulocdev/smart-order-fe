@@ -56,20 +56,20 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
   const { tableNumber, code } = orderList[0]
 
   return (
-    <Card className='custom-scrollbar mx-auto my-12 max-h-[550px] max-w-[750px]'>
+    <Card className='mx-5 my-12 max-w-[750px] md:mx-auto'>
       <CardHeader>
-        <CardTitle className='text-center text-2xl'>Món ăn đã gọi - Bàn số {tableNumber}</CardTitle>
+        <CardTitle className='text-center text-xl md:text-2xl'>Món ăn đã gọi - Bàn số {tableNumber}</CardTitle>
         <div className='flex flex-row items-center justify-between pt-4 text-base'>
-          <h2 className='font-medium'>Mã đơn: {code}</h2>
+          <h2 className='text-sm font-semibold md:text-base'>Mã đơn: {code}</h2>
         </div>
       </CardHeader>
 
       <CardContent>
-        <Table>
-          <TableHeader>
+        <Table divClassname='max-h-[65vh] custom-scrollbar rounded-sm'>
+          <TableHeader className='sticky top-0 rounded-sm bg-gray-100'>
             <TableRow>
-              <TableHead>Món ăn</TableHead>
-              <TableHead>Đơn giá</TableHead>
+              <TableHead className='text-gray-700'>Món ăn</TableHead>
+              <TableHead className='text-gray-700'>Đơn giá</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -90,7 +90,7 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
                       <Badge variant={getBadgeVariantByOrderStatus(order.status)} className='my-1'>
                         {getVietnameseOrderStatus(order.status)}
                       </Badge>
-                      <div className='text-[13px] italic'>x{order.quantity}</div>
+                      <div className='text-[13px] font-medium italic'>x{order.quantity}</div>
                     </div>
                   </div>
                 </TableCell>
@@ -98,7 +98,7 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
               </TableRow>
             ))}
           </TableBody>
-          <TableFooter>
+          <TableFooter className='sticky bottom-0 rounded-sm bg-gray-100'>
             <TableRow>
               <TableCell colSpan={1}>Tổng ({totalQuantity} phần):</TableCell>
               <TableCell className='text-right text-lg'>{formatNumberToVnCurrency(totalPrice)}</TableCell>
@@ -106,9 +106,11 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
           </TableFooter>
         </Table>
       </CardContent>
-      <CardFooter className='flex-col items-center'>
+      <CardFooter className='sticky bottom-0 flex-col items-center'>
         <Link href={'/'}>
-          <Button variant={'outline'}>Gọi thêm món</Button>
+          <Button variant={'green'} className=''>
+            Gọi thêm món
+          </Button>
         </Link>
       </CardFooter>
     </Card>

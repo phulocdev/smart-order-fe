@@ -2,7 +2,7 @@ import { type Table as TanstackTable, flexRender } from '@tanstack/react-table'
 import type * as React from 'react'
 
 import { DataTablePagination } from '@/components/data-table/data-table-pagination'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { getCommonPinningStyles } from '@/lib/data-table'
 import { cn } from '@/lib/utils'
 import { DataTableRowAction } from '@/types/data-table.type'
@@ -25,6 +25,10 @@ interface DataTableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
   actionType?: 'update' | 'delete' | 'view'
 
   setRowAction?: React.Dispatch<React.SetStateAction<DataTableRowAction<TData> | null>>
+
+  tableDivClassName?: string
+
+  tableFooterContent?: React.JSX.Element
 }
 
 export function DataTable<TData>({
@@ -34,14 +38,16 @@ export function DataTable<TData>({
   className,
   actionType,
   setRowAction,
+  tableDivClassName = 'max-h-[65vh] custom-scrollbar rounded-sm',
+  tableFooterContent,
   ...props
 }: DataTableProps<TData>) {
   return (
     <div className={cn('w-full space-y-2.5 overflow-auto', className)} {...props}>
       {children}
       <div className='overflow-x-auto rounded-md border'>
-        <Table>
-          <TableHeader>
+        <Table divClassname={tableDivClassName}>
+          <TableHeader className='sticky top-0 z-10 rounded-sm'>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -92,6 +98,9 @@ export function DataTable<TData>({
               </TableRow>
             )}
           </TableBody>
+          {tableFooterContent && (
+            <TableFooter className='sticky bottom-0 rounded-sm bg-gray-100'>{tableFooterContent}</TableFooter>
+          )}
         </Table>
       </div>
       <div className='flex flex-col gap-2.5'>

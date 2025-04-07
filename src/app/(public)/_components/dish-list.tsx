@@ -2,12 +2,9 @@
 
 import DishRow from '@/app/(public)/_components/dish-row'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
 import { ICategory, IDish } from '@/types/backend.type'
-import { ArrowUp } from 'lucide-react'
 import { Session } from 'next-auth'
-import * as React from 'react'
-import { Element, animateScroll as scroll, scrollSpy } from 'react-scroll'
+import { Element } from 'react-scroll'
 
 interface Props {
   categoryListData: ICategory[]
@@ -16,24 +13,6 @@ interface Props {
 }
 
 export default function DishList({ categoryListData, dishListData, session }: Props) {
-  const [showScrollButton, setShowScrollButton] = React.useState(false)
-
-  React.useEffect(() => {
-    scrollSpy.update()
-
-    const handleScroll = () => {
-      const scrollTop = window.scrollY
-      setShowScrollButton(scrollTop > 200)
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  const scrollToTop = () => {
-    scroll.scrollToTop()
-  }
-
   return (
     <>
       {categoryListData.map((category, index) => {
@@ -58,17 +37,6 @@ export default function DishList({ categoryListData, dishListData, session }: Pr
           </Element>
         )
       })}
-
-      {/* Scroll to top button */}
-      <button
-        className={cn(
-          'fixed bottom-16 right-8 flex aspect-square w-12 items-center justify-center rounded-full bg-red-600 font-semibold text-third-foreground transition-opacity duration-200 ease-in-out lg:bottom-4',
-          { 'pointer-events-none opacity-0': !showScrollButton, 'opacity-100': showScrollButton }
-        )}
-        onClick={scrollToTop}
-      >
-        <ArrowUp size={19} />
-      </button>
     </>
   )
 }

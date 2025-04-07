@@ -43,7 +43,7 @@ export default function StatisticCard({ statistic }: { statistic: IStatisticOrde
         {/* Nếu không có đơn hàng thì đường link mới naviagte */}
         <Card
           onClick={() => {
-            if (orderList.length === 0) return
+            // if (orderList.length !== 0) return
             router.push(`/dashboard/orders/create?tableNumber=${tableNumber}`)
           }}
           key={statistic.tableNumber}

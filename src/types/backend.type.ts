@@ -58,7 +58,7 @@ export interface IBill {
   customerCode: string
   totalPrice: number
   orderItems: IOrderItem[]
-  tableNumer: number
+  tableNumber: number
   account: Omit<IAccount, 'avatarUrl'> | null
   createdAt: string
   updatedAt: string

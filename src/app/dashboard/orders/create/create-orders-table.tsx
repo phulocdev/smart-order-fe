@@ -2,8 +2,9 @@
 import { getColumns } from '@/app/dashboard/orders/create/create-orders-table-columns'
 import { DataTable } from '@/components/data-table/data-table'
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar'
+import { TableCell, TableRow } from '@/components/ui/table'
 import { PAGINATION } from '@/constants/constants'
-import { translateDishKey } from '@/lib/utils'
+import { formatNumberToVnCurrency, translateDishKey } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'
 import { IDish } from '@/types/backend.type'
 import { DataTableFilterField } from '@/types/data-table.type'
@@ -28,6 +29,11 @@ export function CreateOrdersTable({ dishData }: CreateOrdersTableProps) {
   const addOrderItem = useAppStore((state) => state.addOrderItem)
   const updateOrderItem = useAppStore((state) => state.updateOrderItem)
   const removeOrderItem = useAppStore((state) => state.removeOrderItem)
+  const clearOrderInCart = useAppStore((state) => state.clearOrderInCart)
+
+  const totalPrice = React.useMemo(() => {
+    return selectedOrderItems.reduce((result, orderItem) => result + orderItem.quantity * orderItem.dish.price, 0)
+  }, [selectedOrderItems])
 
   const [sorting, setSorting] = React.useState<SortingState>([{ id: 'createdAt', desc: true }])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -85,6 +91,9 @@ export function CreateOrdersTable({ dishData }: CreateOrdersTableProps) {
         pageIndex: PAGINATION.DEFAUT_PAGE_INDEX - 1,
         pageSize: PAGINATION.DEFAULT_PAGE_SIZE
       },
+      columnVisibility: {
+        createdAt: false
+      },
       columnPinning: { right: ['actions'] }
     },
     state: {
@@ -95,9 +104,25 @@ export function CreateOrdersTable({ dishData }: CreateOrdersTableProps) {
     }
   })
 
+  React.useEffect(() => {
+    return () => {
+      clearOrderInCart()
+    }
+  }, [clearOrderInCart])
+
   return (
     <>
-      <DataTable table={table}>
+      <DataTable
+        table={table}
+        tableFooterContent={
+          <TableRow>
+            <TableCell colSpan={1}>Tổng ({selectedOrderItems.length} món):</TableCell>
+            <TableCell colSpan={4} className='text-right text-lg font-semibold'>
+              {formatNumberToVnCurrency(totalPrice)}
+            </TableCell>
+          </TableRow>
+        }
+      >
         <DataTableToolbar
           table={table}
           filterFields={filterFields}

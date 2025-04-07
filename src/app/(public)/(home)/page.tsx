@@ -3,17 +3,17 @@ import dishApiRequest from '@/apiRequests/dish.api'
 import CategoriesCard from '@/app/(public)/_components/categories-card'
 import DishList from '@/app/(public)/_components/dish-list'
 import OrdersCard from '@/app/(public)/_components/orders-card'
+import ScrollToTopButton from '@/app/(public)/_components/scroll-to-top-button'
 import { getAuthSession } from '@/auth'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import Image from 'next/image'
 
 export default async function Page() {
   const session = await getAuthSession()
-  const accessToken = session?.accessToken ?? ''
 
   const [{ data: dishListData }, { data: categoryListData }] = await Promise.all([
-    dishApiRequest.getList(accessToken),
-    categoryApiRequest.getList(accessToken)
+    dishApiRequest.getList(),
+    categoryApiRequest.getList()
   ])
 
   return (
@@ -86,6 +86,9 @@ export default async function Page() {
           </div>
         </div>
       </section>
+
+      {/*  ---------------Scroll to top button ---------------*/}
+      <ScrollToTopButton />
     </div>
   )
 }

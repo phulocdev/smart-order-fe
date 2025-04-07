@@ -1,36 +1,63 @@
 import authApiRequest from '@/apiRequests/auth.api'
-import customerApiRequest from '@/apiRequests/customer.api'
+import customerAuthApiRequest from '@/apiRequests/customer-auth.api'
 import { authOptions } from '@/auth'
 import envServerConfig from '@/config/env.server'
+import { SESSION_COOKIE, SESSION_SECURE } from '@/config/next-auth'
 import { createAuthCookieString } from '@/lib/auth'
 import { shouldUpdateToken } from '@/middleware'
 import * as jwt from 'jsonwebtoken'
+import { NextApiRequest, NextApiResponse } from 'next'
 import NextAuth from 'next-auth'
 import { decode, encode, getToken, JWT } from 'next-auth/jwt'
 import { redirect } from 'next/navigation'
 import { NextRequest, NextResponse } from 'next/server'
 
+// const handler = NextAuth(authOptions)
+
+// const wrappedAuthHandler = async (req: NextRequest, res: NextResponse) => {
+//   const token = await getToken({ req })
+//   const nextAuthResponse = await handler(req, res)
+//   return maybePerformTokenRefresh(token, nextAuthResponse)
+// }
+
+// export { wrappedAuthHandler as GET, wrappedAuthHandler as POST }
+
+// -----------------------------------------------------------------------------------
+// type CombineRequest = Request & NextApiRequest
+// type CombineResponse = Response & NextApiResponse
+
+// const wrappedAuthHandler = async (req: CombineRequest, res: CombineResponse) => {
+//   const handler = await NextAuth(req, res, authOptions)
+//   // const token = await getToken({ req })
+//   const nextAuthResponse = await handler(req, res)
+//   return maybePerformTokenRefresh(nextAuthResponse)
+// }
+
+// export { wrappedAuthHandler as GET, wrappedAuthHandler as POST }
+
+// -----------------------------------------------------------------------------------
+interface RouteHandlerContext {
+  params: Promise<{ nextauth: string[] }>
+}
+
 const handler = NextAuth(authOptions)
 
-export const SESSION_SECURE = process.env.NEXTAUTH_URL?.startsWith('https://')
-export const NEXT_AUTH_SESSION_TOKEN_COOKIE = SESSION_SECURE
-  ? `__Secure-next-auth.session-token`
-  : `next-auth.session-token`
-
-const wrappedAuthHandler = async (req: NextRequest, res: NextResponse) => {
-  const token = await getToken({ req })
-  const nextAuthResponse = await handler(req, res)
-  return maybePerformTokenRefresh(token, req, nextAuthResponse)
+const wrappedAuthHandler = async (req: NextRequest, context: RouteHandlerContext) => {
+  const nextAuthResponse = await handler(req, context)
+  return maybePerformTokenRefresh(nextAuthResponse)
 }
 
 export { wrappedAuthHandler as GET, wrappedAuthHandler as POST }
 
-async function maybePerformTokenRefresh(token: JWT | null, request: NextRequest, response: NextResponse) {
-  // Check if there is a Set-Cookie header with the NEXT_AUTH_SESSION_TOKEN_COOKIE name.
+async function maybePerformTokenRefresh(
+  // token: JWT | null,
+  response: NextResponse
+) {
+  // Check if there is a Set-Cookie header with the SESSION_COOKIE name.
   // If there is, we need to see if the token is expired and needs an update.
   // Return value of getSetCookie() is an array of strings: ['cookie1=value1', 'cookie2=value2', ...]
   const setCookieHeaders = response.headers.getSetCookie()
-  const nextAuthSessionTokenCookie = setCookieHeaders?.find((cookie) => cookie.includes(NEXT_AUTH_SESSION_TOKEN_COOKIE))
+  const nextAuthSessionTokenCookie = setCookieHeaders?.find((cookie) => cookie.includes(SESSION_COOKIE))
 
   if (!nextAuthSessionTokenCookie) {
     // No cookie found, nothing to update.
@@ -59,18 +86,18 @@ async function maybePerformTokenRefresh(token: JWT | null, request: NextRequest,
       const { data: newSession } = response
       updatedSessionToken = newSession
     } else if (customer) {
-      const response = await customerApiRequest.refreshToken(refreshToken)
+      const response = await customerAuthApiRequest.refreshToken(refreshToken)
       const { data: newSession } = response
       updatedSessionToken = newSession
     }
   } catch (error: any) {
-    console.error(`❌❌ [Middleware] Error refreshing tokens: ${error}`)
+    console.error(`❌ [Middleware] Error refreshing tokens: ${error}`)
     redirect('/logout')
     // const refreshErrorResponse = response.clone()
     // refreshErrorResponse.headers.delete('Set-Cookie')
     // refreshErrorResponse.headers.set(
     //   'Set-Cookie',
-    //   createAuthCookieString(NEXT_AUTH_SESSION_TOKEN_COOKIE, '', {
+    //   createAuthCookieString(SESSION_COOKIE, '', {
     //     maxAge: 0,
     //     path: '/',
     //     sameSite: 'Lax'
@@ -89,7 +116,7 @@ async function maybePerformTokenRefresh(token: JWT | null, request: NextRequest,
     maxAge: decodedRefreshToken.exp
   })
 
-  const newCookieValue = createAuthCookieString(NEXT_AUTH_SESSION_TOKEN_COOKIE, newSessionToken, {
+  const newCookieValue = createAuthCookieString(SESSION_COOKIE, newSessionToken, {
     httpOnly: true,
     maxAge: decodedRefreshToken.exp, // seconds
     secure: SESSION_SECURE,

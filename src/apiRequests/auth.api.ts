@@ -1,21 +1,23 @@
-import http from '@/lib/http'
 import { LoginBodyType } from '@/schemaValidations/auth.schema'
 import { IAuthEmployee } from '@/types/auth.type'
 import { LoginOAuthBodyType } from '@/types/backend.dto'
 import { ApiResponse } from '@/types/response.type'
+import httpServer from '@/lib/http.server'
+
+const prefix = '/auth'
 
 const authApiRequest = {
   login: (body: LoginBodyType) => {
-    return http.post<ApiResponse<IAuthEmployee>>('/auth/login', body)
+    return httpServer.post<ApiResponse<IAuthEmployee>>(`${prefix}/login`, body)
   },
   loginOAuth: (body: LoginOAuthBodyType) => {
-    return http.post<ApiResponse<IAuthEmployee>>('/auth/login/oauth', body)
+    return httpServer.post<ApiResponse<IAuthEmployee>>(`${prefix}/login/oauth`, body)
   },
-  logout: (refreshToken: string) => {
-    return http.post<ApiResponse<[]>>('/auth/logout', { refreshToken })
-  },
+  // logout: ({ accessToken, refreshToken }: { refreshToken: string; accessToken: string }) => {
+  //   return httpServer.post<ApiResponse<[]>>(`${prefix}/logout`, { refreshToken, accessToken })
+  // },
   refreshToken: (refreshToken: string) => {
-    return http.post<ApiResponse<IAuthEmployee>>('/auth/refresh-token', { refreshToken })
+    return httpServer.post<ApiResponse<IAuthEmployee>>(`${prefix}/refresh-token`, { refreshToken })
   }
 }
 

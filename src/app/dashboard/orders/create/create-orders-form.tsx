@@ -53,7 +53,7 @@ export default function CreateOrdersForm({ promises }: CreateOrdersFormProps) {
     try {
       const { tableNumber } = values
       if (selectedOrderItems.length === 0) {
-        toast.error('Vui lòng chọn món ăn')
+        toast.error('Vui lòng chọn món ăn!')
         return
       }
       const items: OrderItemDto[] = selectedOrderItems.map((orderItem) => ({ ...orderItem, dish: orderItem.dish._id }))
@@ -74,7 +74,7 @@ export default function CreateOrdersForm({ promises }: CreateOrdersFormProps) {
         <Link href={'/dashboard/orders'}>Quay lại</Link>
       </div>
       <div className='flex items-start justify-between'>
-        <h2 className='text-xl font-medium'>Tạo đơn hàng</h2>
+        <h2 className='text-xl font-semibold'>Tạo đơn hàng</h2>
       </div>
       <div className='mt-5'>
         <Card>

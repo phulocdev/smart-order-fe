@@ -1,17 +1,18 @@
 import authApiRequest from '@/apiRequests/auth.api'
-import customerApiRequest from '@/apiRequests/customer.api'
 import envServerConfig from '@/config/env.server'
 import { SocialProvider } from '@/constants/enum'
 import { HttpError } from '@/lib/errors'
-import { SESSION_TIMEOUT } from '@/middleware'
 import { AuthOptions, getServerSession, Session } from 'next-auth'
 import { type JWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GitHubProvider from 'next-auth/providers/github'
 import GoogleProvider from 'next-auth/providers/google'
+import type { NextAuthOptions } from 'next-auth'
 import * as forge from 'node-forge'
+import { SESSION_TIMEOUT } from '@/config/next-auth'
+import customerAuthApiRequest from '@/apiRequests/customer-auth.api'
 
-const authOptions: AuthOptions = {
+const authOptions: NextAuthOptions = {
   secret: envServerConfig.NEXTAUTH_SECRET,
   pages: { signIn: '/login' },
   session: {
@@ -83,7 +84,7 @@ const authOptions: AuthOptions = {
         if (credentials?.tableToken) {
           const { tableToken } = credentials
           try {
-            const res = await customerApiRequest.login({ tableToken: tableToken })
+            const res = await customerAuthApiRequest.login({ tableToken: tableToken })
             const user = res.data as any
             return user
           } catch (error) {
@@ -179,7 +180,7 @@ const authOptions: AuthOptions = {
       return session
     }
   }
-}
+} satisfies NextAuthOptions
 
 /**
  * Helper function to get the session on the server without having to import the authOptions object every single time

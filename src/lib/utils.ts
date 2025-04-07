@@ -6,7 +6,6 @@ import { clsx, type ClassValue } from 'clsx'
 import { getDay } from 'date-fns'
 import {
   Ban,
-  Banknote,
   CheckCircle,
   CheckCircle2,
   CircleCheck,
@@ -190,6 +189,21 @@ export function translateOrderKey(key: keyof IOrder): string {
   return orderKeyTranslations[key]
 }
 
+export const billKeyTranslations: Record<keyof IBill, string> = {
+  billCode: 'Mã phiếu',
+  totalPrice: 'Tổng tiền',
+  customerCode: 'Mã khách hàng',
+  tableNumber: 'Số bàn',
+  account: 'Người tạo',
+  orderItems: 'Chi tiết đơn hàng',
+  createdAt: 'Ngày tạo',
+  updatedAt: 'Ngày cập nhật'
+}
+
+export function translateBillKey(key: keyof IBill): string {
+  return billKeyTranslations[key]
+}
+
 export const dishKeyTranslations: Record<keyof IDish, string> = {
   _id: 'Mã món ăn',
   title: 'Món ăn',
@@ -200,21 +214,6 @@ export const dishKeyTranslations: Record<keyof IDish, string> = {
   category: 'Danh mục',
   createdAt: 'Ngày tạo',
   updatedAt: 'Ngày cập nhật'
-}
-
-export const billKeyTranslations: Record<keyof IBill, string> = {
-  billCode: 'Mã phiếu',
-  totalPrice: 'Tổng tiền',
-  customerCode: 'Mã khách hàng',
-  tableNumer: 'Số bàn',
-  account: 'Người tạo',
-  orderItems: 'Chi tiết đơn hàng',
-  createdAt: 'Ngày tạo',
-  updatedAt: 'Ngày cập nhật'
-}
-
-export function translateBillKey(key: keyof IBill): string {
-  return billKeyTranslations[key]
 }
 
 export function translateDishKey(key: keyof IDish): string {
@@ -251,4 +250,23 @@ export function getIconOfOrderStatus(status: OrderStatus) {
     default:
       return null
   }
+}
+
+export function formatDate(date: Date | string | number | undefined, opts: Intl.DateTimeFormatOptions = {}) {
+  if (!date) return ''
+
+  try {
+    return new Intl.DateTimeFormat('en-US', {
+      month: opts.month ?? 'long',
+      day: opts.day ?? 'numeric',
+      year: opts.year ?? 'numeric',
+      ...opts
+    }).format(new Date(date))
+  } catch (_err) {
+    return ''
+  }
+}
+
+export function toSentenceCase(str: string) {
+  return str.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
 }

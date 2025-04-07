@@ -44,7 +44,7 @@ export function getColumns({ handleSelectOrder, selectedOrderItems }: GetColumns
       accessorKey: 'select',
       enableSorting: false,
       enableColumnFilter: false,
-      header: () => <span className='text-left'>Số lượng</span>,
+      header: 'Số lượng',
       cell: ({ row }) => (
         <div className='max-w-[150px]'>
           <QuantitySelect
@@ -58,7 +58,10 @@ export function getColumns({ handleSelectOrder, selectedOrderItems }: GetColumns
     {
       accessorKey: 'totalPrice',
       header: () => 'Tổng tiền',
-      cell: ({ row }) => <div>{formatNumberToVnCurrency(row.original.price)}</div>
+      cell: ({ row }) => {
+        const quantity = selectedOrderItems.find((orderItem) => orderItem.dish._id === row.original._id)?.quantity ?? 0
+        return <div>{formatNumberToVnCurrency(quantity * row.original.price)}</div>
+      }
     },
     { accessorKey: 'createdAt', header: '', cell: '', size: 0, enableHiding: false }
   ]

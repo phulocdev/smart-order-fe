@@ -9,7 +9,7 @@ import React from 'react'
 export default async function Page() {
   const session = await getAuthSession()
   const accessToken = session?.accessToken ?? ''
-  const promises = Promise.all([dishApiRequest.getList(accessToken), tableApiRequest.getList(accessToken)])
+  const promises = Promise.all([dishApiRequest.getList(), tableApiRequest.getList(accessToken)])
 
   if (session?.account?.role === Role.Chef) {
     redirect('/dashboard/orders')

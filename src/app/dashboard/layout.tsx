@@ -28,8 +28,8 @@ export default async function DashboardLayout({
           <SidebarTrigger />
           <div className='flex items-center gap-x-3'>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild className='cursor-pointer'>
-                <Avatar>
+              <DropdownMenuTrigger asChild>
+                <Avatar className='cursor-pointer'>
                   <AvatarImage src={account?.avatarUrl} />
                   <AvatarFallback>{account?.fullName.substring(0, 2)}</AvatarFallback>
                 </Avatar>

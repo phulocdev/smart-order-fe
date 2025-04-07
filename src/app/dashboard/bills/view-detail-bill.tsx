@@ -35,12 +35,7 @@ interface ViewDetailInvoiceDialogProps extends React.ComponentPropsWithoutRef<ty
   onSuccess?: () => void
 }
 
-export default function ViewDetailInvoiceDialog({
-  bill,
-  showTrigger = true,
-  onSuccess,
-  ...props
-}: ViewDetailInvoiceDialogProps) {
+export default function ViewDetailInvoiceDialog({ bill, showTrigger = true, ...props }: ViewDetailInvoiceDialogProps) {
   const isDesktop = useMediaQuery('(min-width: 640px)')
   const [isPrinting, setIsPrinting] = React.useState(false)
 
@@ -77,6 +72,10 @@ export default function ViewDetailInvoiceDialog({
                     <TableCell>{bill.customerCode}</TableCell>
                   </TableRow>
                   <TableRow>
+                    <TableHead>{translateBillKey('tableNumber')}</TableHead>
+                    <TableCell>{bill.tableNumber}</TableCell>
+                  </TableRow>
+                  <TableRow>
                     <TableHead>{translateBillKey('orderItems')}</TableHead>
                     <TableCell>
                       <div className='flex flex-col gap-y-3'>
@@ -89,6 +88,10 @@ export default function ViewDetailInvoiceDialog({
                         ))}
                       </div>
                     </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableHead>{translateBillKey('account')}</TableHead>
+                    <TableCell>{bill.account?.fullName}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableHead>{translateBillKey('createdAt')}</TableHead>

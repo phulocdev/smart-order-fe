@@ -75,7 +75,6 @@ export function OrdersTable({ promises, session }: OrdersTableProps) {
     columns,
     pageCount: meta.totalPages,
     filterFields,
-    // enableAdvancedFilter: enableAdvancedTable,
     initialState: {
       sorting: [{ id: 'createdAt', desc: true }],
       columnPinning: { right: ['actions'] },
@@ -125,8 +124,7 @@ export function OrdersTable({ promises, session }: OrdersTableProps) {
           ))}
         </div>
       )}
-      <div className='h-3'></div>
-      <DataTable table={table}>
+      <DataTable className='mt-3' table={table} tableDivClassName='max-h-[65vh] custom-scrollbar rounded-sm'>
         <DataTableToolbar table={table} filterFields={filterFields} translateHeaderFunc={translateOrderKey as any}>
           <OrdersTableToolbarActions table={table} />
         </DataTableToolbar>

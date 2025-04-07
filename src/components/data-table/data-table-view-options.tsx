@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>
-  translateHeaderFunc: (key: string) => string
+  translateHeaderFunc?: (key: string) => string
 }
 
 export function DataTableViewOptions<TData>({ table, translateHeaderFunc }: DataTableViewOptionsProps<TData>) {
@@ -46,7 +46,9 @@ export function DataTableViewOptions<TData>({ table, translateHeaderFunc }: Data
                 .map((column) => {
                   return (
                     <CommandItem key={column.id} onSelect={() => column.toggleVisibility(!column.getIsVisible())}>
-                      <span className='truncate'>{translateHeaderFunc(column.id)}</span>
+                      <span className='truncate'>
+                        {translateHeaderFunc ? translateHeaderFunc(column.id) : column.id}
+                      </span>
                       <Check
                         className={cn('ml-auto size-4 shrink-0', column.getIsVisible() ? 'opacity-100' : 'opacity-0')}
                       />

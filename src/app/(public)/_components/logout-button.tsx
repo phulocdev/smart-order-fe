@@ -1,7 +1,5 @@
 'use client'
 
-import authApiRequest from '@/apiRequests/auth.api'
-import customerApiRequest from '@/apiRequests/customer.api'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,28 +12,46 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
+import http from '@/lib/http'
 import { handleApiError } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'
+import { ApiResponse } from '@/types/response.type'
 import { Session } from 'next-auth'
 import { signOut } from 'next-auth/react'
 
 export default function LogoutButton({ session }: { session: Session }) {
-  const { refreshToken } = session
+  const { refreshToken, accessToken } = session
   const clearOrderInCart = useAppStore((state) => state.clearOrderInCart)
 
   const onLogout = async () => {
     try {
       if (session.account) {
         // Không dùng redirect: false ở đây, vì nó sẽ k  reload lại page -> vẫn ở page đang thực hiện logout
-        // Ko dung promise.all boi vi trong th AT het hạn thi login khong thanh cong
+        // Ko dung promise.all boi vi trong TH AT het hạn thi logout khong thanh cong
         // await Promise.all([signOut({ callbackUrl: '/login' }), authApiRequest.logout(refreshToken)])
         await signOut({ callbackUrl: '/login' })
-        await authApiRequest.logout(refreshToken)
+        await http.post<ApiResponse<[]>>(
+          '/auth/logout',
+          { refreshToken },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`
+            }
+          }
+        )
       } else {
         // await Promise.all([signOut({ callbackUrl: '/' }), customerApiRequest.logout(refreshToken)])
         await signOut({ callbackUrl: '/' })
         clearOrderInCart()
-        await customerApiRequest.logout(refreshToken)
+        await http.post<ApiResponse<[]>>(
+          '/customers/auth/logout',
+          { refreshToken },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`
+            }
+          }
+        )
       }
     } catch (error) {
       handleApiError({ error })

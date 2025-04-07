@@ -48,7 +48,7 @@ export default async function IndexPage(props: IndexPageProps) {
         <React.Suspense fallback={<Skeleton className='h-7 w-52' />}>
           <DateRangePicker
             triggerSize='sm'
-            triggerClassName='w-56 sm:w-60'
+            triggerClassName='w-56 sm:w-60 font-medium'
             align='start'
             shallow={false}
             placeholder='Chọn ngày'

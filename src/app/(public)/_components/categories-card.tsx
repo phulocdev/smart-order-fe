@@ -5,7 +5,7 @@ import { useMediaQuery } from '@/hooks/use-media-query'
 import { ICategory } from '@/types/backend.type'
 import { Link } from 'react-scroll'
 import * as React from 'react'
-import { HEADER_HEIGHT } from '@/config/internal-data'
+import { HEADER_HEIGHT } from '@/constants/internal-data'
 
 interface Props {
   categoryListData: ICategory[]
@@ -23,7 +23,7 @@ export default function CategoriesCard({ categoryListData }: Props) {
               <Link
                 key={category._id}
                 to={`section-${index}`}
-                offset={-(HEADER_HEIGHT + 80)}
+                offset={-(HEADER_HEIGHT + 25)}
                 activeClass='border-red-600 text-red-600'
                 spy
                 smooth
@@ -50,7 +50,7 @@ export default function CategoriesCard({ categoryListData }: Props) {
         <Link
           key={category._id}
           to={`section-${index}`}
-          offset={-(HEADER_HEIGHT + 80)}
+          offset={-(HEADER_HEIGHT + 25)}
           activeClass='border-red-600 text-red-600'
           spy
           smooth

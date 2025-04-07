@@ -15,7 +15,7 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet'
 import { useCreateOrderByCustomerMutation } from '@/hooks/api/useCustomer'
-import { cn, formatNumberToVnCurrency, handleApiError } from '@/lib/utils'
+import { formatNumberToVnCurrency, handleApiError } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'
 import { OrderItemDto } from '@/types/backend.dto'
 import { ShoppingCart, Trash } from 'lucide-react'

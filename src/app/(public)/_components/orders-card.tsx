@@ -1,18 +1,7 @@
 'use client'
 import QuantitySelect from '@/components/quantity-select'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { HEADER_HEIGHT, ORDER_DRAWER_HEIGHT, QUANTITY_SELECT_MAX } from '@/config/internal-data'
-import { useCreateOrderByCustomerMutation } from '@/hooks/api/useCustomer'
-import { useMediaQuery } from '@/hooks/use-media-query'
-import { cn, formatNumberToVnCurrency, handleApiError } from '@/lib/utils'
-import { useAppStore } from '@/providers/zustand-provider'
-import { OrderItemDto } from '@/types/backend.dto'
-import { Loader, SquareX, X } from 'lucide-react'
-import { Session } from 'next-auth'
-import { useRouter } from 'next/navigation'
-import React, { useMemo } from 'react'
-import { toast } from 'sonner'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Drawer,
   DrawerClose,
@@ -22,6 +11,16 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from '@/components/ui/drawer'
+import { HEADER_HEIGHT, QUANTITY_SELECT_MAX } from '@/constants/internal-data'
+import { useCreateOrderByCustomerMutation } from '@/hooks/api/useCustomer'
+import { useMediaQuery } from '@/hooks/use-media-query'
+import { cn, formatNumberToVnCurrency, handleApiError } from '@/lib/utils'
+import { useAppStore } from '@/providers/zustand-provider'
+import { OrderItemDto } from '@/types/backend.dto'
+import { Loader, SquareX } from 'lucide-react'
+import { Session } from 'next-auth'
+import { useRouter } from 'next/navigation'
+import React, { useMemo } from 'react'
 
 interface Props {
   session: Session | null
@@ -45,10 +44,6 @@ export default function OrdersCard({ session }: Props) {
 
   const handleRemoveOrder = (dishId: string) => {
     removeOrderItem(dishId)
-  }
-
-  const onOrderNoteChange = (dishId: string) => (noteContent: string) => {
-    updateOrderItem(dishId, { note: noteContent })
   }
 
   const onOrderQuantityChange = (dishId: string) => (quantity: number) => {
@@ -80,6 +75,7 @@ export default function OrdersCard({ session }: Props) {
           </CardHeader>
         )}
         <CardContent className='pr-0'>
+          <h3 className='py-3 text-center'>Bàn số: {session?.customer?.tableNumber}</h3>
           <div className='custom-scrollbar flex max-h-[350px] flex-col gap-y-2 pr-4 pt-2 text-sm'>
             {orderItems.map((orderItem, index) => (
               <div className='border-b border-b-gray-200 py-2.5 pb-3 last:border-b-0 last:pb-0' key={index}>
