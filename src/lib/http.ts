@@ -86,12 +86,6 @@ const request = async <Response>(
 
   // ------------------------------------------- INTERCEPTOR SUCCESS RESPONSE  -------------------------------------------
 
-  // await new Promise((resolve) => {
-  //   setTimeout(() => {
-  //     resolve(true)
-  //   }, 3000)
-  // })
-
   const successResponse: Response = await res.json()
   return successResponse
 }

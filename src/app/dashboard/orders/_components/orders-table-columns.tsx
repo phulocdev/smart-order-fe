@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
+  cn,
   formatNumberToVnCurrency,
   getVietnameseOrderStatus,
   getVietnameseOrderStatusList,
@@ -24,6 +25,7 @@ import { format } from 'date-fns'
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { useUpdateOrderMutation } from '@/hooks/api/useOrder'
 
 interface GetColumnsProps {
   setRowAction: React.Dispatch<React.SetStateAction<DataTableRowAction<IOrder> | null>>
@@ -112,9 +114,9 @@ export function getColumns({ setRowAction, role }: GetColumnsProps): ColumnDef<I
       accessorKey: 'status',
       header: 'Trạng thái',
       cell: function Cell({ row }) {
-        const currentStatus = row.original.status
-        const [isUpdatePending, startUpdateTransition] = React.useTransition()
         const router = useRouter()
+        const currentStatus = row.original.status
+        const { isPending: isUpdatePending, mutateAsync: updateOrderMutateAsync } = useUpdateOrderMutation()
         return (
           <div className='relative'>
             {currentStatus === OrderStatus.Paid && (
@@ -130,24 +132,20 @@ export function getColumns({ setRowAction, role }: GetColumnsProps): ColumnDef<I
             )}
             <Select
               disabled={isUpdatePending}
-              onValueChange={(value) => {
-                startUpdateTransition(() => {
-                  toast.promise(
-                    orderApiRequest
-                      .update({
-                        id: row.original._id,
-                        body: { status: value as OrderStatus }
-                      })
-                      .then(() => {
-                        router.refresh()
-                      }),
-                    {
-                      loading: 'Đang cập nhật...',
-                      success: 'Cập nhật trạng thái đơn hàng thành công',
-                      error: (err) => getErrorMessage(err)
-                    }
-                  )
-                })
+              onValueChange={async (value) => {
+                toast.promise(
+                  updateOrderMutateAsync({
+                    id: row.original._id,
+                    body: { status: value as OrderStatus }
+                  }).then(() => {
+                    router.refresh()
+                  }),
+                  {
+                    loading: 'Đang cập nhật...',
+                    success: 'Cập nhật trạng thái đơn hàng thành công',
+                    error: (err) => getErrorMessage(err)
+                  }
+                )
               }}
             >
               <SelectTrigger>

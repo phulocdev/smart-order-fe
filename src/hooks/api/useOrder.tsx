@@ -8,3 +8,7 @@ export function useUpdateOrderMutation() {
 export function useCreateOrderMutation() {
   return useMutation({ mutationFn: orderApiRequest.create })
 }
+
+export function useCheckoutOrdersMutation() {
+  return useMutation({ mutationFn: orderApiRequest.checkout })
+}

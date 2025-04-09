@@ -1,5 +1,4 @@
 import LogoutButton from '@/app/(public)/_components/logout-button'
-import { getAuthSession } from '@/auth'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -10,12 +9,15 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { User } from 'lucide-react'
+import { Session } from 'next-auth'
 import Link from 'next/link'
 
-export default async function UserMenu() {
-  const session = await getAuthSession()
+interface Props {
+  session: Session | null
+}
+
+export default async function UserMenu({ session }: Props) {
   const isEmployee = !!session?.account
-  const isCustomer = !!session?.customer
 
   return (
     <DropdownMenu modal={false}>
@@ -38,13 +40,6 @@ export default async function UserMenu() {
           <DropdownMenuItem>
             <Link href={'/dashboard'} className='w-full'>
               Quản lý
-            </Link>
-          </DropdownMenuItem>
-        )}
-        {isCustomer && (
-          <DropdownMenuItem>
-            <Link href={'/customer/orders'} className='w-full'>
-              Đơn hàng
             </Link>
           </DropdownMenuItem>
         )}

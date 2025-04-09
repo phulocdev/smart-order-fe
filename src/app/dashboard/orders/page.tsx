@@ -12,7 +12,8 @@ import Link from 'next/link'
 import * as React from 'react'
 import { getAuthSession } from '@/auth'
 import { orderSearchParamsCache } from '@/app/dashboard/orders/_lib/validations'
-import { Role } from '@/constants/enum'
+import { OrderStatus, Role } from '@/constants/enum'
+import { OrderQuery } from '@/types/search-params.type'
 
 interface IndexPageProps {
   searchParams: Promise<SearchParams>
@@ -21,11 +22,14 @@ interface IndexPageProps {
 export default async function IndexPage(props: IndexPageProps) {
   const session = await getAuthSession()
   const accessToken = session?.accessToken ?? ''
+
   const searchParams = await props.searchParams
   const search = orderSearchParamsCache.parse(searchParams)
   const params = transformOrderQuery(search)
+  const orderParamsForChef: OrderQuery = session?.account?.role === Role.Chef ? { status: OrderStatus.Confirmed } : {}
+
   const promises = Promise.all([
-    orderApiRequest.getList(accessToken, params),
+    orderApiRequest.getList(accessToken, { ...params, ...orderParamsForChef }),
     tableApiRequest.getList(accessToken),
     orderApiRequest.statisticsByTables(accessToken)
   ])

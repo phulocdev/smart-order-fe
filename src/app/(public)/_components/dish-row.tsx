@@ -58,7 +58,7 @@ export default function DishRow({ dish, session }: Props) {
 
   if (isDesktop) {
     return (
-      <Dialog open={!session?.customer ? false : undefined}>
+      <Dialog open={!session?.customer || dish.status === DishStatus.Unavailable ? false : undefined}>
         <DialogTrigger
           asChild
           onClick={() => {
@@ -164,10 +164,14 @@ export default function DishRow({ dish, session }: Props) {
   }
 
   return (
-    <Drawer open={!session?.customer ? false : open} onOpenChange={setOpen}>
+    <Drawer open={!session?.customer || dish.status === DishStatus.Unavailable ? false : open} onOpenChange={setOpen}>
       <DrawerTrigger
         asChild
         onClick={() => {
+          if (dish.status === DishStatus.Unavailable) {
+            return
+          }
+
           if (!session?.customer) {
             toast.error('Vui lòng quét mã QR để có thể đặt món!', { icon: <span>❌</span> })
           }
@@ -193,8 +197,16 @@ export default function DishRow({ dish, session }: Props) {
             </div>
             <div className='flex items-center gap-x-2 pt-4'>
               <div className='font-heading font-semibold text-red-600'>{formatNumberToVnCurrency(dish.price)}</div>
-              <div className='ml-auto'>
-                <button className='flex aspect-square w-9 items-center justify-center rounded-full bg-third text-third-foreground'>
+              <div className='ml-auto inline-flex gap-x-3'>
+                {dish.status === DishStatus.Unavailable && <Badge variant={'ghost'}>Hết hàng</Badge>}
+                <button
+                  className={cn(
+                    'flex aspect-square w-9 items-center justify-center rounded-full bg-third text-third-foreground',
+                    {
+                      'cursor-not-allowed opacity-70': dish.status === DishStatus.Unavailable
+                    }
+                  )}
+                >
                   <Plus size={18} />
                 </button>
               </div>

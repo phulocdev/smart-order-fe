@@ -15,41 +15,58 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import orderApiRequest from '@/apiRequests/order.api'
 import { getErrorMessage } from '@/lib/handle-error'
+import { useCheckoutOrdersMutation } from '@/hooks/api/useOrder'
 
 export default function StatisticCard({ statistic }: { statistic: IStatisticOrders }) {
   const router = useRouter()
   const { tableNumber, orders: orderList, statusCounts } = statistic
   const customer = orderList.length > 0 ? orderList[0].customer : undefined
   const totalPrice = orderList.reduce((result, order) => result + order.totalPrice, 0)
-  const orderShouldPaidList = orderList.filter(
-    (order) => ![OrderStatus.Paid, OrderStatus.Canceled, OrderStatus.Rejected].includes(order.status)
+
+  const orderCanceledOrRejectedLength = orderList.filter((order) =>
+    [OrderStatus.Canceled, OrderStatus.Rejected].includes(order.status)
+  ).length
+  const orderPaidLength = orderList.filter((order) => [OrderStatus.Paid].includes(order.status)).length
+  const orderUnPaidLength = orderList.length - orderPaidLength - orderCanceledOrRejectedLength
+  const canCompleteOrders = orderList.every((order) =>
+    [OrderStatus.Canceled, OrderStatus.Paid, OrderStatus.Rejected, OrderStatus.Served].includes(order.status)
   )
 
-  const [isCheckoutPending, startCheckoutTransition] = React.useTransition()
+  const { isPending: isCheckoutPending, mutateAsync: checkoutMutateAsync } = useCheckoutOrdersMutation()
   const checkoutOrders = () => {
     if (!customer) return
-    startCheckoutTransition(() => {
+    if (orderList.length === orderCanceledOrRejectedLength) {
       toast.promise(
-        orderApiRequest.checkout(customer._id).then(() => router.refresh()),
+        checkoutMutateAsync(customer._id).then(() => router.refresh()),
         {
-          loading: orderShouldPaidList.length > 0 ? 'Đang thanh toán...' : 'Đang xuất hóa đơn...',
-          success: orderShouldPaidList.length > 0 ? 'Thanh toán thành công' : 'Xuất hóa đơn thành công',
-          error: (err) => getErrorMessage(err),
-          action: !isCheckoutPending ? (
-            <Button
-              size={'sm'}
-              onClick={() => {
-                router.push(`/dashboard/bills?customerCode=${customer.code}`)
-              }}
-            >
-              Xem hóa đơn
-            </Button>
-          ) : (
-            <span></span>
-          )
+          loading: 'Đang hoàn tất đơn hàng...',
+          success: 'Đã hoàn tất đơn hàng',
+          error: (err) => getErrorMessage(err)
         }
       )
-    })
+      return
+    }
+
+    toast.promise(
+      checkoutMutateAsync(customer._id).then(() => router.refresh()),
+      {
+        loading: orderUnPaidLength > 0 ? 'Đang thanh toán...' : 'Đang xuất hóa đơn...',
+        success: orderUnPaidLength > 0 ? 'Thanh toán thành công' : 'Xuất hóa đơn thành công',
+        error: (err) => getErrorMessage(err)
+        // action: (
+        //   <Button
+        //     size={'sm'}
+        //     disabled={isCheckoutPending}
+        //     className={cn({ 'cursor-not-allowed': isCheckoutPending })}
+        //     onClick={() => {
+        //       router.push(`/dashboard/bills?customerCode=${customer.code}`)
+        //     }}
+        //   >
+        //     Xem hóa đơn
+        //   </Button>
+        // )
+      }
+    )
   }
 
   return (
@@ -187,14 +204,29 @@ export default function StatisticCard({ statistic }: { statistic: IStatisticOrde
                 {formatNumberToVnCurrency(totalPrice)}
               </Badge>
             </div>
-            <Button
-              disabled={isCheckoutPending}
-              className='mt-2 w-full text-sm'
-              variant={'outline'}
-              onClick={checkoutOrders}
-            >
-              {orderShouldPaidList.length > 0 ? `Thanh toán (${orderShouldPaidList.length}) đơn` : 'Xuất hóa đơn'}
-            </Button>
+            {/* TH: Tất cả các đơn hàng đã bị HỦY hoặc TỪ CHỐI thì cần hoàn thành đơn hàng */}
+            {canCompleteOrders && orderList.length === orderCanceledOrRejectedLength && (
+              <Button
+                disabled={isCheckoutPending}
+                className='mt-2 w-full text-sm'
+                variant={'outline'}
+                onClick={checkoutOrders}
+              >
+                Hoàn tất đơn hàng
+              </Button>
+            )}
+
+            {/* Trong trường hợp mà còn đơn CHƯA THANH TOÁN hoặc ĐÃ THANH TOÁN TẤT CẢ -> cần xuất hóa đơn */}
+            {canCompleteOrders && orderList.length !== orderCanceledOrRejectedLength && (
+              <Button
+                disabled={isCheckoutPending}
+                className='mt-2 w-full text-sm'
+                variant={'outline'}
+                onClick={checkoutOrders}
+              >
+                {orderUnPaidLength > 0 ? `Thanh toán (${orderUnPaidLength}) đơn` : 'Xuất hóa đơn'}
+              </Button>
+            )}
           </>
         </HoverCardContent>
       )}
