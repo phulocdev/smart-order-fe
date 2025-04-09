@@ -1,16 +1,14 @@
 import categoryApiRequest from '@/apiRequests/category.api'
 import dishApiRequest from '@/apiRequests/dish.api'
 import CategoriesCard from '@/app/(public)/_components/categories-card'
-import DishList from '@/app/(public)/_components/dish-list'
+import DishesGroupCard from '@/app/(public)/_components/dishes-group-card'
 import OrdersCard from '@/app/(public)/_components/orders-card'
 import ScrollToTopButton from '@/app/(public)/_components/scroll-to-top-button'
-import { getAuthSession } from '@/auth'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import Image from 'next/image'
+import React from 'react'
 
 export default async function Page() {
-  const session = await getAuthSession()
-
   const [{ data: dishListData }, { data: categoryListData }] = await Promise.all([
     dishApiRequest.getList(),
     categoryApiRequest.getList()
@@ -75,14 +73,26 @@ export default async function Page() {
             <CategoriesCard categoryListData={categoryListData} />
           </div>
 
-          {/* -------------------- Dish list for each category   --------------------*/}
+          {/* -------------------- Dish list of each category   --------------------*/}
           <div className='px-3 md:px-10 lg:col-span-12 lg:px-0'>
-            <DishList categoryListData={categoryListData} dishListData={dishListData} session={session} />
+            {categoryListData.map((category, catIdx) => {
+              const totalDishRow = 0
+              const dishList = dishListData.filter((dish) => dish.category?._id === category._id)
+              return (
+                <DishesGroupCard
+                  key={category._id}
+                  catIdx={catIdx}
+                  category={category}
+                  dishList={dishList}
+                  totalDishRow={totalDishRow}
+                />
+              )
+            })}
           </div>
 
           {/* -------------------- Orders List   --------------------*/}
           <div className='col-span-7'>
-            <OrdersCard session={session} />
+            <OrdersCard />
           </div>
         </div>
       </section>

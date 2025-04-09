@@ -19,7 +19,6 @@ interface Prop {
   dishTitle?: string
   onSubmit?: (noteContent: string) => void
   className?: string
-  resetAfterSubmit?: boolean
 }
 
 export default function OrderNote({

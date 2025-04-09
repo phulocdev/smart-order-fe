@@ -1,4 +1,3 @@
-import { getAuthSession } from '@/auth'
 import Providers from '@/providers/providers'
 import { SocketProvider } from '@/providers/socket-provider'
 import { ThemeProvider } from '@/providers/theme-provider'
@@ -26,13 +25,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await getAuthSession()
   return (
     <html lang='en' suppressHydrationWarning>
       <body
         className={`${quicksand.className} ${quicksand.variable} ${oswald.variable} relative flex min-h-screen flex-col [&::-webkit-scrollbar]:w-0`}
       >
-        <Providers session={session}>
+        <Providers>
           <SocketProvider>
             <ThemeProvider attribute='class' defaultTheme='light' enableSystem disableTransitionOnChange>
               {children}

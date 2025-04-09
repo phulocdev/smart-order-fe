@@ -1,3 +1,4 @@
+import OrderNote from '@/app/(public)/_components/order-note'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
 import QuantitySelect from '@/components/quantity-select'
 import { formatNumberToVnCurrency, removeVietNamAccent, translateDishKey } from '@/lib/utils'
@@ -22,14 +23,17 @@ export function getColumns({ handleSelectOrder, selectedOrderItems }: GetColumns
       header: translateDishKey('title'),
       cell: ({ row }) => (
         <div className='flex items-start gap-x-3'>
-          <Image
-            width={128}
-            height={128}
-            sizes='100vw'
-            className='h-32 w-32 rounded-sm object-cover'
-            alt={row.original.title}
-            src={row.original.imageUrl}
-          />
+          <div className='relative'>
+            <Image
+              width={128}
+              height={128}
+              sizes='100vw'
+              className='h-32 w-32 rounded-sm object-cover'
+              alt={row.original.title}
+              src={row.original.imageUrl}
+            />
+            <OrderNote className='absolute left-0 top-0' />
+          </div>
           <div className='line-clamp-2'>{row.original.title}</div>
         </div>
       )

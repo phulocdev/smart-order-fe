@@ -47,9 +47,9 @@ export function CreateOrdersTable({ dishData }: CreateOrdersTableProps) {
 
       // TH1: Thêm mới
       if (selectedOrderItemIdx < 0) {
-        // TODO: nhan vien co the them/cap nhat note cho tung orderItem
         return addOrderItem({ dish, note: '', price: dish.price, quantity })
       }
+
       // TH2: Xóa
       if (quantity === 0) {
         return removeOrderItem(dish._id)

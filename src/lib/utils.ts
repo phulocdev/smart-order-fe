@@ -1,6 +1,7 @@
 import { variants } from '@/components/ui/badge'
 import { DishStatus, OrderStatus, TableStatus } from '@/constants/enum'
 import { EntityError } from '@/lib/errors'
+import { OrderItemState } from '@/providers/zustand-provider'
 import { IBill, IDish, IOrder } from '@/types/backend.type'
 import { clsx, type ClassValue } from 'clsx'
 import { getDay } from 'date-fns'
@@ -18,6 +19,8 @@ import {
 import { UseFormSetError } from 'react-hook-form'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
+
+const isClient = typeof window !== 'undefined'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -267,4 +270,47 @@ export function formatDate(date: Date | string | number | undefined, opts: Intl.
 
 export function toSentenceCase(str: string) {
   return str.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
+}
+
+export function getOrderItemsFromLS() {
+  if (isClient) {
+    const orderItemJSON = localStorage.getItem('cart')
+    return orderItemJSON ? JSON.parse(orderItemJSON) : []
+  }
+}
+
+export function addOrderItemToLS(newOrderItem: OrderItemState) {
+  if (isClient) {
+    const orderItemJSON = localStorage.getItem('cart')
+    const orderItems = orderItemJSON ? JSON.parse(orderItemJSON) : []
+    localStorage.setItem('cart', JSON.stringify([...orderItems, newOrderItem]))
+  }
+}
+
+export function removeOrderItemFromLS(dishId: string) {
+  if (isClient) {
+    const orderItemJSON = localStorage.getItem('cart')
+    const orderItems: OrderItemState[] = orderItemJSON ? JSON.parse(orderItemJSON) : []
+    const filteredOrderItems = orderItems.filter((orderItem) => orderItem.dish._id !== dishId)
+    localStorage.setItem('cart', JSON.stringify(filteredOrderItems))
+  }
+}
+
+export function updateOrderItemInLS(dishId: string, payload: { quantity?: number; note?: string }) {
+  if (isClient) {
+    const orderItemJSON = localStorage.getItem('cart')
+    const orderItems: OrderItemState[] = orderItemJSON ? JSON.parse(orderItemJSON) : []
+
+    const targetOrderItemIdx = orderItems.findIndex((orderItem) => orderItem.dish._id === dishId)
+    const targetOrderItem = orderItems[targetOrderItemIdx]
+
+    orderItems[targetOrderItemIdx] = { ...targetOrderItem, ...payload }
+    localStorage.setItem('cart', JSON.stringify(orderItems))
+  }
+}
+
+export function clearOrderItemFromLS() {
+  if (isClient) {
+    localStorage.removeItem('cart')
+  }
 }

@@ -18,15 +18,12 @@ import { cn, formatNumberToVnCurrency, handleApiError } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'
 import { OrderItemDto } from '@/types/backend.dto'
 import { Loader, SquareX } from 'lucide-react'
-import { Session } from 'next-auth'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import React, { useMemo } from 'react'
 
-interface Props {
-  session: Session | null
-}
-
-export default function OrdersCard({ session }: Props) {
+export default function OrdersCard() {
+  const { data: session } = useSession()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const [open, setOpen] = React.useState(false)
 

@@ -77,7 +77,7 @@ export default function QuantitySelect({ initialValue = 1, max, min = 1, onChang
       </Button>
       <Input
         value={quantity}
-        className='aspect-square w-16 border-gray-300 bg-white text-center text-sm placeholder:text-center focus:outline-none dark:bg-slate-800'
+        className='mb-[1px] aspect-square w-16 border-gray-300 bg-white text-center text-sm placeholder:text-center focus:outline-none dark:bg-slate-800'
         pattern='[0-9]'
         onChange={handleInputChange}
       />
