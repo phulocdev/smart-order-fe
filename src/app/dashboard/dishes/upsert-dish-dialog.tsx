@@ -57,6 +57,7 @@ export default function UpsertDishDialog({
       description: '',
       imageUrl: '',
       price: 0,
+      cookingTime: 1,
       category: categoryListData[0]._id,
       status: DishStatus.Available
     }
