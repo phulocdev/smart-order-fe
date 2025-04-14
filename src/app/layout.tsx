@@ -2,13 +2,15 @@ import Providers from '@/providers/providers'
 import { SocketProvider } from '@/providers/socket-provider'
 import { ThemeProvider } from '@/providers/theme-provider'
 import type { Metadata } from 'next'
-import { Oswald, Quicksand } from 'next/font/google'
+import { Inter, Oswald, Quicksand } from 'next/font/google'
 import './globals.css'
 
 const quicksand = Quicksand({
   subsets: ['latin'],
   variable: '--font-quicksand'
 })
+
+const inter = Inter({ subsets: ['vietnamese'], variable: '--font-inter' })
 
 const oswald = Oswald({
   subsets: ['latin'],
@@ -28,7 +30,7 @@ export default async function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body
-        className={`${quicksand.className} ${quicksand.variable} ${oswald.variable} relative flex min-h-screen flex-col [&::-webkit-scrollbar]:w-0`}
+        className={`${quicksand.className} ${quicksand.variable} ${oswald.variable} ${inter.variable} relative flex min-h-screen flex-col [&::-webkit-scrollbar]:w-0`}
       >
         <Providers>
           <SocketProvider>

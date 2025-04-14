@@ -106,6 +106,7 @@ export default function UpsertDishDialog({
       description: '',
       imageUrl: '',
       price: 0,
+      cookingTime: 1,
       status: DishStatus.Available,
       category: categoryListData[0]._id
     })
@@ -207,9 +208,9 @@ export default function UpsertDishDialog({
                     name='price'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Giá bán</FormLabel>
+                        <FormLabel>Giá bán (VNĐ)</FormLabel>
                         <FormControl>
-                          <Input type='number' placeholder='Hãy nhập giá...' {...field} />
+                          <Input type='number' {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -236,6 +237,23 @@ export default function UpsertDishDialog({
                               ))}
                             </SelectContent>
                           </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <div className='grid grid-cols-2'>
+                <div className='col-span-1'>
+                  <FormField
+                    control={form.control}
+                    name='cookingTime'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Thời gian nấu (phút)</FormLabel>
+                        <FormControl>
+                          <Input type='number' {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

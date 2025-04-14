@@ -32,7 +32,7 @@ export function DishesTable({ promises }: DishesTableProps) {
   const router = useRouter()
   const [sorting, setSorting] = React.useState<SortingState>([{ id: 'createdAt', desc: true }])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({ updatedAt: false })
   const [rowSelection, setRowSelection] = React.useState({})
 
   const [rowAction, setRowAction] = React.useState<DataTableRowAction<IDish> | null>(null)

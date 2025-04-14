@@ -79,7 +79,9 @@ export function OrdersTable({ promises, session }: OrdersTableProps) {
       sorting: [{ id: 'createdAt', desc: true }],
       columnPinning: { right: ['actions'] },
       columnVisibility: {
-        updatedAt: false
+        updatedAt: false,
+        cookingCompletedAt: false,
+        paidAt: false
       }
     },
     getRowId: (originalRow) => originalRow._id,

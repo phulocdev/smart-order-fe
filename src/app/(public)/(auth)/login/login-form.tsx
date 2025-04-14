@@ -28,6 +28,12 @@ export default function LoginForm() {
     }
   })
 
+  React.useEffect(() => {
+    return () => {
+      setIsLoading(false)
+    }
+  })
+
   async function onLoginWithCredential(values: LoginBodyType) {
     try {
       setIsLoading(true)
@@ -39,7 +45,6 @@ export default function LoginForm() {
         email,
         password
       })
-      setIsLoading(false)
 
       if (response?.error) {
         const error = JSON.parse(response.error) as HttpError
@@ -107,7 +112,14 @@ export default function LoginForm() {
             {isLoading && <Loader className='mr-2 size-4 animate-spin' aria-hidden='true' />}
             Đăng nhập
           </Button>
-          <Button type='button' variant={'outline'} className='w-full' onClick={onLoginWithGoogle}>
+          <Button
+            type='button'
+            variant={'outline'}
+            className={cn('w-full', {
+              'cursor-not-allowed opacity-80': isLoading
+            })}
+            onClick={onLoginWithGoogle}
+          >
             <Image
               alt='googleIcon'
               src={'/google.svg'}

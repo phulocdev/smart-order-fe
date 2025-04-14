@@ -21,7 +21,7 @@ export default async function DashboardLayout({
   const account = session?.account
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className=''>
       <AppSidebar role={account?.role} />
       <section className='grow'>
         <div className='sticky flex justify-between gap-x-3 border-b py-3 pr-20 shadow dark:border-b-gray-500'>

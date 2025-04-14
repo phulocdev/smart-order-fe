@@ -183,7 +183,9 @@ const orderKeyTranslations: Record<keyof IOrder, string> = {
   quantity: 'Số lượng',
   tableNumber: 'Bàn',
   createdAt: 'Ngày tạo',
-  updatedAt: 'Ngày cập nhật'
+  updatedAt: 'Ngày cập nhật',
+  cookingCompletedAt: 'Ngày nấu',
+  paidAt: 'Ngày thanh toán'
 }
 
 export function translateOrderKey(key: keyof IOrder): string {
@@ -214,7 +216,8 @@ export const dishKeyTranslations: Record<keyof IDish, string> = {
   imageUrl: 'Hình ảnh',
   category: 'Danh mục',
   createdAt: 'Ngày tạo',
-  updatedAt: 'Ngày cập nhật'
+  updatedAt: 'Ngày cập nhật',
+  cookingTime: 'Thời gian nấu'
 }
 
 export function translateDishKey(key: keyof IDish): string {

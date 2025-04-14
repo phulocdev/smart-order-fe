@@ -51,10 +51,16 @@ export function getColumns({ setRowAction }: GetColumnsProps): ColumnDef<IDish>[
       cell: ({ row }) => <div>{formatNumberToVnCurrency(row.original.price)}</div>
     },
     {
+      accessorKey: 'cookingTime',
+      enableSorting: true,
+      header: ({ column }) => <DataTableColumnHeader column={column} title={translateDishKey('cookingTime')} />,
+      cell: ({ row }) => <div className='pl-8'>{row.original.cookingTime} (phút)</div>
+    },
+    {
       accessorKey: 'description',
       header: translateDishKey('description'),
       size: 300,
-      cell: ({ row }) => <div className='line-clamp-3'>{row.original.description}</div>
+      cell: ({ row }) => <div className='line-clamp-2'>{row.original.description}</div>
     },
     {
       accessorKey: 'status',

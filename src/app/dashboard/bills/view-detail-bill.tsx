@@ -1,4 +1,4 @@
-import { exportBillToPDF } from '@/app/dashboard/bills/_lib/export'
+import { exportBillToPDF } from '@/app/dashboard/bills/_lib/export-pdf'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

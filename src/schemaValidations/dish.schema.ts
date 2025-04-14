@@ -13,6 +13,16 @@ export const createDishSchema = z.object({
     .trim()
     .transform((val) => parseInt(val))
     .pipe(z.number({ message: 'Giá tiền phải là định dạng số' }).min(1, { message: 'Giá tiền phải > 0' })),
+  cookingTime: z.coerce
+    .string({ required_error: 'Thời gian nấu không được bỏ trống' })
+    .trim()
+    .transform((val) => parseInt(val))
+    .pipe(
+      z
+        .number({ message: 'Thời gian nấu phải là định dạng số' })
+        .min(1, { message: 'Thời gian nấu phải > 0' })
+        .max(180, { message: 'Thời gian nấu phải <= 180 phút' })
+    ),
   status: z.nativeEnum(DishStatus, {
     message: 'Trạng thái món ăn không hợp lệ',
     required_error: 'Trạng thái món ăn không được bỏ trống'

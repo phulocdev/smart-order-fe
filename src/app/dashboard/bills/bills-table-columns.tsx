@@ -1,4 +1,4 @@
-import { exportBillToPDF } from '@/app/dashboard/bills/_lib/export'
+import { exportBillToPDF } from '@/app/dashboard/bills/_lib/export-pdf'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

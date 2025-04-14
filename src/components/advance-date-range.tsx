@@ -96,7 +96,7 @@ export default function AdvanceDateRange({ from, to, className }: Props) {
   }
 
   return (
-    <div className={className}>
+    <div className={cn(className, '')}>
       <Popover open={calendarOpen}>
         <PopoverTrigger asChild>
           <Button

@@ -84,7 +84,8 @@ export default {
         sm: 'calc(var(--radius) - 4px)'
       },
       fontFamily: {
-        heading: ['var(--font-oswald)']
+        heading: ['var(--font-oswald)'],
+        inter: ['var(--font-inter)']
       },
       keyframes: {
         'caret-blink': {

@@ -208,6 +208,44 @@ export function getColumns({ setRowAction, role }: GetColumnsProps): ColumnDef<I
         </>
       )
     },
+    {
+      accessorKey: 'cookingCompletedAt',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={translateOrderKey('cookingCompletedAt')} />,
+      cell: ({ row }) => {
+        const { cookingCompletedAt } = row.original
+        return (
+          <>
+            <div>
+              <span className='text-xs text-gray-500'>Ngày: </span>
+              <span className='text-sm'>{cookingCompletedAt ? format(cookingCompletedAt, 'dd/MM/yyyy') : '___'}</span>
+            </div>
+            <div>
+              <span className='text-xs text-gray-500'>Giờ: </span>
+              <span className='text-sm'>{cookingCompletedAt ? format(cookingCompletedAt, 'H:mm:ss') : '___'}</span>
+            </div>
+          </>
+        )
+      }
+    },
+    {
+      accessorKey: 'paidAt',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={translateOrderKey('paidAt')} />,
+      cell: ({ row }) => {
+        const { paidAt } = row.original
+        return (
+          <>
+            <div>
+              <span className='text-xs text-gray-500'>Ngày: </span>
+              <span className='text-sm'>{paidAt ? format(paidAt, 'dd/MM/yyyy') : '___'}</span>
+            </div>
+            <div>
+              <span className='text-xs text-gray-500'>Giờ: </span>
+              <span className='text-sm'>{paidAt ? format(paidAt, 'H:mm:ss') : '___'}</span>
+            </div>
+          </>
+        )
+      }
+    },
     { accessorKey: 'tableNumber', header: '', cell: '', size: 0, enableHiding: false },
     {
       id: 'actions',

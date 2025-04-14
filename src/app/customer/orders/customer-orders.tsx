@@ -40,10 +40,17 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
       router.refresh()
     }
 
+    const onNewOrders = ({ quantity }: { tableNumber: number; quantity: number }) => {
+      router.refresh()
+      toast('🔔 Đơn hàng mới', { description: `Nhân viên đã gọi thêm ${quantity} món ăn!` })
+    }
+
     socket.on('updatedOrder', onUpdatedOrder)
+    socket.on('newOrders', onNewOrders)
 
     return () => {
       socket.off('updatedOrder', onUpdatedOrder)
+      socket.off('newOrders', onNewOrders)
     }
   }, [router, socket])
 

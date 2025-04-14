@@ -9,6 +9,7 @@ export interface IDish {
   status: DishStatus
   imageUrl: string
   category: ICategory | null
+  cookingTime: number // minutes
   createdAt: string
   updatedAt: string
 }
@@ -31,6 +32,8 @@ export interface IOrder {
   quantity: number
   price: number
   note: string
+  paidAt: string
+  cookingCompletedAt: string
   totalPrice: number
   status: OrderStatus
   tableNumber: number
