@@ -18,7 +18,9 @@ export default function LogoutComponent({ session }: { session: Session | null }
     async function handleLogout() {
       try {
         await signOut({ redirect: false })
-        if (session?.customer) clearOrderInCart()
+        if (session?.customer) {
+          clearOrderInCart(session.customer.tableNumber)
+        }
       } catch (error) {
         handleApiError({ error })
       } finally {

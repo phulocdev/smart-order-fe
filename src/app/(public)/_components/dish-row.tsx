@@ -30,7 +30,9 @@ interface Props {
 }
 
 export default function DishRow({ dish, session }: Props) {
-  const orderItems = useAppStore((state) => state.orderItems)
+  const tableNumber = session?.customer?.tableNumber
+  const orderItemsState = useAppStore((state) => state.orderItems)
+  const orderItems = orderItemsState.find((order) => order.tableNumber === tableNumber)?.items ?? []
   const addOrderItem = useAppStore((state) => state.addOrderItem)
   const updateOrderItem = useAppStore((state) => state.updateOrderItem)
 
@@ -44,16 +46,17 @@ export default function DishRow({ dish, session }: Props) {
   }
 
   const handleSelectDish = () => {
-    debugger
+    if (!tableNumber) return
+
     const isExist = orderItems.some((order) => order.dish._id === dish._id)
     if (isExist) {
-      updateOrderItem(dish._id, { quantity, note })
+      updateOrderItem(tableNumber, dish._id, { quantity, note })
     } else {
-      addOrderItem({ dish, note, quantity, price: dish.price })
+      addOrderItem(tableNumber, { dish, note, quantity, price: dish.price })
     }
     setQuantity(1)
     setNote('')
-    toast(`🟢 Đã thêm món ăn vào giỏ hàng`, { position: isDesktop ? 'bottom-right' : 'top-right' })
+    toast.success(`Đã thêm món ăn vào giỏ hàng`, { position: isDesktop ? 'bottom-right' : 'top-right' })
   }
 
   if (isDesktop) {
@@ -67,7 +70,7 @@ export default function DishRow({ dish, session }: Props) {
             }
 
             if (!session?.customer) {
-              toast.error('Vui lòng quét mã QR để có thể đặt món!', { icon: <span>❌</span> })
+              toast.error('Vui lòng quét mã QR để có thể đặt món!')
             }
           }}
         >

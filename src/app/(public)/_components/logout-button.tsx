@@ -42,7 +42,9 @@ export default function LogoutButton({ session }: { session: Session }) {
       } else {
         // await Promise.all([signOut({ callbackUrl: '/' }), customerApiRequest.logout(refreshToken)])
         await signOut({ callbackUrl: '/' })
-        clearOrderInCart()
+        if (session.customer) {
+          clearOrderInCart(session.customer.tableNumber)
+        }
         await http.post<ApiResponse<[]>>(
           '/customers/auth/logout',
           { refreshToken },

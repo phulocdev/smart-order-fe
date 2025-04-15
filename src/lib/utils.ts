@@ -1,7 +1,7 @@
 import { variants } from '@/components/ui/badge'
 import { DishStatus, OrderStatus, TableStatus } from '@/constants/enum'
 import { EntityError } from '@/lib/errors'
-import { OrderItemState } from '@/providers/zustand-provider'
+import { OrderItem, OrderItemsState } from '@/providers/zustand-provider'
 import { IBill, IDish, IOrder } from '@/types/backend.type'
 import { clsx, type ClassValue } from 'clsx'
 import { getDay } from 'date-fns'
@@ -275,45 +275,66 @@ export function toSentenceCase(str: string) {
   return str.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
 }
 
-export function getOrderItemsFromLS() {
+export function getOrderItemsFromLS(): OrderItemsState[] {
   if (isClient) {
     const orderItemJSON = localStorage.getItem('cart')
-    return orderItemJSON ? JSON.parse(orderItemJSON) : []
+    const orderItems: OrderItemsState[] = orderItemJSON ? JSON.parse(orderItemJSON) : []
+    return orderItems
+  }
+  return []
+}
+
+export function addOrderItemToLS(tableNumber: number, newOrderItem: OrderItem) {
+  if (isClient) {
+    let orderItems = getOrderItemsFromLS()
+    let prevItems = orderItems.find((order) => order.tableNumber === tableNumber)?.items ?? []
+    orderItems = orderItems.filter((order) => order.tableNumber !== tableNumber)
+    prevItems = prevItems.filter((item) => item.dish._id !== newOrderItem.dish._id)
+    localStorage.setItem('cart', JSON.stringify([...orderItems, { tableNumber, items: [...prevItems, newOrderItem] }]))
   }
 }
 
-export function addOrderItemToLS(newOrderItem: OrderItemState) {
+export function removeOrderItemFromLS(tableNumber: number, dishId: string) {
   if (isClient) {
-    const orderItemJSON = localStorage.getItem('cart')
-    const orderItems = orderItemJSON ? JSON.parse(orderItemJSON) : []
-    localStorage.setItem('cart', JSON.stringify([...orderItems, newOrderItem]))
-  }
-}
+    const orderItems = getOrderItemsFromLS()
+    const prevItemsIdx = orderItems.findIndex((order) => order.tableNumber === tableNumber)
 
-export function removeOrderItemFromLS(dishId: string) {
-  if (isClient) {
-    const orderItemJSON = localStorage.getItem('cart')
-    const orderItems: OrderItemState[] = orderItemJSON ? JSON.parse(orderItemJSON) : []
-    const filteredOrderItems = orderItems.filter((orderItem) => orderItem.dish._id !== dishId)
-    localStorage.setItem('cart', JSON.stringify(filteredOrderItems))
-  }
-}
+    if (prevItemsIdx < 0) return
 
-export function updateOrderItemInLS(dishId: string, payload: { quantity?: number; note?: string }) {
-  if (isClient) {
-    const orderItemJSON = localStorage.getItem('cart')
-    const orderItems: OrderItemState[] = orderItemJSON ? JSON.parse(orderItemJSON) : []
-
-    const targetOrderItemIdx = orderItems.findIndex((orderItem) => orderItem.dish._id === dishId)
-    const targetOrderItem = orderItems[targetOrderItemIdx]
-
-    orderItems[targetOrderItemIdx] = { ...targetOrderItem, ...payload }
+    const prevItems = orderItems[prevItemsIdx].items
+    const filteredItems = prevItems.filter((orderItem) => orderItem.dish._id !== dishId)
+    orderItems[prevItemsIdx].items = filteredItems
     localStorage.setItem('cart', JSON.stringify(orderItems))
   }
 }
 
-export function clearOrderItemFromLS() {
+export function updateOrderItemInLS(
+  tableNumber: number,
+  dishId: string,
+  payload: { quantity?: number; note?: string }
+) {
   if (isClient) {
-    localStorage.removeItem('cart')
+    const orderItems = getOrderItemsFromLS()
+    const prevItemsIdx = orderItems.findIndex((order) => order.tableNumber === tableNumber)
+
+    if (prevItemsIdx < 0) return
+
+    const prevItems = orderItems[prevItemsIdx].items
+    const targetItemIdx = prevItems.findIndex((item) => item.dish._id === dishId)
+
+    if (targetItemIdx < 0) return
+    const targetItem = prevItems[targetItemIdx]
+    orderItems[prevItemsIdx].items[targetItemIdx] = { ...targetItem, ...payload }
+    localStorage.setItem('cart', JSON.stringify(orderItems))
+  }
+}
+
+export function clearOrderItemFromLS(tableNumber: number) {
+  if (isClient) {
+    let orderItems = getOrderItemsFromLS()
+    // const prevItemsIdx = orderItems.findIndex((order) => order.tableNumber === tableNumber)
+    // // orderItems[prevItemsIdx].items = []
+    orderItems = orderItems.filter((order) => order.tableNumber !== tableNumber)
+    localStorage.setItem('cart', JSON.stringify(orderItems))
   }
 }

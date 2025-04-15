@@ -22,7 +22,7 @@ export default async function Header() {
               alt='Smart-Order'
               width={160}
               height={44}
-              className='h-11 w-[160px] object-cover'
+              className='h-8 w-[118px] object-cover sm:h-11 sm:w-[160px]'
             />
           </Link>
           <div className='flex items-center gap-x-3'>

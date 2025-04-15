@@ -34,6 +34,8 @@ export function OrdersTable({ promises, session }: OrdersTableProps) {
   const [rowAction, setRowAction] = React.useState<DataTableRowAction<IOrder> | null>(null)
   const columns = React.useMemo(() => getColumns({ setRowAction, role }), [role])
 
+  console.log({ statisticsByTablesData })
+
   /**
    * This component can render either a faceted filter or a search filter based on the `options` prop.
    *

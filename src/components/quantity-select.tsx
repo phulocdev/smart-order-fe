@@ -66,13 +66,7 @@ export default function QuantitySelect({ initialValue = 1, max, min = 1, onChang
 
   return (
     <div className={cn('inline-flex items-center gap-x-2', className)}>
-      <Button
-        type='button'
-        variant={'outline'}
-        size={'icon'}
-        className='shrink-0 border-third text-third'
-        onClick={handleDecrease}
-      >
+      <Button type='button' variant={'outline'} size={'icon'} className='shrink-0' onClick={handleDecrease}>
         <Minus />
       </Button>
       <Input
@@ -81,13 +75,7 @@ export default function QuantitySelect({ initialValue = 1, max, min = 1, onChang
         pattern='[0-9]'
         onChange={handleInputChange}
       />
-      <Button
-        type='button'
-        variant={'outline'}
-        size={'icon'}
-        className='shrink-0 border-third text-third'
-        onClick={handleIncrease}
-      >
+      <Button type='button' variant={'outline'} size={'icon'} className='shrink-0' onClick={handleIncrease}>
         <Plus />
       </Button>
     </div>

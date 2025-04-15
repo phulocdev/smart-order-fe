@@ -1,6 +1,6 @@
 import dishApiRequest from '@/apiRequests/dish.api'
 import tableApiRequest from '@/apiRequests/table.api'
-import CreateOrdersForm from '@/app/dashboard/orders/create/create-orders-form'
+import CreateOrderScreen from '@/app/dashboard/orders/create/create-orders-screen'
 import { getAuthSession } from '@/auth'
 import { Role } from '@/constants/enum'
 import { redirect } from 'next/navigation'
@@ -17,7 +17,7 @@ export default async function Page() {
 
   return (
     <React.Suspense fallback={<div>...Loading</div>}>
-      <CreateOrdersForm promises={promises} />
+      <CreateOrderScreen promises={promises} />
     </React.Suspense>
   )
 }

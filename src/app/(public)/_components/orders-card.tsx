@@ -26,8 +26,14 @@ export default function OrdersCard() {
   const { data: session } = useSession()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const [open, setOpen] = React.useState(false)
+  const tableNumber = session?.customer?.tableNumber ?? 1
 
-  const orderItems = useAppStore((state) => state.orderItems)
+  const orderItemsState = useAppStore((state) => state.orderItems)
+  const orderItems = React.useMemo(
+    () => orderItemsState.find((order) => order.tableNumber === tableNumber)?.items ?? [],
+    [orderItemsState, tableNumber]
+  )
+
   const totalPrice = useMemo(
     () => orderItems.reduce((result, orderItem) => result + orderItem.price * orderItem.quantity, 0),
     [orderItems]
@@ -40,18 +46,18 @@ export default function OrdersCard() {
   const createOrderMutation = useCreateOrderByCustomerMutation()
 
   const handleRemoveOrder = (dishId: string) => {
-    removeOrderItem(dishId)
+    removeOrderItem(tableNumber, dishId)
   }
 
   const onOrderQuantityChange = (dishId: string) => (quantity: number) => {
-    updateOrderItem(dishId, { quantity })
+    updateOrderItem(tableNumber, dishId, { quantity })
   }
 
   const confirmOrders = async () => {
     try {
       const items: OrderItemDto[] = orderItems.map((order) => ({ ...order, dish: order.dish._id }))
       await createOrderMutation.mutateAsync({ items })
-      clearOrderInCart()
+      clearOrderInCart(tableNumber)
       router.push('/customer/orders')
     } catch (error) {
       handleApiError({ error })
