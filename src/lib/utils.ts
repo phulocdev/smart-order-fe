@@ -114,6 +114,26 @@ const getDishStatusByIndex = (index: number) => {
   return Object.values(DishStatus)[index]
 }
 
+export const getVietnameseTableStatus = (status: TableStatus): string => {
+  switch (status) {
+    case TableStatus.Available:
+      return 'Trống'
+    case TableStatus.Hidden:
+      return 'Ẩn'
+    case TableStatus.Occupied:
+      return 'Đang có khách'
+    default:
+      return 'INVALID'
+  }
+}
+
+export const getVietnameseTableStatusList = (): Array<{ label: string; value: TableStatus }> => {
+  return Object.values(TableStatus).map((statusValue) => ({
+    label: getVietnameseTableStatus(statusValue),
+    value: statusValue
+  }))
+}
+
 export const getVietnameseDayOfWeek = (date: string | Date) => {
   const orderOfDay = getDay(date)
   switch (orderOfDay) {

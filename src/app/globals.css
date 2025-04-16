@@ -134,6 +134,10 @@ html {
   h6 {
     @apply font-semibold;
   }
+
+  nextjs-portal {
+    display: none;
+  }
 }
 
 @layer base {

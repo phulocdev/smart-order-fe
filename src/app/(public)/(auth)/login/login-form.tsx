@@ -28,12 +28,6 @@ export default function LoginForm() {
     }
   })
 
-  React.useEffect(() => {
-    return () => {
-      setIsLoading(false)
-    }
-  })
-
   async function onLoginWithCredential(values: LoginBodyType) {
     try {
       setIsLoading(true)
@@ -59,6 +53,8 @@ export default function LoginForm() {
       router.replace('/dashboard/orders')
     } catch (error) {
       handleApiError({ error, setError: form.setError })
+    } finally {
+      setIsLoading(false)
     }
   }
 

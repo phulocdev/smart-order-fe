@@ -83,15 +83,15 @@ export default function UpsertDishDialog({
         const formData = new FormData()
         formData.append('file', new Blob([file], { type: file.type }))
         const uploadImageRes = await uploadSingleImageMutation.mutateAsync({ body: formData, folderName: 'dishes' })
-        imageUrl = uploadImageRes.data.result
+        imageUrl = uploadImageRes.data?.result
       }
 
       if (type === 'create') {
         await createDishMutation.mutateAsync({ ...values, imageUrl: imageUrl ?? '' })
-        toast('✅ Tạo mới món ăn thành công!')
+        toast.success('Tạo mới món ăn thành công!')
       } else if (dish) {
         await updateDishMutation.mutateAsync({ id: dish._id, body: { ...values, imageUrl } })
-        toast('✅ Cập nhật món ăn thành công!')
+        toast.success('Cập nhật món ăn thành công!')
       }
       resetForm()
       onSuccess?.()

@@ -1,7 +1,11 @@
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { TableStatus } from '@/constants/enum'
 import { cn } from '@/lib/utils'
 import { ITable } from '@/types/backend.type'
+import { Users } from 'lucide-react'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 interface Props {
   table: ITable
@@ -30,6 +34,10 @@ export default function TableCard({
         }
       )}
       onClick={() => {
+        if (table.status === TableStatus.Hidden) {
+          toast('Bàn này đã bị ẩn!')
+          return
+        }
         onSelectTable(table.number)
       }}
     >
@@ -50,7 +58,13 @@ export default function TableCard({
       </div>
       {isSelected && (
         <Badge className='absolute right-1 top-1' variant={'ghost'}>
-          {isServing ? 'Đang phục vụ' : 'Chưa hoàn tất'}
+          {isServing ? 'Đang chọn món' : 'Chưa hoàn tất'}
+        </Badge>
+      )}
+
+      {table.status === TableStatus.Occupied && (
+        <Badge className='absolute right-1 top-1' variant={'ghost'}>
+          Đang có khách
         </Badge>
       )}
     </div>

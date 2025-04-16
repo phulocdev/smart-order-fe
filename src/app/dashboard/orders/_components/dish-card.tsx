@@ -38,7 +38,7 @@ export default function DishCard({ dish, currentTableNumber }: Props) {
           {formatNumberToVnCurrency(dish.price)}
         </Badge>
       </div>
-      <div className='line-clamp-2 h-12 px-2 py-3 text-center text-sm font-semibold'>{dish.title}</div>
+      <div className='line-clamp-2 px-2 pt-3 text-center text-sm font-semibold'>{dish.title}</div>
     </div>
   )
 }
