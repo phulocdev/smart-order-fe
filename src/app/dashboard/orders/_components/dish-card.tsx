@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge'
-import { formatNumberToVnCurrency } from '@/lib/utils'
+import { DishStatus } from '@/constants/enum'
+import { cn, formatNumberToVnCurrency } from '@/lib/utils'
 import { useAppStore } from '@/providers/zustand-provider'
 import { IDish } from '@/types/backend.type'
 import Image from 'next/image'
@@ -15,8 +16,15 @@ export default function DishCard({ dish, currentTableNumber }: Props) {
 
   return (
     <div
-      className='aspect-square rounded-md border border-blue-200 bg-blue-50 pb-3'
+      className={cn('aspect-square rounded-md border border-blue-200 bg-blue-50 pb-3', {
+        'cursor-not-allowed opacity-50': dish.status === DishStatus.Unavailable
+      })}
       onClick={() => {
+        if (dish.status === DishStatus.Unavailable) {
+          toast.error('Không thể chọn món ăn này')
+          return
+        }
+
         if (currentTableNumber) {
           addOrderItem(currentTableNumber, { dish, note: '', price: dish.price, quantity: 1 })
           toast.success('Đã thêm món ăn vào giỏ hàng')
@@ -38,7 +46,7 @@ export default function DishCard({ dish, currentTableNumber }: Props) {
           {formatNumberToVnCurrency(dish.price)}
         </Badge>
       </div>
-      <div className='line-clamp-2 px-2 pt-3 text-center text-sm font-semibold'>{dish.title}</div>
+      <div className='line-clamp-2 h-14 px-2 pt-3 text-center text-sm font-semibold'>{dish.title}</div>
     </div>
   )
 }

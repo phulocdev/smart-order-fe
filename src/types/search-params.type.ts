@@ -15,4 +15,5 @@ export type OrderQuery = DateRangeQuery &
     customerCode?: string // code
     status?: string
     tableNumber?: string
+    customerId?: string
   }

@@ -1,6 +1,6 @@
 import http from '@/lib/http'
 import { ITable } from '@/types/backend.type'
-import { PaginatedResponse } from '@/types/response.type'
+import { ApiResponse, PaginatedResponse } from '@/types/response.type'
 
 const tableApiRequest = {
   getList: (accessToken: string) => {
@@ -9,6 +9,10 @@ const tableApiRequest = {
         Authorization: `Bearer ${accessToken}`
       }
     })
+  },
+
+  clientGetOne: (id: string) => {
+    return http.get<ApiResponse<ITable>>(`/tables/${id}`)
   }
 }
 

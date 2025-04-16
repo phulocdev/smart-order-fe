@@ -27,12 +27,12 @@ export default async function IndexPage(props: IndexPageProps) {
   const search = orderSearchParamsCache.parse(searchParams)
   const params = transformOrderQuery(search)
   const orderQueryParamsForChef: OrderQuery =
-    session?.account?.role === Role.Chef ? { status: OrderStatus.Pending } : {}
+    session?.account?.role === Role.Chef ? { status: OrderStatus.Confirmed } : {}
 
   const promises = Promise.all([
     orderApiRequest.getList(accessToken, { ...params, ...orderQueryParamsForChef }),
-    tableApiRequest.getList(accessToken),
-    orderApiRequest.statisticsByTables(accessToken)
+    tableApiRequest.getList(accessToken)
+    // orderApiRequest.statisticsByTables(accessToken)
   ])
 
   return (

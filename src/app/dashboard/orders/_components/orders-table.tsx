@@ -5,9 +5,9 @@ import { OrdersTableToolbarActions } from '@/app/dashboard/orders/_components/or
 import StatisticCard from '@/app/dashboard/orders/_components/statistic-card'
 import { DataTable } from '@/components/data-table/data-table'
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar'
-import { Role } from '@/constants/enum'
+import { Role, TableStatus } from '@/constants/enum'
 import { useDataTable } from '@/hooks/use-data-table'
-import { getVietnameseOrderStatusList, translateOrderKey } from '@/lib/utils'
+import { cn, getVietnameseOrderStatusList, translateOrderKey } from '@/lib/utils'
 import { useSocket } from '@/providers/socket-provider'
 import { IOrder, IStatisticOrders, ITable } from '@/types/backend.type'
 import type { DataTableFilterField, DataTableRowAction } from '@/types/data-table.type'
@@ -17,10 +17,17 @@ import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
 import { getColumns } from './orders-table-columns'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { Table } from 'lucide-react'
 
 interface OrdersTableProps {
   promises: Promise<
-    [Awaited<PaginatedResponse<IOrder>>, Awaited<PaginatedResponse<ITable>>, Awaited<ApiResponse<IStatisticOrders[]>>]
+    [
+      Awaited<PaginatedResponse<IOrder>>,
+      Awaited<PaginatedResponse<ITable>>
+      // , Awaited<ApiResponse<IStatisticOrders[]>>
+    ]
   >
   session: Session | null
 }
@@ -30,11 +37,13 @@ export function OrdersTable({ promises, session }: OrdersTableProps) {
   const router = useRouter()
   const role = session?.account?.role
 
-  const [{ data: orderData, meta }, { data: tableData }, { data: statisticsByTablesData }] = React.use(promises)
+  const [
+    { data: orderData, meta },
+    { data: tableData }
+    // { data: statisticsByTablesData }
+  ] = React.use(promises)
   const [rowAction, setRowAction] = React.useState<DataTableRowAction<IOrder> | null>(null)
   const columns = React.useMemo(() => getColumns({ setRowAction, role }), [role])
-
-  console.log({ statisticsByTablesData })
 
   /**
    * This component can render either a faceted filter or a search filter based on the `options` prop.
@@ -121,9 +130,41 @@ export function OrdersTable({ promises, session }: OrdersTableProps) {
   return (
     <>
       {session?.account?.role !== Role.Chef && (
-        <div className='custom-scrollbar flex max-w-[1040px] space-x-4 overflow-x-auto py-4'>
-          {statisticsByTablesData.map((statistic) => (
+        <div className='custom-scrollbar flex max-w-[1040px] space-x-4 overflow-x-auto py-4 pl-[2px]'>
+          {/* {statisticsByTablesData.map((statistic) => (
             <StatisticCard key={statistic.tableNumber} statistic={statistic} />
+          ))} */}
+          {tableData.map((table) => (
+            <Card
+              onClick={() => {
+                if (table.status === TableStatus.Available) {
+                  router.push(`/dashboard/orders/create?tableNumber=${table.number}`)
+                } else if (table.status === TableStatus.Occupied) {
+                  router.push(`/dashboard/orders/checkout?tableId=${table._id}`)
+                }
+              }}
+              key={table.number}
+              className={cn('h-full shrink-0 cursor-pointer text-sm', {
+                'cursor-not-allowed opacity-90': table.status === TableStatus.Hidden
+              })}
+            >
+              <CardContent className='p-0'>
+                <div className='flex h-full items-center gap-x-2 px-4 py-3'>
+                  <div className='shrink-0 font-medium'>
+                    <div className='flex items-center gap-x-1'>
+                      <Table size={20} />
+                      <div className='text-[17px]'>{table.number}</div>
+                    </div>
+                  </div>
+                  <Separator orientation='vertical' className='mx-1 h-20 w-[1.5px] shrink-0' />
+                  <div className='flex h-[92px] max-w-16 items-center pt-3 text-center text-sm capitalize'>
+                    {table.status === TableStatus.Available && 'Sẵn sàng'}
+                    {table.status === TableStatus.Occupied && 'Đang có khách'}
+                    {table.status === TableStatus.Hidden && 'Đã ẩn'}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}

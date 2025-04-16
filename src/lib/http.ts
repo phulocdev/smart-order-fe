@@ -81,6 +81,7 @@ const request = async <Response>(
     } else if (statusCode === ENTITY_ERROR_STATUS_CODE) {
       throw new EntityError({ message, errors })
     }
+    console.log({ message })
     throw new HttpError({ message, statusCode })
   }
 

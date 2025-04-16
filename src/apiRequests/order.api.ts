@@ -15,6 +15,9 @@ const orderApiRequest = {
       }
     })
   },
+  clientGetList: (params?: DateRangeQuery & PaginationQuery & OrderQuery) => {
+    return http.get<PaginatedResponse<IOrder>>(`${prefix}?${qs.stringify(params)}`)
+  },
   statisticsByTables: (accessToken: string) => {
     return http.get<ApiResponse<IStatisticOrders[]>>(`${prefix}/statistics-by-tables`, {
       headers: {

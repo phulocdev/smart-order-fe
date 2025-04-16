@@ -16,6 +16,7 @@ import { IDish, ITable } from '@/types/backend.type'
 import { PaginatedResponse } from '@/types/response.type'
 import { Loader, Trash, X } from 'lucide-react'
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
 import React from 'react'
 import { toast } from 'sonner'
 
@@ -26,6 +27,7 @@ interface CreateOrdersScreenProps {
 export default function CreateOrderScreen({ promises }: CreateOrdersScreenProps) {
   const [{ data: dishData }, { data: tableData }] = React.use(promises)
   const [currentTableNumber, setCurrentTableNumber] = React.useState<number | undefined>()
+
   const orderItemsState = useAppStore((state) => state.orderItems)
   const orderItemsHasOrders = orderItemsState.filter((order) => order.items.length > 0)
   const updateOrderItem = useAppStore((state) => state.updateOrderItem)
@@ -33,12 +35,21 @@ export default function CreateOrderScreen({ promises }: CreateOrdersScreenProps)
   const clearOrderInCart = useAppStore((state) => state.clearOrderInCart)
   const createOrderMutation = useCreateOrderMutation()
 
+  const searchParams = useSearchParams()
+  const tableNumber = Number(searchParams.get('tableNumber'))
+
   React.useEffect(() => {
     const savedTable = localStorage.getItem('currentServingTable')
     if (!currentTableNumber && savedTable) {
       setCurrentTableNumber(parseInt(savedTable, 10))
     }
   }, [currentTableNumber])
+
+  React.useEffect(() => {
+    if (isNaN(tableNumber)) return
+    setCurrentTableNumber(tableNumber)
+    localStorage.setItem('currentServingTable', tableNumber.toString())
+  }, [tableNumber])
 
   const selectCurrentTableNumber = (tableNumber: number) => {
     setCurrentTableNumber(tableNumber)
@@ -166,7 +177,7 @@ export default function CreateOrderScreen({ promises }: CreateOrdersScreenProps)
                                           updateOrderItem(order.tableNumber, item.dish._id, { note: noteContext })
                                         }}
                                       />
-                                      <h3 className='line-clamp-2 w-52'>{item.dish?.title}</h3>
+                                      <h3 className='line-clamp-2 w-48'>{item.dish?.title}</h3>
                                     </div>
                                   </div>
                                 </TableCell>
