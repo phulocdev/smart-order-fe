@@ -65,7 +65,7 @@ export default function DishRow({ dish, session }: Props) {
         <DialogTrigger
           asChild
           onClick={() => {
-            if (dish.status === DishStatus.Unavailable || !session?.customer) {
+            if (dish.status === DishStatus.Unavailable) {
               return
             }
 
@@ -171,7 +171,7 @@ export default function DishRow({ dish, session }: Props) {
       <DrawerTrigger
         asChild
         onClick={() => {
-          if (dish.status === DishStatus.Unavailable || !session?.customer) {
+          if (dish.status === DishStatus.Unavailable) {
             return
           }
 
