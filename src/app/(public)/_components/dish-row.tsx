@@ -70,7 +70,7 @@ export default function DishRow({ dish, session }: Props) {
             }
 
             if (!session?.customer) {
-              toast.error('Vui lòng quét mã QR để có thể đặt món!')
+              toast.error('Vui lòng quét mã QR để có thể đặt món')
             }
           }}
         >
