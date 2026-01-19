@@ -1,82 +1,83 @@
-import { DishStatus, OrderStatus, TableStatus } from '@/constants/enum'
-import { IAccount, ICustomer } from '@/types/auth.type'
+import { DishStatus, OrderStatus, TableStatus } from "@/constants/enum";
+import { IAccount, ICustomer } from "@/types/auth.type";
 
 export interface IDish {
-  _id: string
-  title: string
-  description: string
-  price: number
-  status: DishStatus
-  imageUrl: string
-  category: ICategory | null
-  cookingTime: number // minutes
-  createdAt: string
-  updatedAt: string
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  status: DishStatus;
+  imageUrl: string;
+  category: ICategory | null;
+  cookingTime: number; // minutes
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ITable {
-  _id: string
-  number: number
-  capacity: number
-  status: TableStatus
-  customer: string // ObjectId
-  createdAt: string
-  updatedAt: string
+  _id: string;
+  number: number;
+  capacity: number;
+  status: TableStatus;
+  customer: string; // ObjectId
+  reservationLink: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IOrder {
-  _id: string
-  code: string
-  customer: Omit<ICustomer, 'table'> | null
-  dish: IDish | null
-  quantity: number
-  price: number
-  note: string
-  paidAt: string
-  cookingCompletedAt: string
-  totalPrice: number
-  status: OrderStatus
-  tableNumber: number
-  createdAt: string
-  updatedAt: string
+  _id: string;
+  code: string;
+  customer: Omit<ICustomer, "table"> | null;
+  dish: IDish | null;
+  quantity: number;
+  price: number;
+  note: string;
+  paidAt: string;
+  cookingCompletedAt: string;
+  totalPrice: number;
+  status: OrderStatus;
+  tableNumber: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IStatisticOrders {
-  tableNumber: number
-  orders: IOrder[]
-  statusCounts: Record<OrderStatus, number>
+  tableNumber: number;
+  orders: IOrder[];
+  statusCounts: Record<OrderStatus, number>;
 }
 
 interface IOrderItem {
-  _id: string
-  dish: IDish | null
-  quantity: number
-  price: number
-  createdAt: string
-  updatedAt: string
+  _id: string;
+  dish: IDish | null;
+  quantity: number;
+  price: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IBill {
-  billCode: string
-  customerCode: string
-  totalPrice: number
-  orderItems: IOrderItem[]
-  tableNumber: number
-  account: Omit<IAccount, 'avatarUrl'> | null
-  createdAt: string
-  updatedAt: string
+  billCode: string;
+  customerCode: string;
+  totalPrice: number;
+  orderItems: IOrderItem[];
+  tableNumber: number;
+  account: Omit<IAccount, "avatarUrl"> | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IDashboardStatistics {
-  totalRevenue: number
-  countCustomers: number
-  countOrders: number
-  revenueChartData: { date: string; totalPrice: number }[]
+  totalRevenue: number;
+  countCustomers: number;
+  countOrders: number;
+  revenueChartData: { date: string; totalPrice: number }[];
 }
 
 export interface ICategory {
-  _id: string
-  title: string
-  createdAt: string
-  updatedAt: string
+  _id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -1,6 +1,7 @@
 import UserMenu from "@/app/(public)/_components/user-menu";
 import { getAuthSession } from "@/auth";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/constants/constants";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,7 +17,7 @@ export default async function Header() {
       </div>
       <div className="container mx-auto py-4">
         <div className="flex items-center justify-between">
-          <Link href={"/"}>
+          <Link href={ROUTES.HOME}>
             <Image
               src={"/logo.svg"}
               alt="Smart-Order"
@@ -27,7 +28,7 @@ export default async function Header() {
           </Link>
           <div className="flex items-center gap-x-3">
             {isCustomer && (
-              <Link href={"/customer/orders"}>
+              <Link href={ROUTES.CUSTOMER.ORDERS}>
                 <Button size={"icon"} variant={"outline"}>
                   <ShoppingCart />
                 </Button>

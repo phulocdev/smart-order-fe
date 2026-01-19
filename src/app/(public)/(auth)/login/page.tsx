@@ -1,19 +1,29 @@
-import LoginForm from '@/app/(public)/(auth)/login/login-form'
-import { getAuthSession } from '@/auth'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { redirect } from 'next/navigation'
+import LoginForm from "@/app/(public)/(auth)/login/login-form";
+import { getAuthSession } from "@/auth";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ROUTES } from "@/constants/constants";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const session = await getAuthSession()
+  const session = await getAuthSession();
   if (session) {
-    redirect('/')
+    redirect(ROUTES.HOME);
   }
   return (
-    <div className='max-w-[25rem] shrink-0 grow px-3 sm:px-0'>
+    <div className="max-w-[25rem] shrink-0 grow px-3 sm:px-0">
       <Card>
         <CardHeader>
-          <CardTitle className='text-xl font-semibold'>Đăng nhập</CardTitle>
-          <CardDescription>Chỉ có nhân viên mới có thể đăng nhập vào hệ thống</CardDescription>
+          <CardTitle className="text-xl font-semibold">Đăng nhập</CardTitle>
+          <CardDescription>
+            Chỉ có nhân viên mới có thể đăng nhập vào hệ thống
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <LoginForm />
@@ -22,9 +32,11 @@ export default async function Page() {
           {/* <Link href={'/register'} className='w-full text-center text-sm text-red-500 dark:text-red-800'>
             Bạn chưa có tài khoản?
           </Link> */}
-          <div className='w-full text-center text-xs italic'>CS504070 - Spring, 2025</div>
+          <div className="w-full text-center text-xs italic">
+            CS504070 - Spring, 2025
+          </div>
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

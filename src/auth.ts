@@ -1,51 +1,59 @@
-import authApiRequest from '@/apiRequests/auth.api'
-import envServerConfig from '@/config/env.server'
-import { SocialProvider } from '@/constants/enum'
-import { HttpError } from '@/lib/errors'
-import { AuthOptions, getServerSession, Session } from 'next-auth'
-import { type JWT } from 'next-auth/jwt'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import GitHubProvider from 'next-auth/providers/github'
-import GoogleProvider from 'next-auth/providers/google'
-import type { NextAuthOptions } from 'next-auth'
-import * as forge from 'node-forge'
-import { SESSION_TIMEOUT } from '@/config/next-auth'
-import customerAuthApiRequest from '@/apiRequests/customer-auth.api'
+import authApiRequest from "@/apiRequests/auth.api";
+import envServerConfig from "@/config/env.server";
+import { SocialProvider } from "@/constants/enum";
+import { ROUTES } from "@/constants/constants";
+import { HttpError } from "@/lib/errors";
+import { AuthOptions, getServerSession, Session } from "next-auth";
+import { type JWT } from "next-auth/jwt";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GitHubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
+import type { NextAuthOptions } from "next-auth";
+import * as forge from "node-forge";
+import { SESSION_TIMEOUT } from "@/config/next-auth";
+import customerAuthApiRequest from "@/apiRequests/customer-auth.api";
 
 const authOptions: NextAuthOptions = {
   secret: envServerConfig.NEXTAUTH_SECRET,
-  pages: { signIn: '/login' },
+  pages: { signIn: ROUTES.LOGIN },
   session: {
-    strategy: 'jwt',
-    maxAge: SESSION_TIMEOUT
+    strategy: "jwt",
+    maxAge: SESSION_TIMEOUT,
   },
   jwt: {
-    maxAge: SESSION_TIMEOUT
+    maxAge: SESSION_TIMEOUT,
   },
   providers: [
     CredentialsProvider({
-      id: 'employee-credentials',
-      name: 'Employee',
+      id: "employee-credentials",
+      name: "Employee",
       credentials: {
-        email: { label: 'Email', type: 'text', placeholder: 'loc01@gmail.com' },
-        password: { label: 'Password', type: 'password', placeholder: '123123123' }
+        email: { label: "Email", type: "text", placeholder: "loc01@gmail.com" },
+        password: {
+          label: "Password",
+          type: "password",
+          placeholder: "123123123",
+        },
       },
       async authorize(credentials) {
         if (credentials?.email && credentials.password) {
-          const publicKey = envServerConfig.LOGIN_PUBLIC_KEY
-          const rsa = forge.pki.publicKeyFromPem(publicKey)
-          const encryptedBytes = rsa.encrypt(credentials.password, 'RSA-OAEP')
-          const encryptedPassword = Buffer.from(encryptedBytes, 'binary').toString('base64')
+          const publicKey = envServerConfig.LOGIN_PUBLIC_KEY;
+          const rsa = forge.pki.publicKeyFromPem(publicKey);
+          const encryptedBytes = rsa.encrypt(credentials.password, "RSA-OAEP");
+          const encryptedPassword = Buffer.from(
+            encryptedBytes,
+            "binary"
+          ).toString("base64");
 
-          console.log({ encryptedPassword })
+          console.log({ encryptedPassword });
           const body = {
             email: credentials.email,
-            password: encryptedPassword
-          }
+            password: encryptedPassword,
+          };
           try {
-            const res = await authApiRequest.login(body)
-            const user = res.data as any
-            return user
+            const res = await authApiRequest.login(body);
+            const user = res.data as any;
+            return user;
           } catch (error) {
             // Lỗi trả về từ http.ts file luôn là 1 HttpError (có thg con là EntityError) - Lỗi từ Backend Server
             // Bad Request / Unauthorzied / ERRORCONNECT thì tương tự vs Http Error
@@ -62,130 +70,172 @@ const authOptions: NextAuthOptions = {
               // throw new Error(JSON.stringify(error)) -> Thiếu messsage field trong chuỗi JSON trả về - Không rõ lý do tại sao
 
               // Đảm bảo việc luôn có message trong object error trả về
-              throw new Error(JSON.stringify({ ...error, message: error.message }))
+              throw new Error(
+                JSON.stringify({ ...error, message: error.message })
+              );
             }
             // Lỗi trả về từ NextServer
-            const loginError = new HttpError({ message: 'Đăng nhập thất bại', statusCode: 400 })
-            throw new Error(JSON.stringify({ ...loginError, message: loginError.message }))
+            const loginError = new HttpError({
+              message: "Đăng nhập thất bại",
+              statusCode: 400,
+            });
+            throw new Error(
+              JSON.stringify({ ...loginError, message: loginError.message })
+            );
           }
         } else {
-          const loginError = new HttpError({ message: 'Vui lòng nhập email và password', statusCode: 400 })
-          throw new Error(JSON.stringify({ ...loginError, message: loginError.message }))
+          const loginError = new HttpError({
+            message: "Vui lòng nhập email và password",
+            statusCode: 400,
+          });
+          throw new Error(
+            JSON.stringify({ ...loginError, message: loginError.message })
+          );
         }
-      }
+      },
     }),
     CredentialsProvider({
-      id: 'customer-credentials',
-      name: 'Customer',
+      id: "customer-credentials",
+      name: "Customer",
       credentials: {
-        tableToken: { label: 'Table token', type: 'text' }
+        tableToken: { label: "Table token", type: "text" },
       },
       async authorize(credentials) {
         if (credentials?.tableToken) {
-          const { tableToken } = credentials
+          const { tableToken } = credentials;
           try {
-            const res = await customerAuthApiRequest.login({ tableToken: tableToken })
-            const user = res.data as any
-            return user
+            const res = await customerAuthApiRequest.login({
+              tableToken: tableToken,
+            });
+            const user = res.data as any;
+            return user;
           } catch (error) {
             if (error instanceof HttpError) {
-              throw new Error(JSON.stringify({ ...error, message: error.message }))
+              throw new Error(
+                JSON.stringify({ ...error, message: error.message })
+              );
             }
-            const loginError = new HttpError({ message: 'Đăng nhập thất bại', statusCode: 400 })
-            throw new Error(JSON.stringify({ ...loginError, message: loginError.message })) // Lỗi trả về từ NextServer
+            const loginError = new HttpError({
+              message: "Đăng nhập thất bại",
+              statusCode: 400,
+            });
+            throw new Error(
+              JSON.stringify({ ...loginError, message: loginError.message })
+            ); // Lỗi trả về từ NextServer
           }
         } else {
-          const loginError = new HttpError({ message: 'Vui lòng quét mã QR để đặt bàn', statusCode: 400 })
-          throw new Error(JSON.stringify({ ...loginError, message: loginError.message }))
+          const loginError = new HttpError({
+            message: "Vui lòng quét mã QR để đặt bàn",
+            statusCode: 400,
+          });
+          throw new Error(
+            JSON.stringify({ ...loginError, message: loginError.message })
+          );
         }
-      }
+      },
     }),
     GitHubProvider({
       clientId: envServerConfig.GITHUB_ID,
-      clientSecret: envServerConfig.GITHUB_SECRET
+      clientSecret: envServerConfig.GITHUB_SECRET,
     }),
     GoogleProvider({
       clientId: envServerConfig.GOOGLE_CLIENT_ID,
       clientSecret: envServerConfig.GOOGLE_CLIENT_SECRET,
       authorization: {
         params: {
-          prompt: 'consent',
-          access_type: 'offline',
-          response_type: 'code'
-        }
-      }
-    })
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
+    }),
   ],
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider && !['employee-credentials', 'customer-credentials'].includes(account.provider)) {
+      if (
+        account?.provider &&
+        !["employee-credentials", "customer-credentials"].includes(
+          account.provider
+        )
+      ) {
         try {
           await authApiRequest.loginOAuth({
-            email: user.email ?? '',
-            accessToken: account?.access_token ?? '',
+            email: user.email ?? "",
+            accessToken: account?.access_token ?? "",
             provider: account.provider as SocialProvider,
-            avatarUrl: user.image ?? ''
-          })
-          return true
+            avatarUrl: user.image ?? "",
+          });
+          return true;
         } catch (error: any) {
-          return `/login?error=${error.message}`
+          return `${ROUTES.LOGIN}?error=${error.message}`;
         }
       }
-      return true
+      return true;
     },
     // user là biến có thể nhận từ hàm authorize() trong Credentials hoặc từ Providers(Github, Google) trả về
     async jwt({ token, user, account, trigger }): Promise<JWT> {
       // Chỉnh sửa JWT Token được lưu trong cookie Browser (NextServer tạo)
       // Persist the OAuth access_token to the token right after signin - OAuth
       if (
-        trigger === 'signIn' &&
+        trigger === "signIn" &&
         account?.provider &&
-        !['employee-credentials', 'customer-credentials'].includes(account.provider) &&
+        !["employee-credentials", "customer-credentials"].includes(
+          account.provider
+        ) &&
         user.email
       ) {
         const res = await authApiRequest.loginOAuth({
-          email: user.email ?? '',
-          accessToken: account?.access_token ?? '',
+          email: user.email ?? "",
+          accessToken: account?.access_token ?? "",
           provider: SocialProvider.Google,
-          avatarUrl: user.image ?? ''
-        })
-        const { accessToken, refreshToken, account: accountData } = res.data
-        token.accessToken = accessToken
-        token.refreshToken = refreshToken
-        token.account = accountData
+          avatarUrl: user.image ?? "",
+        });
+        const { accessToken, refreshToken, account: accountData } = res.data;
+        token.accessToken = accessToken;
+        token.refreshToken = refreshToken;
+        token.account = accountData;
       }
       // Nhân viên đăng nhập
-      if (trigger === 'signIn' && account?.provider === 'employee-credentials' && user) {
-        token.accessToken = user.accessToken
-        token.refreshToken = user.refreshToken
-        token.account = user.account
+      if (
+        trigger === "signIn" &&
+        account?.provider === "employee-credentials" &&
+        user
+      ) {
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
+        token.account = user.account;
       }
 
       // Khách hàng đăng nhập
-      if (trigger === 'signIn' && account?.provider === 'customer-credentials' && user) {
-        token.accessToken = user.accessToken
-        token.refreshToken = user.refreshToken
-        token.customer = user.customer
+      if (
+        trigger === "signIn" &&
+        account?.provider === "customer-credentials" &&
+        user
+      ) {
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
+        token.customer = user.customer;
       }
 
-      return token
+      return token;
     },
     async session({ session, token }): Promise<Session> {
-      if (!token) return session
+      if (!token) return session;
       // Send properties to the client, like an access_token from a provider.
-      session.accessToken = token.accessToken
-      session.refreshToken = token.refreshToken
-      if (token.customer) session.customer = token.customer
-      else if (token.account) session.account = token.account
-      return session
-    }
-  }
-} satisfies NextAuthOptions
+      session.accessToken = token.accessToken;
+      session.refreshToken = token.refreshToken;
+      if (token.customer) session.customer = token.customer;
+      else if (token.account) session.account = token.account;
+      return session;
+    },
+  },
+} satisfies NextAuthOptions;
 
 /**
  * Helper function to get the session on the server without having to import the authOptions object every single time
  * @returns The session object or null
  */
-const getAuthSession = async (): Promise<Session | null> => await getServerSession(authOptions)
+const getAuthSession = async (): Promise<Session | null> =>
+  await getServerSession(authOptions);
 
-export { authOptions, getAuthSession }
+export { authOptions, getAuthSession };

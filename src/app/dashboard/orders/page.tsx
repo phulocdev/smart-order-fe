@@ -1,48 +1,54 @@
-import orderApiRequest from '@/apiRequests/order.api'
-import tableApiRequest from '@/apiRequests/table.api'
-import { OrdersTable } from '@/app/dashboard/orders/_components/orders-table'
-import { transformOrderQuery } from '@/app/dashboard/orders/_lib/utils'
-import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton'
-import { DateRangePicker } from '@/components/date-range-picker'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import type { SearchParams } from '@/types/data-table.type'
-import { CirclePlus } from 'lucide-react'
-import Link from 'next/link'
-import * as React from 'react'
-import { getAuthSession } from '@/auth'
-import { orderSearchParamsCache } from '@/app/dashboard/orders/_lib/validations'
-import { OrderStatus, Role } from '@/constants/enum'
-import { OrderQuery } from '@/types/search-params.type'
+import orderApiRequest from "@/apiRequests/order.api";
+import tableApiRequest from "@/apiRequests/table.api";
+import { OrdersTable } from "@/app/dashboard/orders/_components/orders-table";
+import { transformOrderQuery } from "@/app/dashboard/orders/_lib/utils";
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
+import { DateRangePicker } from "@/components/date-range-picker";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { SearchParams } from "@/types/data-table.type";
+import { CirclePlus } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
+import { getAuthSession } from "@/auth";
+import { orderSearchParamsCache } from "@/app/dashboard/orders/_lib/validations";
+import { OrderStatus, Role } from "@/constants/enum";
+import { ROUTES } from "@/constants/constants";
+import { OrderQuery } from "@/types/search-params.type";
 
 interface IndexPageProps {
-  searchParams: Promise<SearchParams>
+  searchParams: Promise<SearchParams>;
 }
 
 export default async function IndexPage(props: IndexPageProps) {
-  const session = await getAuthSession()
-  const accessToken = session?.accessToken ?? ''
+  const session = await getAuthSession();
+  const accessToken = session?.accessToken ?? "";
 
-  const searchParams = await props.searchParams
-  const search = orderSearchParamsCache.parse(searchParams)
-  const params = transformOrderQuery(search)
+  const searchParams = await props.searchParams;
+  const search = orderSearchParamsCache.parse(searchParams);
+  const params = transformOrderQuery(search);
   const orderQueryParamsForChef: OrderQuery =
-    session?.account?.role === Role.Chef ? { status: OrderStatus.Confirmed } : {}
+    session?.account?.role === Role.Chef
+      ? { status: OrderStatus.Confirmed }
+      : {};
 
   const promises = Promise.all([
-    orderApiRequest.getList(accessToken, { ...params, ...orderQueryParamsForChef }),
-    tableApiRequest.getList(accessToken)
+    orderApiRequest.getList(accessToken, {
+      ...params,
+      ...orderQueryParamsForChef,
+    }),
+    tableApiRequest.getList(accessToken),
     // orderApiRequest.statisticsByTables(accessToken)
-  ])
+  ]);
 
   return (
     // <Shell className='gap-2'>
-    <div className='px-1 py-5 md:px-4 lg:px-6'>
-      <div className='mb-3 flex items-start justify-between'>
-        <h2 className='text-2xl'>Đơn hàng</h2>
+    <div className="px-1 py-5 md:px-4 lg:px-6">
+      <div className="mb-3 flex items-start justify-between">
+        <h2 className="text-2xl">Đơn hàng</h2>
         {session?.account?.role !== Role.Chef && (
-          <Link href={'/dashboard/orders/create'}>
-            <Button className='ml-auto'>
+          <Link href={ROUTES.DASHBOARD.ORDERS_CREATE}>
+            <Button className="ml-auto">
               <CirclePlus />
               <span>Tạo đơn hàng</span>
             </Button>
@@ -50,16 +56,16 @@ export default async function IndexPage(props: IndexPageProps) {
         )}
       </div>
       {session?.account?.role !== Role.Chef && (
-        <React.Suspense fallback={<Skeleton className='h-7 w-52' />}>
+        <React.Suspense fallback={<Skeleton className="h-7 w-52" />}>
           <DateRangePicker
-            triggerSize='sm'
-            triggerClassName='w-56 sm:w-60 font-medium'
-            align='start'
+            triggerSize="sm"
+            triggerClassName="w-56 sm:w-60 font-medium"
+            align="start"
             shallow={false}
-            placeholder='Chọn ngày'
+            placeholder="Chọn ngày"
             defaultDateRange={{
               from: params.from ? new Date(params.from) : undefined,
-              to: params.to ? new Date(params.to) : undefined
+              to: params.to ? new Date(params.to) : undefined,
             }}
           />
         </React.Suspense>
@@ -70,7 +76,17 @@ export default async function IndexPage(props: IndexPageProps) {
             columnCount={9}
             searchableColumnCount={2}
             filterableColumnCount={2}
-            cellWidths={['10rem', '12rem', '12rem', '8rem', '8rem', '8rem', '12rem', '8rem', '8rem']}
+            cellWidths={[
+              "10rem",
+              "12rem",
+              "12rem",
+              "8rem",
+              "8rem",
+              "8rem",
+              "12rem",
+              "8rem",
+              "8rem",
+            ]}
             shrinkZero
           />
         }
@@ -79,5 +95,5 @@ export default async function IndexPage(props: IndexPageProps) {
       </React.Suspense>
     </div>
     // </Shell>
-  )
+  );
 }

@@ -1,11 +1,12 @@
-import ReservationScreen from '@/app/(public)/(auth)/reservation/reservation-screen'
-import { getAuthSession } from '@/auth'
-import { redirect } from 'next/navigation'
+import ReservationScreen from "@/app/(public)/(auth)/reservation/reservation-screen";
+import { getAuthSession } from "@/auth";
+import { ROUTES } from "@/constants/constants";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const session = await getAuthSession()
+  const session = await getAuthSession();
   if (session) {
-    redirect('/')
+    redirect(ROUTES.HOME);
   }
-  return <ReservationScreen />
+  return <ReservationScreen />;
 }

@@ -1,16 +1,17 @@
-import authApiRequest from '@/apiRequests/auth.api'
-import customerAuthApiRequest from '@/apiRequests/customer-auth.api'
-import { authOptions } from '@/auth'
-import envServerConfig from '@/config/env.server'
-import { SESSION_COOKIE, SESSION_SECURE } from '@/config/next-auth'
-import { createAuthCookieString } from '@/lib/auth'
-import { shouldUpdateToken } from '@/middleware'
-import * as jwt from 'jsonwebtoken'
-import { NextApiRequest, NextApiResponse } from 'next'
-import NextAuth from 'next-auth'
-import { decode, encode, getToken, JWT } from 'next-auth/jwt'
-import { redirect } from 'next/navigation'
-import { NextRequest, NextResponse } from 'next/server'
+import authApiRequest from "@/apiRequests/auth.api";
+import customerAuthApiRequest from "@/apiRequests/customer-auth.api";
+import { authOptions } from "@/auth";
+import envServerConfig from "@/config/env.server";
+import { SESSION_COOKIE, SESSION_SECURE } from "@/config/next-auth";
+import { ROUTES } from "@/constants/constants";
+import { createAuthCookieString } from "@/lib/auth";
+import { shouldUpdateToken } from "@/middleware";
+import * as jwt from "jsonwebtoken";
+import { NextApiRequest, NextApiResponse } from "next";
+import NextAuth from "next-auth";
+import { decode, encode, getToken, JWT } from "next-auth/jwt";
+import { redirect } from "next/navigation";
+import { NextRequest, NextResponse } from "next/server";
 
 // const handler = NextAuth(authOptions)
 
@@ -37,17 +38,20 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // -----------------------------------------------------------------------------------
 interface RouteHandlerContext {
-  params: Promise<{ nextauth: string[] }>
+  params: Promise<{ nextauth: string[] }>;
 }
 
-const handler = NextAuth(authOptions)
+const handler = NextAuth(authOptions);
 
-const wrappedAuthHandler = async (req: NextRequest, context: RouteHandlerContext) => {
-  const nextAuthResponse = await handler(req, context)
-  return maybePerformTokenRefresh(nextAuthResponse)
-}
+const wrappedAuthHandler = async (
+  req: NextRequest,
+  context: RouteHandlerContext
+) => {
+  const nextAuthResponse = await handler(req, context);
+  return maybePerformTokenRefresh(nextAuthResponse);
+};
 
-export { wrappedAuthHandler as GET, wrappedAuthHandler as POST }
+export { wrappedAuthHandler as GET, wrappedAuthHandler as POST };
 
 async function maybePerformTokenRefresh(
   // token: JWT | null,
@@ -56,43 +60,50 @@ async function maybePerformTokenRefresh(
   // Check if there is a Set-Cookie header with the SESSION_COOKIE name.
   // If there is, we need to see if the token is expired and needs an update.
   // Return value of getSetCookie() is an array of strings: ['cookie1=value1', 'cookie2=value2', ...]
-  const setCookieHeaders = response.headers.getSetCookie()
-  const nextAuthSessionTokenCookie = setCookieHeaders?.find((cookie) => cookie.includes(SESSION_COOKIE))
+  const setCookieHeaders = response.headers.getSetCookie();
+  const nextAuthSessionTokenCookie = setCookieHeaders?.find((cookie) =>
+    cookie.includes(SESSION_COOKIE)
+  );
 
   if (!nextAuthSessionTokenCookie) {
     // No cookie found, nothing to update.
-    return response
+    return response;
   }
 
-  const cookieValueWithOptions = nextAuthSessionTokenCookie.split('=')[1]
-  const cookieValue = cookieValueWithOptions.split(';')[0]
+  const cookieValueWithOptions = nextAuthSessionTokenCookie.split("=")[1];
+  const cookieValue = cookieValueWithOptions.split(";")[0];
 
   const decodedCookieAsToken = await decode({
     secret: envServerConfig.NEXTAUTH_SECRET as string,
-    token: cookieValue
-  })
+    token: cookieValue,
+  });
 
-  if (!decodedCookieAsToken || !shouldUpdateToken(decodedCookieAsToken.accessToken)) {
-    return response
+  if (
+    !decodedCookieAsToken ||
+    !shouldUpdateToken(decodedCookieAsToken.accessToken)
+  ) {
+    return response;
   }
 
-  let updatedSessionToken: JWT | undefined = undefined
-  const { refreshToken, account, customer } = decodedCookieAsToken
-  const decodedRefreshToken = jwt.decode(decodedCookieAsToken?.refreshToken) as { exp: number }
+  let updatedSessionToken: JWT | undefined = undefined;
+  const { refreshToken, account, customer } = decodedCookieAsToken;
+  const decodedRefreshToken = jwt.decode(
+    decodedCookieAsToken?.refreshToken
+  ) as { exp: number };
 
   try {
     if (account) {
-      const response = await authApiRequest.refreshToken(refreshToken)
-      const { data: newSession } = response
-      updatedSessionToken = newSession
+      const response = await authApiRequest.refreshToken(refreshToken);
+      const { data: newSession } = response;
+      updatedSessionToken = newSession;
     } else if (customer) {
-      const response = await customerAuthApiRequest.refreshToken(refreshToken)
-      const { data: newSession } = response
-      updatedSessionToken = newSession
+      const response = await customerAuthApiRequest.refreshToken(refreshToken);
+      const { data: newSession } = response;
+      updatedSessionToken = newSession;
     }
   } catch (error: any) {
-    console.error(`❌ [Middleware] Error refreshing tokens: ${error}`)
-    redirect('/logout')
+    console.error(`❌ [Middleware] Error refreshing tokens: ${error}`);
+    redirect(ROUTES.LOGOUT);
     // const refreshErrorResponse = response.clone()
     // refreshErrorResponse.headers.delete('Set-Cookie')
     // refreshErrorResponse.headers.set(
@@ -113,19 +124,23 @@ async function maybePerformTokenRefresh(
   const newSessionToken = await encode({
     secret: process.env.NEXTAUTH_SECRET as string,
     token: updatedSessionToken,
-    maxAge: decodedRefreshToken.exp
-  })
+    maxAge: decodedRefreshToken.exp,
+  });
 
-  const newCookieValue = createAuthCookieString(SESSION_COOKIE, newSessionToken, {
-    httpOnly: true,
-    maxAge: decodedRefreshToken.exp, // seconds
-    secure: SESSION_SECURE,
-    sameSite: 'Lax',
-    path: '/'
-  })
+  const newCookieValue = createAuthCookieString(
+    SESSION_COOKIE,
+    newSessionToken,
+    {
+      httpOnly: true,
+      maxAge: decodedRefreshToken.exp, // seconds
+      secure: SESSION_SECURE,
+      sameSite: "Lax",
+      path: "/",
+    }
+  );
 
-  const clonedResponse = response.clone()
-  clonedResponse.headers.delete('Set-Cookie')
-  clonedResponse.headers.set('Set-Cookie', newCookieValue)
-  return clonedResponse
+  const clonedResponse = response.clone();
+  clonedResponse.headers.delete("Set-Cookie");
+  clonedResponse.headers.set("Set-Cookie", newCookieValue);
+  return clonedResponse;
 }

@@ -1,10 +1,10 @@
-import { variants } from '@/components/ui/badge'
-import { DishStatus, OrderStatus, TableStatus } from '@/constants/enum'
-import { EntityError } from '@/lib/errors'
-import { OrderItem, OrderItemsState } from '@/providers/zustand-provider'
-import { IBill, IDish, IOrder } from '@/types/backend.type'
-import { clsx, type ClassValue } from 'clsx'
-import { getDay } from 'date-fns'
+import { variants } from "@/components/ui/badge";
+import { DishStatus, OrderStatus, TableStatus } from "@/constants/enum";
+import { EntityError } from "@/lib/errors";
+import { OrderItem, OrderItemsState } from "@/providers/zustand-provider";
+import { IBill, IDish, IOrder, ITable } from "@/types/backend.type";
+import { clsx, type ClassValue } from "clsx";
+import { getDay } from "date-fns";
 import {
   Ban,
   CheckCircle,
@@ -14,16 +14,16 @@ import {
   HandPlatter,
   Loader,
   Users,
-  XCircle
-} from 'lucide-react'
-import { UseFormSetError } from 'react-hook-form'
-import { toast } from 'sonner'
-import { twMerge } from 'tailwind-merge'
+  XCircle,
+} from "lucide-react";
+import { UseFormSetError } from "react-hook-form";
+import { toast } from "sonner";
+import { twMerge } from "tailwind-merge";
 
-const isClient = typeof window !== 'undefined'
+const isClient = typeof window !== "undefined";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 /**
@@ -31,300 +31,362 @@ export function cn(...inputs: ClassValue[]) {
  * @param path đường dẫn đến tài nguyên trong backend
  */
 export function normalizePath(path: string) {
-  return path.startsWith('/') ? path : `/${path}`
+  return path.startsWith("/") ? path : `/${path}`;
 }
 
 export const handleApiError = ({
   error,
   setError,
-  duration = 3000
+  duration = 3000,
 }: {
-  error: any
-  setError?: UseFormSetError<any>
-  duration?: number
+  error: any;
+  setError?: UseFormSetError<any>;
+  duration?: number;
 }) => {
   if (error instanceof EntityError && setError) {
-    const { errors } = error
-    errors.map((err) => setError(err.field, { message: err.message }))
+    const { errors } = error;
+    errors.map((err) => setError(err.field, { message: err.message }));
   } else {
     // Http Error (Bad Request | Not Found | Unauthorized | Internal Server Error)
     // Ngoài ra còn có các lỗi khác như: ERRCONNECT | Unexpected Error - Uncaught
-    toast.error(error?.message ?? 'Đã có lỗi xảy ra', { description: 'Vui lòng thử lại', duration, closeButton: true })
+    toast.error(error?.message ?? "Đã có lỗi xảy ra", {
+      description: "Vui lòng thử lại",
+      duration,
+      closeButton: true,
+    });
   }
-}
+};
 
 export const formatNumberToVnCurrency = (number: number) => {
-  return number.toLocaleString('it-IT') + '₫'
-}
+  return number.toLocaleString("it-IT") + "₫";
+};
 
 export function formatNumberWithCommas(number: number): string {
-  return number.toLocaleString('en-US')
+  return number.toLocaleString("en-US");
 }
 export const getVietnameseOrderStatus = (status: OrderStatus) => {
   switch (status) {
     case OrderStatus.Pending:
-      return 'Chờ xác nhận'
+      return "Chờ xác nhận";
     case OrderStatus.Confirmed:
-      return 'Đã xác nhận'
+      return "Đã xác nhận";
     case OrderStatus.Cooked:
-      return 'Đã nấu'
+      return "Đã nấu";
     case OrderStatus.Served:
-      return 'Đã phục vụ'
+      return "Đã phục vụ";
     case OrderStatus.Paid:
-      return 'Đã thanh toán'
+      return "Đã thanh toán";
     case OrderStatus.Canceled:
-      return 'Đã hủy'
+      return "Đã hủy";
     case OrderStatus.Rejected:
-      return 'Từ chối'
+      return "Từ chối";
     default:
-      return 'INVALID_ORDER_STATUS'
+      return "INVALID_ORDER_STATUS";
   }
-}
+};
 
 export const getVietnameseDishStatus = (status: DishStatus) => {
   switch (status) {
     case DishStatus.Available:
-      return 'Có sẵn'
+      return "Có sẵn";
     case DishStatus.Unavailable:
-      return 'Không có sẵn'
+      return "Không có sẵn";
     default:
-      return 'INVALID_DISH_STATUS'
+      return "INVALID_DISH_STATUS";
   }
-}
+};
 
 export const getVietnameseDishStatusList = () => {
   return Object.values(DishStatus).map((status, index) => ({
     label: getVietnameseDishStatus(status),
-    value: getDishStatusByIndex(index)
-  }))
-}
+    value: getDishStatusByIndex(index),
+  }));
+};
 
 export const getVietnameseOrderStatusList = () => {
   return Object.values(OrderStatus).map((status, index) => ({
     label: getVietnameseOrderStatus(status),
-    value: getOrderStatusByIndex(index)
-  }))
-}
+    value: getOrderStatusByIndex(index),
+  }));
+};
 
 const getOrderStatusByIndex = (index: number) => {
-  return Object.values(OrderStatus)[index]
-}
+  return Object.values(OrderStatus)[index];
+};
 
 const getDishStatusByIndex = (index: number) => {
-  return Object.values(DishStatus)[index]
-}
+  return Object.values(DishStatus)[index];
+};
 
 export const getVietnameseTableStatus = (status: TableStatus): string => {
   switch (status) {
     case TableStatus.Available:
-      return 'Trống'
+      return "Trống";
     case TableStatus.Hidden:
-      return 'Ẩn'
+      return "Ẩn";
     case TableStatus.Occupied:
-      return 'Đang có khách'
+      return "Đang có khách";
     default:
-      return 'INVALID'
+      return "INVALID";
   }
-}
+};
 
-export const getVietnameseTableStatusList = (): Array<{ label: string; value: TableStatus }> => {
+export const getVietnameseTableStatusList = (): Array<{
+  label: string;
+  value: TableStatus;
+}> => {
   return Object.values(TableStatus).map((statusValue) => ({
     label: getVietnameseTableStatus(statusValue),
-    value: statusValue
-  }))
-}
+    value: statusValue,
+  }));
+};
 
 export const getVietnameseDayOfWeek = (date: string | Date) => {
-  const orderOfDay = getDay(date)
+  const orderOfDay = getDay(date);
   switch (orderOfDay) {
     case 0:
-      return 'Chủ Nhật'
+      return "Chủ Nhật";
     case 1:
-      return 'Thứ Hai'
+      return "Thứ Hai";
     case 2:
-      return 'Thứ Ba'
+      return "Thứ Ba";
     case 3:
-      return 'Thứ Tư'
+      return "Thứ Tư";
     case 4:
-      return 'Thứ Năm'
+      return "Thứ Năm";
     case 5:
-      return 'Thứ Sáu'
+      return "Thứ Sáu";
     case 6:
-      return 'Thứ Bảy'
+      return "Thứ Bảy";
     default:
-      return 'INVALID_DAY_OF_WEEK'
+      return "INVALID_DAY_OF_WEEK";
   }
-}
+};
 
-export const getBadgeVariantByOrderStatus = (status: OrderStatus): keyof typeof variants.variant => {
+export const getBadgeVariantByOrderStatus = (
+  status: OrderStatus
+): keyof typeof variants.variant => {
   switch (status) {
     case OrderStatus.Pending:
-      return 'yellow'
+      return "yellow";
     case OrderStatus.Confirmed:
-      return 'blue'
+      return "blue";
     case OrderStatus.Served:
-      return 'blue'
+      return "blue";
     case OrderStatus.Rejected:
-      return 'red'
+      return "red";
     case OrderStatus.Canceled:
-      return 'outline'
+      return "outline";
     case OrderStatus.Paid:
-      return 'green'
+      return "green";
     default:
-      return 'default'
+      return "default";
   }
-}
+};
 
 export const removeVietNamAccent = (text: string) => {
-  const from = 'àáãảạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệđùúủũụưừứửữựòóỏõọôồốổỗộơờớởỡợìíỉĩịäëïîöüûñçýỳỹỵỷ',
-    to = 'aaaaaaaaaaaaaaaaaeeeeeeeeeeeduuuuuuuuuuuoooooooooooooooooiiiiiaeiiouuncyyyyy'
+  const from =
+      "àáãảạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệđùúủũụưừứửữựòóỏõọôồốổỗộơờớởỡợìíỉĩịäëïîöüûñçýỳỹỵỷ",
+    to =
+      "aaaaaaaaaaaaaaaaaeeeeeeeeeeeduuuuuuuuuuuoooooooooooooooooiiiiiaeiiouuncyyyyy";
   for (let i = 0, l = from.length; i < l; i++) {
-    text = text.replace(RegExp(from[i], 'gi'), to[i])
+    text = text.replace(RegExp(from[i], "gi"), to[i]);
   }
 
   text = text
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\-]/g, '-')
-    .replace(/-+/g, '-')
+    .replace(/[^a-z0-9\-]/g, "-")
+    .replace(/-+/g, "-");
 
-  return text
-}
+  return text;
+};
 
 const orderKeyTranslations: Record<keyof IOrder, string> = {
-  _id: 'Mã đơn hàng',
-  code: 'Mã đơn',
-  customer: 'Khách hàng',
-  totalPrice: 'Tổng tiền',
-  status: 'Trạng thái',
-  dish: 'Món ăn',
-  note: 'Ghi chú',
-  price: 'Đơn giá',
-  quantity: 'Số lượng',
-  tableNumber: 'Bàn',
-  createdAt: 'Ngày tạo',
-  updatedAt: 'Ngày cập nhật',
-  cookingCompletedAt: 'Ngày nấu',
-  paidAt: 'Ngày thanh toán'
-}
+  _id: "Mã đơn hàng",
+  code: "Mã đơn",
+  customer: "Khách hàng",
+  totalPrice: "Tổng tiền",
+  status: "Trạng thái",
+  dish: "Món ăn",
+  note: "Ghi chú",
+  price: "Đơn giá",
+  quantity: "Số lượng",
+  tableNumber: "Bàn",
+  createdAt: "Ngày tạo",
+  updatedAt: "Ngày cập nhật",
+  cookingCompletedAt: "Ngày nấu",
+  paidAt: "Ngày thanh toán",
+};
 
 export function translateOrderKey(key: keyof IOrder): string {
-  return orderKeyTranslations[key]
+  return orderKeyTranslations[key];
 }
 
 export const billKeyTranslations: Record<keyof IBill, string> = {
-  billCode: 'Mã phiếu',
-  totalPrice: 'Tổng tiền',
-  customerCode: 'Mã khách hàng',
-  tableNumber: 'Số bàn',
-  account: 'Người tạo',
-  orderItems: 'Chi tiết đơn hàng',
-  createdAt: 'Ngày tạo',
-  updatedAt: 'Ngày cập nhật'
-}
+  billCode: "Mã phiếu",
+  totalPrice: "Tổng tiền",
+  customerCode: "Mã khách hàng",
+  tableNumber: "Số bàn",
+  account: "Người tạo",
+  orderItems: "Chi tiết đơn hàng",
+  createdAt: "Ngày tạo",
+  updatedAt: "Ngày cập nhật",
+};
 
 export function translateBillKey(key: keyof IBill): string {
-  return billKeyTranslations[key]
+  return billKeyTranslations[key];
 }
 
 export const dishKeyTranslations: Record<keyof IDish, string> = {
-  _id: 'Mã món ăn',
-  title: 'Món ăn',
-  description: 'Mô tả',
-  price: 'Giá',
-  status: 'Trạng thái',
-  imageUrl: 'Hình ảnh',
-  category: 'Danh mục',
-  createdAt: 'Ngày tạo',
-  updatedAt: 'Ngày cập nhật',
-  cookingTime: 'Thời gian nấu'
-}
+  _id: "Mã món ăn",
+  title: "Món ăn",
+  description: "Mô tả",
+  price: "Giá",
+  status: "Trạng thái",
+  imageUrl: "Hình ảnh",
+  category: "Danh mục",
+  createdAt: "Ngày tạo",
+  updatedAt: "Ngày cập nhật",
+  cookingTime: "Thời gian nấu",
+};
 
 export function translateDishKey(key: keyof IDish): string {
-  return dishKeyTranslations[key]
+  return dishKeyTranslations[key];
+}
+
+export function translateTableKey(key: keyof ITable): string {
+  const translations: Record<string, string> = {
+    _id: "Mã bàn",
+    number: "Số bàn",
+    capacity: "Sức chứa",
+    status: "Trạng thái",
+    customer: "Khách hàng",
+    createdAt: "Ngày tạo",
+    updatedAt: "Ngày cập nhật",
+  };
+  return translations[key as string] || key;
+}
+
+export function translateAccountKey(
+  key: keyof import("@/types/auth.type").IAccount
+): string {
+  const translations: Record<string, string> = {
+    _id: "Mã tài khoản",
+    email: "Email",
+    fullName: "Tên đầy đủ",
+    avatarUrl: "Ảnh đại diện",
+    role: "Vai trò",
+    createdAt: "Ngày tạo",
+    updatedAt: "Ngày cập nhật",
+  };
+  return translations[key as string] || key;
 }
 
 export function getIconOfTableStatus(status: TableStatus) {
   switch (status) {
     case TableStatus.Available:
-      return CheckCircle
+      return CheckCircle;
     case TableStatus.Occupied:
-      return Users
+      return Users;
     default:
-      return null
+      return null;
   }
 }
 
 export function getIconOfOrderStatus(status: OrderStatus) {
   switch (status) {
     case OrderStatus.Pending:
-      return Loader
+      return Loader;
     case OrderStatus.Confirmed:
-      return CheckCircle2
+      return CheckCircle2;
     case OrderStatus.Cooked:
-      return CookingPot
+      return CookingPot;
     case OrderStatus.Served:
-      return HandPlatter
+      return HandPlatter;
     case OrderStatus.Paid:
-      return CircleCheck
+      return CircleCheck;
     case OrderStatus.Canceled:
-      return XCircle
+      return XCircle;
     case OrderStatus.Rejected:
-      return Ban
+      return Ban;
     default:
-      return null
+      return null;
   }
 }
 
-export function formatDate(date: Date | string | number | undefined, opts: Intl.DateTimeFormatOptions = {}) {
-  if (!date) return ''
+export function formatDate(
+  date: Date | string | number | undefined,
+  opts: Intl.DateTimeFormatOptions = {}
+) {
+  if (!date) return "";
 
   try {
-    return new Intl.DateTimeFormat('en-US', {
-      month: opts.month ?? 'long',
-      day: opts.day ?? 'numeric',
-      year: opts.year ?? 'numeric',
-      ...opts
-    }).format(new Date(date))
+    return new Intl.DateTimeFormat("en-US", {
+      month: opts.month ?? "long",
+      day: opts.day ?? "numeric",
+      year: opts.year ?? "numeric",
+      ...opts,
+    }).format(new Date(date));
   } catch (_err) {
-    return ''
+    return "";
   }
 }
 
 export function toSentenceCase(str: string) {
-  return str.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
+  return str
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase());
 }
 
 export function getOrderItemsFromLS(): OrderItemsState[] {
   if (isClient) {
-    const orderItemJSON = localStorage.getItem('cart')
-    const orderItems: OrderItemsState[] = orderItemJSON ? JSON.parse(orderItemJSON) : []
-    return orderItems
+    const orderItemJSON = localStorage.getItem("cart");
+    const orderItems: OrderItemsState[] = orderItemJSON
+      ? JSON.parse(orderItemJSON)
+      : [];
+    return orderItems;
   }
-  return []
+  return [];
 }
 
 export function addOrderItemToLS(tableNumber: number, newOrderItem: OrderItem) {
   if (isClient) {
-    let orderItems = getOrderItemsFromLS()
-    let prevItems = orderItems.find((order) => order.tableNumber === tableNumber)?.items ?? []
-    orderItems = orderItems.filter((order) => order.tableNumber !== tableNumber)
-    prevItems = prevItems.filter((item) => item.dish._id !== newOrderItem.dish._id)
-    localStorage.setItem('cart', JSON.stringify([...orderItems, { tableNumber, items: [...prevItems, newOrderItem] }]))
+    let orderItems = getOrderItemsFromLS();
+    let prevItems =
+      orderItems.find((order) => order.tableNumber === tableNumber)?.items ??
+      [];
+    orderItems = orderItems.filter(
+      (order) => order.tableNumber !== tableNumber
+    );
+    prevItems = prevItems.filter(
+      (item) => item.dish._id !== newOrderItem.dish._id
+    );
+    localStorage.setItem(
+      "cart",
+      JSON.stringify([
+        ...orderItems,
+        { tableNumber, items: [...prevItems, newOrderItem] },
+      ])
+    );
   }
 }
 
 export function removeOrderItemFromLS(tableNumber: number, dishId: string) {
   if (isClient) {
-    const orderItems = getOrderItemsFromLS()
-    const prevItemsIdx = orderItems.findIndex((order) => order.tableNumber === tableNumber)
+    const orderItems = getOrderItemsFromLS();
+    const prevItemsIdx = orderItems.findIndex(
+      (order) => order.tableNumber === tableNumber
+    );
 
-    if (prevItemsIdx < 0) return
+    if (prevItemsIdx < 0) return;
 
-    const prevItems = orderItems[prevItemsIdx].items
-    const filteredItems = prevItems.filter((orderItem) => orderItem.dish._id !== dishId)
-    orderItems[prevItemsIdx].items = filteredItems
-    localStorage.setItem('cart', JSON.stringify(orderItems))
+    const prevItems = orderItems[prevItemsIdx].items;
+    const filteredItems = prevItems.filter(
+      (orderItem) => orderItem.dish._id !== dishId
+    );
+    orderItems[prevItemsIdx].items = filteredItems;
+    localStorage.setItem("cart", JSON.stringify(orderItems));
   }
 }
 
@@ -334,27 +396,36 @@ export function updateOrderItemInLS(
   payload: { quantity?: number; note?: string }
 ) {
   if (isClient) {
-    const orderItems = getOrderItemsFromLS()
-    const prevItemsIdx = orderItems.findIndex((order) => order.tableNumber === tableNumber)
+    const orderItems = getOrderItemsFromLS();
+    const prevItemsIdx = orderItems.findIndex(
+      (order) => order.tableNumber === tableNumber
+    );
 
-    if (prevItemsIdx < 0) return
+    if (prevItemsIdx < 0) return;
 
-    const prevItems = orderItems[prevItemsIdx].items
-    const targetItemIdx = prevItems.findIndex((item) => item.dish._id === dishId)
+    const prevItems = orderItems[prevItemsIdx].items;
+    const targetItemIdx = prevItems.findIndex(
+      (item) => item.dish._id === dishId
+    );
 
-    if (targetItemIdx < 0) return
-    const targetItem = prevItems[targetItemIdx]
-    orderItems[prevItemsIdx].items[targetItemIdx] = { ...targetItem, ...payload }
-    localStorage.setItem('cart', JSON.stringify(orderItems))
+    if (targetItemIdx < 0) return;
+    const targetItem = prevItems[targetItemIdx];
+    orderItems[prevItemsIdx].items[targetItemIdx] = {
+      ...targetItem,
+      ...payload,
+    };
+    localStorage.setItem("cart", JSON.stringify(orderItems));
   }
 }
 
 export function clearOrderItemFromLS(tableNumber: number) {
   if (isClient) {
-    let orderItems = getOrderItemsFromLS()
+    let orderItems = getOrderItemsFromLS();
     // const prevItemsIdx = orderItems.findIndex((order) => order.tableNumber === tableNumber)
     // // orderItems[prevItemsIdx].items = []
-    orderItems = orderItems.filter((order) => order.tableNumber !== tableNumber)
-    localStorage.setItem('cart', JSON.stringify(orderItems))
+    orderItems = orderItems.filter(
+      (order) => order.tableNumber !== tableNumber
+    );
+    localStorage.setItem("cart", JSON.stringify(orderItems));
   }
 }

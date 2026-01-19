@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/constants/constants";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -21,7 +22,7 @@ export default function Error({
         className="w-50 aspect-square object-cover"
       />
       <p className="py-4 max-w-xl">{error.message}</p>
-      <Button variant={"outline"} onClick={() => router.replace("/")}>
+      <Button variant={"outline"} onClick={() => router.replace(ROUTES.HOME)}>
         Quay về trang chủ
       </Button>
     </div>

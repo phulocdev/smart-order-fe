@@ -1,44 +1,48 @@
-'use client'
-import { Spinner } from '@/components/ui/spinner'
-import { handleApiError } from '@/lib/utils'
-import { signIn } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import * as React from 'react'
+"use client";
+import { Spinner } from "@/components/ui/spinner";
+import { ROUTES } from "@/constants/constants";
+import { handleApiError } from "@/lib/utils";
+import { signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import * as React from "react";
 
 export default function ReservationScreen() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const tableToken = searchParams.get('token') || ''
-  const [loading, setLoading] = React.useState(false)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tableToken = searchParams.get("token") || "";
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     async function handleLogin() {
       try {
-        setLoading(true)
-        const response = await signIn('customer-credentials', { redirect: false, tableToken }).finally(() => {
-          setLoading(false)
-        })
+        setLoading(true);
+        const response = await signIn("customer-credentials", {
+          redirect: false,
+          tableToken,
+        }).finally(() => {
+          setLoading(false);
+        });
 
         if (response?.error) {
-          const error = JSON.parse(response.error)
-          throw error
+          const error = JSON.parse(response.error);
+          throw error;
         }
-        router.replace('/')
+        router.replace(ROUTES.HOME);
       } catch (error) {
-        handleApiError({ error, duration: Infinity })
+        handleApiError({ error, duration: Infinity });
       }
     }
 
-    handleLogin()
-  }, [router, tableToken])
+    handleLogin();
+  }, [router, tableToken]);
 
   return (
     <div>
       {loading && (
-        <div className='absolute inset-0 flex items-center justify-center bg-black opacity-30'>
-          <Spinner size={'large'} className='text-white' />
+        <div className="absolute inset-0 flex items-center justify-center bg-black opacity-30">
+          <Spinner size={"large"} className="text-white" />
         </div>
       )}
     </div>
-  )
+  );
 }

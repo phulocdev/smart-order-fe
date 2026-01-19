@@ -8,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ROUTES } from "@/constants/constants";
 import { User } from "lucide-react";
 import { Session } from "next-auth";
 import Link from "next/link";
@@ -31,14 +32,14 @@ export default async function UserMenu({ session }: Props) {
         <DropdownMenuSeparator />
         {!session && (
           <DropdownMenuItem>
-            <Link href={"/login"} className="w-full">
+            <Link href={ROUTES.LOGIN} className="w-full">
               Đăng nhập
             </Link>
           </DropdownMenuItem>
         )}
         {isEmployee && (
           <DropdownMenuItem>
-            <Link href={"/dashboard"} className="w-full">
+            <Link href={ROUTES.DASHBOARD.ROOT} className="w-full">
               Quản lý
             </Link>
           </DropdownMenuItem>

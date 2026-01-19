@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   AlertDialog,
@@ -9,19 +9,20 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger
-} from '@/components/ui/alert-dialog'
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import http from '@/lib/http'
-import { handleApiError } from '@/lib/utils'
-import { useAppStore } from '@/providers/zustand-provider'
-import { ApiResponse } from '@/types/response.type'
-import { Session } from 'next-auth'
-import { signOut } from 'next-auth/react'
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { ROUTES } from "@/constants/constants";
+import http from "@/lib/http";
+import { handleApiError } from "@/lib/utils";
+import { useAppStore } from "@/providers/zustand-provider";
+import { ApiResponse } from "@/types/response.type";
+import { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 
 export default function LogoutButton({ session }: { session: Session }) {
-  const { refreshToken, accessToken } = session
-  const clearOrderInCart = useAppStore((state) => state.clearOrderInCart)
+  const { refreshToken, accessToken } = session;
+  const clearOrderInCart = useAppStore((state) => state.clearOrderInCart);
 
   const onLogout = async () => {
     try {
@@ -29,49 +30,57 @@ export default function LogoutButton({ session }: { session: Session }) {
         // Không dùng redirect: false ở đây, vì nó sẽ k  reload lại page -> vẫn ở page đang thực hiện logout
         // Ko dung promise.all boi vi trong TH AT het hạn thi logout khong thanh cong
         // await Promise.all([signOut({ callbackUrl: '/login' }), authApiRequest.logout(refreshToken)])
-        await signOut({ callbackUrl: '/login' })
+        await signOut({ callbackUrl: ROUTES.LOGIN });
         await http.post<ApiResponse<[]>>(
-          '/auth/logout',
+          `${ROUTES.API.AUTH}/logout`,
           { refreshToken },
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`
-            }
+              Authorization: `Bearer ${accessToken}`,
+            },
           }
-        )
+        );
       } else {
         // await Promise.all([signOut({ callbackUrl: '/' }), customerApiRequest.logout(refreshToken)])
-        await signOut({ callbackUrl: '/' })
+        await signOut({ callbackUrl: ROUTES.HOME });
         if (session.customer) {
-          clearOrderInCart(session.customer.tableNumber)
+          clearOrderInCart(session.customer.tableNumber);
         }
         await http.post<ApiResponse<[]>>(
-          '/customers/auth/logout',
+          ROUTES.API.CUSTOMERS_AUTH_LOGOUT,
           { refreshToken },
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`
-            }
+              Authorization: `Bearer ${accessToken}`,
+            },
           }
-        )
+        );
       }
     } catch (error) {
-      handleApiError({ error })
+      handleApiError({ error });
     }
-  }
+  };
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild className='w-full text-left'>
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Đăng xuất</DropdownMenuItem>
+      <AlertDialogTrigger asChild className="w-full text-left">
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          Đăng xuất
+        </DropdownMenuItem>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
             <p>Bạn có muốn đăng xuất?</p>
           </AlertDialogTitle>
-          {session?.customer && <AlertDialogDescription>Bạn sẽ không thể tiếp tục tự gọi món</AlertDialogDescription>}
+          {session?.customer && (
+            <AlertDialogDescription>
+              Bạn sẽ không thể tiếp tục tự gọi món
+            </AlertDialogDescription>
+          )}
           {session?.account && (
-            <AlertDialogDescription>Hành động này sẽ thoát khỏi phiên làm việc của bạn</AlertDialogDescription>
+            <AlertDialogDescription>
+              Hành động này sẽ thoát khỏi phiên làm việc của bạn
+            </AlertDialogDescription>
           )}
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -80,5 +89,5 @@ export default function LogoutButton({ session }: { session: Session }) {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
