@@ -12,6 +12,7 @@ export default function Error({
 }) {
   const router = useRouter();
 
+  debugger;
   return (
     <div className="flex h-screen flex-col items-center py-28">
       <Image

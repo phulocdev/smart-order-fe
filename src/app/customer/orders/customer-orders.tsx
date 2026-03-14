@@ -39,17 +39,26 @@ interface CustomerOrderProps {
 }
 
 export default function CustomerOrder({ promise }: CustomerOrderProps) {
-  const { data: orderList } = React.use(promise);
+  const response = React.use(promise);
+  const orderList = Array.isArray(response?.data) ? response.data : [];
   const socket = useSocket();
   const router = useRouter();
 
+  console.log("=== CUSTOMER ORDERS DEBUG ===");
+  console.log("Full API response:", response);
+  console.log("Response data type:", typeof response?.data);
+  console.log("Is data array?:", Array.isArray(response?.data));
+  console.log("Extracted orderList:", orderList);
+  console.log("OrderList length:", orderList.length);
+  console.log("================================");
+
   const totalQuantity = orderList.reduce(
     (result, order) => result + order.quantity,
-    0
+    0,
   );
   const totalPrice = orderList.reduce(
     (result, order) => result + order.totalPrice,
-    0
+    0,
   );
 
   React.useEffect(() => {
@@ -68,7 +77,7 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
       status: OrderStatus;
     }) => {
       toast(
-        `📢 Món "${dishTitle}" vừa được chuyển sang trạng thái "${getVietnameseOrderStatus(status)}"`
+        `📢 Món "${dishTitle}" vừa được chuyển sang trạng thái "${getVietnameseOrderStatus(status)}"`,
       );
       router.refresh();
     };

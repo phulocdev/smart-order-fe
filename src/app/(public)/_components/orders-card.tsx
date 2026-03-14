@@ -34,16 +34,16 @@ export default function OrdersCard() {
     () =>
       orderItemsState.find((order) => order.tableNumber === tableNumber)
         ?.items ?? [],
-    [orderItemsState, tableNumber]
+    [orderItemsState, tableNumber],
   );
 
   const totalPrice = useMemo(
     () =>
       orderItems.reduce(
         (result, orderItem) => result + orderItem.price * orderItem.quantity,
-        0
+        0,
       ),
-    [orderItems]
+    [orderItems],
   );
   const updateOrderItem = useAppStore((state) => state.updateOrderItem);
   const removeOrderItem = useAppStore((state) => state.removeOrderItem);
@@ -114,7 +114,7 @@ export default function OrdersCard() {
                     <div
                       className={cn(
                         "line-clamp-1 text-sm font-normal text-third",
-                        { "mt-2": !!orderItem.note }
+                        { "mt-2": !!orderItem.note },
                       )}
                     >
                       {orderItem.note}
@@ -122,7 +122,7 @@ export default function OrdersCard() {
                   </div>
                   <div className="text-[15px] font-extrabold">
                     {formatNumberToVnCurrency(
-                      orderItem.dish.price * orderItem.quantity
+                      orderItem.dish.price * orderItem.quantity,
                     )}
                   </div>
                 </div>
@@ -186,7 +186,7 @@ export default function OrdersCard() {
       <DrawerTrigger asChild>
         <div
           className={cn(
-            "fixed bottom-0 left-0 right-0 flex justify-between bg-third px-5 py-3 text-[13px] uppercase text-third-foreground opacity-95 lg:hidden"
+            "fixed bottom-0 left-0 right-0 flex justify-between bg-third px-5 py-3 text-[13px] uppercase text-third-foreground opacity-95 lg:hidden",
             // { [`bottom-[${ORDER_DRAWER_HEIGHT}px] text-gray-50`]: open, 'bottom-0': !open }
           )}
         >
@@ -233,7 +233,7 @@ export default function OrdersCard() {
                     <div
                       className={cn(
                         "line-clamp-1 text-sm font-normal text-third",
-                        { "mt-2": !!orderItem.note }
+                        { "mt-2": !!orderItem.note },
                       )}
                     >
                       {orderItem.note}
@@ -241,7 +241,7 @@ export default function OrdersCard() {
                   </div>
                   <div className="text-[15px] font-extrabold">
                     {formatNumberToVnCurrency(
-                      orderItem.dish.price * orderItem.quantity
+                      orderItem.dish.price * orderItem.quantity,
                     )}
                   </div>
                 </div>

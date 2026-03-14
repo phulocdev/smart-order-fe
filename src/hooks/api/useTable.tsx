@@ -1,5 +1,17 @@
 import tableApiRequest from "@/apiRequests/table.api";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+
+export function useGetTableListQuery(accessToken?: string) {
+  return useQuery({
+    queryKey: ["tables", accessToken],
+    queryFn: async () => {
+      if (!accessToken) return [];
+      const response = await tableApiRequest.getList(accessToken);
+      return response.data || [];
+    },
+    enabled: !!accessToken,
+  });
+}
 
 export function useCreateTableMutation() {
   return useMutation({

@@ -3,12 +3,8 @@ import { ITable } from "@/types/backend.type";
 import { ApiResponse, PaginatedResponse } from "@/types/response.type";
 
 const tableApiRequest = {
-  getList: (accessToken: string) => {
-    return http.get<PaginatedResponse<ITable>>("/tables", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+  getList: () => {
+    return http.get<PaginatedResponse<ITable>>("/tables", {});
   },
 
   clientGetOne: (id: string) => {

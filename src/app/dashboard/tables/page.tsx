@@ -9,7 +9,7 @@ import React from "react";
 
 export default async function Page() {
   const session = await getAuthSession();
-  const promise = tableApiRequest.getList(session?.accessToken || "");
+  const promise = tableApiRequest.getList();
 
   if (session?.account?.role !== Role.Manager) {
     redirect(ROUTES.DASHBOARD.ROOT);
