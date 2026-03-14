@@ -37,7 +37,7 @@ export default async function IndexPage(props: IndexPageProps) {
       ...params,
       ...orderQueryParamsForChef,
     }),
-    tableApiRequest.getList(accessToken),
+    tableApiRequest.getList(),
     // orderApiRequest.statisticsByTables(accessToken)
   ]);
 

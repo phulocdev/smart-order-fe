@@ -12,7 +12,7 @@ export default async function Page() {
   const accessToken = session?.accessToken ?? "";
   const promises = Promise.all([
     dishApiRequest.getList(),
-    tableApiRequest.getList(accessToken),
+    tableApiRequest.getList(),
   ]);
 
   if (session?.account?.role === Role.Chef) {
