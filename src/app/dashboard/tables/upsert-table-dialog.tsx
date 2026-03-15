@@ -146,7 +146,7 @@ export default function UpsertTableDialog({
                   </FormItem>
                 )}
               />
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="reservationLink"
                 render={({ field }) => (
@@ -161,7 +161,7 @@ export default function UpsertTableDialog({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
             </form>
           </Form>
         </DialogDescription>

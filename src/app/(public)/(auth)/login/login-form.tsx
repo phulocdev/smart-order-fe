@@ -111,7 +111,8 @@ export default function LoginForm() {
         />
         {oAuthLoginErrorMessage === OAUTH_LOGIN_ERROR_MESSAGE && (
           <div className="text-[13px] font-medium text-red-500">
-            Tài khoản không tồn tại trên hệ thống!
+            Chỉ có nhân viên của nhà hàng mới có thể đăng nhập bằng Google. Vui
+            lòng liên hệ quản lý để được hỗ trợ.
           </div>
         )}
         <>

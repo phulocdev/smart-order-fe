@@ -15,6 +15,7 @@ import { ROUTES } from "@/constants/constants";
 import {
   ChartArea,
   NotepadText,
+  Settings,
   ShoppingCart,
   Soup,
   Table,
@@ -63,7 +64,7 @@ const items = [
   {
     title: "Cài đặt",
     url: ROUTES.DASHBOARD.SETTINGS,
-    icon: User, // You can use a different icon if preferred
+    icon: Settings, // You can use a different icon if preferred
     // No roles property means visible to all
   },
 ];
