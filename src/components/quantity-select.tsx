@@ -1,83 +1,115 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
-import { Minus, Plus } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
-import { toast } from 'sonner'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
+import { Minus, Plus } from "lucide-react";
+import React, { use, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface Props {
-  initialValue?: number
-  max?: number
-  min?: number
-  className?: string
-  onChange?: (quantity: number) => void
+  initialValue?: number;
+  max?: number;
+  min?: number;
+  className?: string;
+  onChange?: (quantity: number) => void;
 }
 
-export default function QuantitySelect({ initialValue = 1, max, min = 1, onChange, className = '' }: Props) {
-  const [quantity, setQuantity] = useState<number>(initialValue)
+export default function QuantitySelect({
+  initialValue = 1,
+  max,
+  min = 1,
+  onChange,
+  className = "",
+}: Props) {
+  const [quantity, setQuantity] = useState<number>(initialValue);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
-    setQuantity(initialValue)
-  }, [initialValue])
+    setQuantity(initialValue);
+  }, [initialValue]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const numberValue = Number(e.target.value)
-    if (isNaN(numberValue)) return
+    const numberValue = Number(e.target.value);
+    if (isNaN(numberValue)) return;
 
     if (max && numberValue > max) {
-      setQuantity(max)
-      if (onChange) onChange(max)
-      toast(`🔴 Số lượng món ăn phải <= ${max}`)
-      return
+      setQuantity(max);
+      if (onChange) onChange(max);
+      toast(
+        `🔴 Số lượng món ăn phải <= ${max}`,
+        isMobile ? { position: "top-right" } : { position: "bottom-right" },
+      );
+      return;
     }
 
     if (numberValue < min) {
-      setQuantity(min)
-      if (onChange) onChange(min)
-      toast('🔴 Số lượng món ăn không hợp lệ')
-      return
+      setQuantity(min);
+      if (onChange) onChange(min);
+      toast(
+        "🔴 Số lượng món ăn không hợp lệ",
+        isMobile ? { position: "top-right" } : { position: "bottom-right" },
+      );
+      return;
     }
 
-    setQuantity(numberValue)
-    if (onChange) onChange(numberValue)
-  }
+    setQuantity(numberValue);
+    if (onChange) onChange(numberValue);
+  };
 
   const handleIncrease = () => {
-    const newQuantity = quantity + 1
+    const newQuantity = quantity + 1;
     if (max && newQuantity > max) {
-      toast(`🔴 Số lượng món ăn phải <= ${max}`)
-      return
+      toast(
+        `🔴 Số lượng món ăn phải <= ${max}`,
+        isMobile ? { position: "top-right" } : { position: "bottom-right" },
+      );
+      return;
     }
-    setQuantity(newQuantity)
-    if (onChange) onChange(newQuantity)
-  }
+    setQuantity(newQuantity);
+    if (onChange) onChange(newQuantity);
+  };
 
   const handleDecrease = () => {
-    const newQuantity = quantity - 1
+    const newQuantity = quantity - 1;
     if (newQuantity < min) {
-      toast('🔴 Số lượng món ăn không hợp lệ')
-      return
+      toast(
+        "🔴 Số lượng món ăn không hợp lệ",
+        isMobile ? { position: "top-right" } : { position: "bottom-right" },
+      );
+      return;
     }
-    setQuantity(newQuantity)
-    if (onChange) onChange(newQuantity)
-  }
+    setQuantity(newQuantity);
+    if (onChange) onChange(newQuantity);
+  };
 
   return (
-    <div className={cn('inline-flex items-center gap-x-2', className)}>
-      <Button type='button' variant={'outline'} size={'icon'} className='shrink-0' onClick={handleDecrease}>
+    <div className={cn("inline-flex items-center gap-x-2", className)}>
+      <Button
+        type="button"
+        variant={"outline"}
+        size={"icon"}
+        className="shrink-0"
+        onClick={handleDecrease}
+      >
         <Minus />
       </Button>
       <Input
         value={quantity}
-        className='mb-[1px] aspect-square w-16 border-gray-300 bg-white text-center text-sm placeholder:text-center focus:outline-none dark:bg-slate-800'
-        pattern='[0-9]'
+        className="mb-[1px] aspect-square w-16 border-gray-300 bg-white text-center text-sm placeholder:text-center focus:outline-none dark:bg-slate-800"
+        pattern="[0-9]"
         onChange={handleInputChange}
       />
-      <Button type='button' variant={'outline'} size={'icon'} className='shrink-0' onClick={handleIncrease}>
+      <Button
+        type="button"
+        variant={"outline"}
+        size={"icon"}
+        className="shrink-0"
+        onClick={handleIncrease}
+      >
         <Plus />
       </Button>
     </div>
-  )
+  );
 }

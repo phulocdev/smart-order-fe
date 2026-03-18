@@ -6,7 +6,7 @@ export function useGetTableListQuery(accessToken?: string) {
     queryKey: ["tables", accessToken],
     queryFn: async () => {
       if (!accessToken) return [];
-      const response = await tableApiRequest.getList();
+      const response = await tableApiRequest.getList({ sort: "number.asc" });
       return response.data || [];
     },
     enabled: !!accessToken,

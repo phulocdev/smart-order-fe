@@ -19,18 +19,20 @@ import { useAppStore } from "@/providers/zustand-provider";
 import { ApiResponse } from "@/types/response.type";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
+import { Denk_One } from "next/font/google";
+import { useState } from "react";
 
 export default function LogoutButton({ session }: { session: Session }) {
   const { refreshToken, accessToken } = session;
   const clearOrderInCart = useAppStore((state) => state.clearOrderInCart);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const onLogout = async () => {
+  const handleLogout = async () => {
+    debugger;
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
     try {
       if (session.account) {
-        // Không dùng redirect: false ở đây, vì nó sẽ k  reload lại page -> vẫn ở page đang thực hiện logout
-        // Ko dung promise.all boi vi trong TH AT het hạn thi logout khong thanh cong
-        // await Promise.all([signOut({ callbackUrl: '/login' }), authApiRequest.logout(refreshToken)])
-        await signOut({ callbackUrl: ROUTES.LOGIN });
         await http.post<ApiResponse<[]>>(
           `${ROUTES.API.AUTH}/logout`,
           { refreshToken },
@@ -38,14 +40,10 @@ export default function LogoutButton({ session }: { session: Session }) {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
-          }
+          },
         );
       } else {
-        // await Promise.all([signOut({ callbackUrl: '/' }), customerApiRequest.logout(refreshToken)])
-        await signOut({ callbackUrl: ROUTES.HOME });
-        if (session.customer) {
-          clearOrderInCart(session.customer.tableNumber);
-        }
+        // Customer logout
         await http.post<ApiResponse<[]>>(
           ROUTES.API.CUSTOMERS_AUTH_LOGOUT,
           { refreshToken },
@@ -53,11 +51,24 @@ export default function LogoutButton({ session }: { session: Session }) {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
-          }
+          },
         );
       }
     } catch (error) {
+      debugger;
       handleApiError({ error });
+    } finally {
+      debugger;
+      // Always sign out and clear cart
+      if (session.account) {
+        await signOut({ callbackUrl: ROUTES.LOGIN });
+      } else {
+        await signOut({ callbackUrl: ROUTES.HOME });
+        if (session.customer) {
+          clearOrderInCart(session.customer.tableNumber);
+        }
+      }
+      setIsLoggingOut(false);
     }
   };
   return (
@@ -84,8 +95,10 @@ export default function LogoutButton({ session }: { session: Session }) {
           )}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Hủy</AlertDialogCancel>
-          <AlertDialogAction onClick={onLogout}>Xác nhận</AlertDialogAction>
+          <AlertDialogCancel disabled={isLoggingOut}>Hủy</AlertDialogCancel>
+          <AlertDialogAction onClick={handleLogout} disabled={isLoggingOut}>
+            {isLoggingOut ? "Đang đăng xuất..." : "Xác nhận"}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

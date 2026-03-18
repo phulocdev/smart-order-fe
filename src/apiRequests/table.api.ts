@@ -1,10 +1,13 @@
 import http from "@/lib/http";
 import { ITable } from "@/types/backend.type";
 import { ApiResponse, PaginatedResponse } from "@/types/response.type";
+import qs from "qs";
 
 const tableApiRequest = {
-  getList: () => {
-    return http.get<PaginatedResponse<ITable>>("/tables", {});
+  getList: (params: { sort?: string }) => {
+    return http.get<PaginatedResponse<ITable>>(
+      `/tables?${qs.stringify(params)}`,
+    );
   },
 
   clientGetOne: (id: string) => {

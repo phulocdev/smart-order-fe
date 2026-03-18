@@ -14,7 +14,7 @@ export default async function Page() {
   ] = await Promise.all([
     dishApiRequest.getList(),
     categoryApiRequest.getList(),
-    tableApiRequest.getList(),
+    tableApiRequest.getList({ sort: "number.asc" }),
   ]);
 
   return (

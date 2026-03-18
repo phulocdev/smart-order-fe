@@ -27,33 +27,56 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 import { getColumns } from "./orders-table-columns";
+import { useQuery } from "@tanstack/react-query";
+import orderApiRequest from "@/apiRequests/order.api";
+import tableApiRequest from "@/apiRequests/table.api";
+import { OrderQuery } from "@/types/search-params.type";
+import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
+import { refresh } from "next/cache";
 
 interface OrdersTableProps {
-  promises: Promise<
-    [
-      Awaited<PaginatedResponse<IOrder>>,
-      Awaited<PaginatedResponse<ITable>>,
-      // , Awaited<ApiResponse<IStatisticOrders[]>>
-    ]
-  >;
+  params: OrderQuery;
   session: Session | null;
 }
 
-export function OrdersTable({ promises, session }: OrdersTableProps) {
+export function OrdersTable({ params, session }: OrdersTableProps) {
   const socket = useSocket();
   const router = useRouter();
   const role = session?.account?.role;
+  const accessToken = session?.accessToken ?? "";
 
-  const [
-    { data: orderData, meta },
-    { data: tableData },
-    // { data: statisticsByTablesData }
-  ] = React.use(promises);
+  const [debouncedParams, setDebouncedParams] = React.useState(params);
+
+  const debouncedSetParams = useDebouncedCallback(setDebouncedParams, 500);
+
+  React.useEffect(() => {
+    debouncedSetParams(params);
+  }, [params, debouncedSetParams]);
+
+  const {
+    data: orderData,
+    isLoading: isLoadingOrders,
+    refetch: refetchOrders,
+  } = useQuery({
+    queryKey: ["orders", debouncedParams, accessToken],
+    queryFn: () => orderApiRequest.getList(accessToken, debouncedParams),
+    enabled: !!accessToken,
+  });
+
+  const {
+    data: tableData,
+    isLoading: isLoadingTables,
+    refetch: refetchTables,
+  } = useQuery({
+    queryKey: ["tables"],
+    queryFn: () => tableApiRequest.getList({ sort: "number.asc" }),
+  });
+
   const [rowAction, setRowAction] =
     React.useState<DataTableRowAction<IOrder> | null>(null);
   const columns = React.useMemo(
     () => getColumns({ setRowAction, role }),
-    [role]
+    [role],
   );
 
   /**
@@ -86,16 +109,16 @@ export function OrdersTable({ promises, session }: OrdersTableProps) {
     {
       id: "tableNumber",
       label: "Số bàn",
-      options: tableData?.map((table) => ({
+      options: tableData?.data?.map((table) => ({
         label: `Bàn số ${table.number}`,
         value: table.number,
       })),
     },
   ];
   const { table } = useDataTable({
-    data: orderData,
+    data: orderData?.data || [],
     columns,
-    pageCount: meta.totalPages,
+    pageCount: orderData?.meta.totalPages || 0,
     filterFields,
     initialState: {
       sorting: [{ id: "createdAt", desc: true }],
@@ -126,14 +149,19 @@ export function OrdersTable({ promises, session }: OrdersTableProps) {
       tableNumber: number;
       quantity: number;
     }) => {
-      router.refresh();
+      refetchOrders();
+      refetchTables();
+      // router.refresh();
+
       toast("🔔 Đơn hàng mới", {
         description: `Bàn số ${tableNumber} đã gọi ${quantity} món ăn`,
       });
     };
 
     const onUpdatedOrder = () => {
-      router.refresh();
+      refetchOrders();
+      refetchTables();
+      // router.refresh();
     };
 
     socket.on("newOrders", onNewOrders);
@@ -153,16 +181,16 @@ export function OrdersTable({ promises, session }: OrdersTableProps) {
           {/* {statisticsByTablesData.map((statistic) => (
             <StatisticCard key={statistic.tableNumber} statistic={statistic} />
           ))} */}
-          {tableData.map((table) => (
+          {tableData?.data?.map((table) => (
             <Card
               onClick={() => {
                 if (table.status === TableStatus.Available) {
                   router.push(
-                    `${ROUTES.DASHBOARD.ORDERS_CREATE}?tableNumber=${table.number}`
+                    `${ROUTES.DASHBOARD.ORDERS_CREATE}?tableNumber=${table.number}`,
                   );
                 } else if (table.status === TableStatus.Occupied) {
                   router.push(
-                    `${ROUTES.DASHBOARD.ORDERS_CHECKOUT}?tableId=${table._id}`
+                    `${ROUTES.DASHBOARD.ORDERS_CHECKOUT}?tableId=${table._id}`,
                   );
                 }
               }}

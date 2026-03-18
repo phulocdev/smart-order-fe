@@ -11,13 +11,13 @@ const ReactQueryProvider = ({ children }: { children: React.ReactNode }) => {
         defaultOptions: {
           queries: { refetchOnWindowFocus: false, retry: false },
         },
-      })
+      }),
   );
 
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+      {/* <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" /> */}
     </QueryClientProvider>
   );
 };

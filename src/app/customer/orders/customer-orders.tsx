@@ -1,5 +1,6 @@
 "use client";
 
+import customerApiRequest from "@/apiRequests/customer.api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,31 +19,37 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { OrderStatus } from "@/constants/enum";
 import { ROUTES } from "@/constants/constants";
+import { OrderStatus } from "@/constants/enum";
 import {
   formatNumberToVnCurrency,
   getBadgeVariantByOrderStatus,
   getVietnameseOrderStatus,
 } from "@/lib/utils";
 import { useSocket } from "@/providers/socket-provider";
-import { IOrder } from "@/types/backend.type";
-import { PaginatedResponse } from "@/types/response.type";
+import { useQuery } from "@tanstack/react-query";
+import { Session } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
 interface CustomerOrderProps {
-  promise: Promise<Awaited<PaginatedResponse<IOrder>>>;
+  session: Session | null;
 }
 
-export default function CustomerOrder({ promise }: CustomerOrderProps) {
-  const response = React.use(promise);
+export default function CustomerOrder({ session }: CustomerOrderProps) {
+  const accessToken = session?.accessToken ?? "";
+  const { data: response, refetch: refetchOrders } = useQuery({
+    queryKey: ["customerOrders", accessToken],
+    queryFn: () => customerApiRequest.getOrders(accessToken),
+    enabled: !!accessToken,
+  });
+
+  debugger;
+
   const orderList = Array.isArray(response?.data) ? response.data : [];
   const socket = useSocket();
-  const router = useRouter();
 
   console.log("=== CUSTOMER ORDERS DEBUG ===");
   console.log("Full API response:", response);
@@ -66,7 +73,8 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
 
     // Trong trường hợp JWT Expired thì socket chưa connect đến server đâu nên ở đây sẽ re-connect lại
     if (!socket.connected) {
-      router.refresh();
+      // router.refresh();
+      refetchOrders();
     }
 
     const onUpdatedOrder = ({
@@ -79,7 +87,8 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
       toast(
         `📢 Món "${dishTitle}" vừa được chuyển sang trạng thái "${getVietnameseOrderStatus(status)}"`,
       );
-      router.refresh();
+      // router.refresh();
+      refetchOrders();
     };
 
     const onNewOrders = ({
@@ -88,7 +97,8 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
       tableNumber: number;
       quantity: number;
     }) => {
-      router.refresh();
+      // router.refresh();
+      refetchOrders();
       toast("🔔 Đơn hàng mới", {
         description: `Nhân viên đã gọi thêm ${quantity} món ăn!`,
       });
@@ -101,7 +111,7 @@ export default function CustomerOrder({ promise }: CustomerOrderProps) {
       socket.off("updatedOrder", onUpdatedOrder);
       socket.off("newOrders", onNewOrders);
     };
-  }, [router, socket]);
+  }, [refetchOrders, socket]);
 
   if (orderList.length === 0) {
     return (

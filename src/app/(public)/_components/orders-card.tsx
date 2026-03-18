@@ -11,8 +11,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { HEADER_HEIGHT, QUANTITY_SELECT_MAX } from "@/constants/internal-data";
 import { ROUTES } from "@/constants/constants";
+import { HEADER_HEIGHT, QUANTITY_SELECT_MAX } from "@/constants/internal-data";
 import { useCreateOrderByCustomerMutation } from "@/hooks/api/useCustomer";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn, formatNumberToVnCurrency, handleApiError } from "@/lib/utils";
@@ -21,7 +21,7 @@ import { OrderItemDto } from "@/types/backend.dto";
 import { Loader, SquareX } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useMemo } from "react";
+import React from "react";
 
 export default function OrdersCard() {
   const { data: session } = useSession();
@@ -30,21 +30,21 @@ export default function OrdersCard() {
   const tableNumber = session?.customer?.tableNumber ?? 1;
 
   const orderItemsState = useAppStore((state) => state.orderItems);
-  const orderItems = React.useMemo(
-    () =>
+  const orderItems = React.useMemo(() => {
+    return (
       orderItemsState.find((order) => order.tableNumber === tableNumber)
-        ?.items ?? [],
-    [orderItemsState, tableNumber],
-  );
+        ?.items ?? []
+    );
+  }, [orderItemsState, tableNumber]);
 
-  const totalPrice = useMemo(
+  const totalPrice = React.useMemo(
     () =>
-      orderItems.reduce(
-        (result, orderItem) => result + orderItem.price * orderItem.quantity,
-        0,
-      ),
+      orderItems.reduce((result, orderItem) => {
+        return result + orderItem.dish.price * orderItem.quantity;
+      }, 0),
     [orderItems],
   );
+
   const updateOrderItem = useAppStore((state) => state.updateOrderItem);
   const removeOrderItem = useAppStore((state) => state.removeOrderItem);
   const clearOrderInCart = useAppStore((state) => state.clearOrderInCart);

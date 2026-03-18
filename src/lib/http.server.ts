@@ -47,7 +47,6 @@ const serverRequest = async <Response>(
   });
 
   if (!res.ok) {
-    debugger;
     let errorResponse: ApiErrorResponse;
     try {
       errorResponse = await res.json();

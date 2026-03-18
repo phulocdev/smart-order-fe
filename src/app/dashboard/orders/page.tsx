@@ -32,14 +32,10 @@ export default async function IndexPage(props: IndexPageProps) {
       ? { status: OrderStatus.Confirmed }
       : {};
 
-  const promises = Promise.all([
-    orderApiRequest.getList(accessToken, {
-      ...params,
-      ...orderQueryParamsForChef,
-    }),
-    tableApiRequest.getList(),
-    // orderApiRequest.statisticsByTables(accessToken)
-  ]);
+  const queryParams = {
+    ...params,
+    ...orderQueryParamsForChef,
+  };
 
   return (
     // <Shell className='gap-2'>
@@ -91,7 +87,7 @@ export default async function IndexPage(props: IndexPageProps) {
           />
         }
       >
-        <OrdersTable promises={promises} session={session} />
+        <OrdersTable params={queryParams} session={session} />
       </React.Suspense>
     </div>
     // </Shell>

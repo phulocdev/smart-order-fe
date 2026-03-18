@@ -72,7 +72,6 @@ export default function AvailableTableDialog({
   };
 
   const handleSelectTable = (table: ITable) => {
-    debugger;
     if (table.status !== TableStatus.Available) {
       toast({
         description: `Bàn số ${table.number} hiện không khả dụng. Vui lòng chọn bàn khác.`,
